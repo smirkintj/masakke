@@ -358,7 +358,7 @@ h1 { font-size: 30px; line-height: 1.15; font-weight: 500; margin: 12px 0 4px; t
 }
 @media (min-width: 900px) {
   .app { max-width: 1080px; }
-  .app.bare { max-width: 640px; }
+  .app.bare, .app.slim { max-width: 640px; }
   .week-grid { grid-template-columns: minmax(0, 1fr) 360px; gap: 32px; align-items: start; }
   .side { grid-column: 2; grid-row: 1; position: sticky; top: calc(76px + env(safe-area-inset-top, 0px)); }
   .week-main { grid-column: 1; grid-row: 1; }
@@ -1633,6 +1633,7 @@ const DATA = /*__DATA__*/null;
     const gate = CLOUD && !AUTH, created = CLOUD && AUTH && A.mode === "created";
     const ob = gate || created || !S.onboarded;
     document.getElementById("app").classList.toggle("bare", ob);
+    document.getElementById("app").classList.toggle("slim", !ob && (S.tab === "kitchen" || S.tab === "setup"));
     document.getElementById("tabsNav").hidden = ob;
     document.getElementById("where").hidden = ob;
     if (gate) { v.innerHTML = viewAuth(); return; }
