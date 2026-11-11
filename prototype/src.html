@@ -52,7 +52,7 @@ button:disabled { cursor: default; opacity: 0.5; }
 
 /* top bar */
 .top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 60px; }
-.logo { font-weight: 600; font-size: 20px; display: flex; align-items: center; gap: 8px; }
+.logo { font-weight: 600; font-size: 20px; display: flex; align-items: center; gap: 8px; background: none; border: 0; padding: 4px 0; color: var(--fg); }
 .logo svg { color: var(--accent-bright); }
 .where { display: inline-flex; align-items: center; gap: 6px; min-width: 0; height: 36px; padding: 0 14px; border-radius: 18px; border: 0; background: var(--surface); color: var(--fg2); font-size: 14px; font-weight: 500; transition: background-color 150ms var(--ease); }
 .where span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -64,6 +64,8 @@ h1 { font-size: 30px; line-height: 1.15; font-weight: 500; margin: 12px 0 4px; t
 
 /* week layout */
 .week-grid { display: grid; gap: 24px; }
+.week-grid > *, .side > *, .next > *, .days > *, .day > * { min-width: 0; }
+.btn.big { white-space: normal; text-align: center; line-height: 20px; }
 .side { display: grid; gap: 16px; align-content: start; }
 
 /* flow + next */
@@ -112,6 +114,10 @@ h1 { font-size: 30px; line-height: 1.15; font-weight: 500; margin: 12px 0 4px; t
 .dish-main { min-width: 0; text-align: left; background: none; border: 0; padding: 4px 0; border-radius: 8px; }
 .dish-main .n { display: block; font-weight: 500; font-size: 16px; line-height: 22px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dish-main .e { display: block; font-size: 14px; line-height: 20px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.missing { display: grid; grid-template-columns: 20px 1fr; gap: 10px; align-items: start; background: var(--card); border-radius: 12px; padding: 12px; font-size: 14px; color: var(--fg2); }
+.missing svg { color: var(--accent); margin-top: 2px; }
+.missing b { display: block; font-weight: 500; color: var(--fg); font-size: 15px; }
+.prep .nb { font-size: 12px; font-weight: 500; color: var(--accent); margin-left: 6px; }
 .dish.pickable { grid-template-columns: minmax(0, 1fr) auto; }
 .next .dish-main .n, .next .dish-main .e { white-space: normal; }
 .dish .c { font-size: 14px; color: var(--fg2); white-space: nowrap; }
@@ -181,7 +187,12 @@ h1 { font-size: 30px; line-height: 1.15; font-weight: 500; margin: 12px 0 4px; t
 .shop .q { font-size: 13px; color: var(--muted); line-height: 18px; }
 .shops .shop { grid-template-columns: 24px minmax(0, 1fr); align-items: start; }
 .shops .shop input { margin-top: 2px; }
-.shop .hrs.open { color: var(--pos); }
+.shop .hrs.open, .shopline .hrs.open { color: var(--pos); }
+.shop .dir { color: var(--fg2); font-weight: 500; text-underline-offset: 3px; }
+.shopline { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; gap: 10px; align-items: center; background: var(--surface); border-radius: 12px; padding: 10px 10px 10px 12px; margin-bottom: 16px; font-size: 14px; color: var(--fg2); }
+.summary .shopline { margin-bottom: 0; }
+.shopline svg { color: var(--fg2); }
+.shopline b { display: block; font-weight: 500; color: var(--fg); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .shop .src-ok { color: var(--accent); font-weight: 500; }
 .shop .km { font-size: 14px; color: var(--fg2); text-align: right; white-space: nowrap; }
 .shop-more { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px; }
@@ -202,6 +213,18 @@ h1 { font-size: 30px; line-height: 1.15; font-weight: 500; margin: 12px 0 4px; t
 .ob-bar i.on { background: var(--accent-bright); }
 .ob-actions { display: grid; grid-template-columns: auto 1fr; gap: 12px; margin-top: 24px; position: sticky; bottom: 0; padding: 12px 0 calc(12px + env(safe-area-inset-bottom, 0px)); background: var(--bg); }
 .ob-actions.solo { grid-template-columns: 1fr; }
+.how { list-style: none; counter-reset: how; padding: 0; margin: 16px 0 0; display: grid; gap: 12px; }
+.how li { counter-increment: how; display: grid; grid-template-columns: 36px 1fr; column-gap: 12px; align-items: start; }
+.how li::before { content: counter(how); grid-row: span 2; width: 36px; height: 36px; border-radius: 18px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); font-weight: 500; }
+.how b { font-weight: 500; font-size: 16px; }
+.how span { color: var(--fg2); font-size: 14px; line-height: 20px; }
+.how.small li::before { width: 28px; height: 28px; border-radius: 14px; font-size: 14px; }
+.how.small li { grid-template-columns: 28px 1fr; }
+.how.small b { font-size: 15px; }
+.guide { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 16px 20px 20px; margin-bottom: 16px; }
+.guide .gh { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.guide .gh b { font-weight: 500; font-size: 16px; }
+.guide .link { text-decoration: none; }
 
 /* tabs */
 .tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; background: var(--card); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom, 0px); padding-left: max(8px, env(safe-area-inset-left, 0px)); padding-right: max(8px, env(safe-area-inset-right, 0px)); }
@@ -265,6 +288,8 @@ h1 { font-size: 30px; line-height: 1.15; font-weight: 500; margin: 12px 0 4px; t
 .done-t { font-size: 30px; line-height: 1.2; font-weight: 500; margin: 24px 0 8px; }
 
 .no-gsap .enter { animation: rise 360ms var(--ease) both; }
+.cue { display: grid; gap: 2px; border-left: 3px solid var(--accent-bright); padding: 4px 0 4px 14px; margin: 0 0 24px; font-size: 17px; line-height: 24px; }
+.cue span { font-size: 13px; font-weight: 500; color: var(--accent); }
 .tstrip { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; }
 .tchip { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px; border-radius: 18px; border: 0; background: var(--surface); color: var(--fg2); font-size: 13px; font-weight: 500; }
 .tchip b { font-weight: 600; color: var(--fg); margin-left: 2px; }
@@ -295,7 +320,7 @@ h1 { font-size: 30px; line-height: 1.15; font-weight: 500; margin: 12px 0 4px; t
 
 <div class="app" id="app">
   <header class="top">
-    <div class="logo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11h18"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 4v3"/><path d="M8.5 5.5l1 2.2"/><path d="M15.5 5.5l-1 2.2"/></svg>MasakJe</div>
+    <button class="logo" id="logo" type="button" aria-label="MasakJe, go to Today"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11h18"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 4v3"/><path d="M8.5 5.5l1 2.2"/><path d="M15.5 5.5l-1 2.2"/></svg>MasakJe</button>
     <button class="where" id="where" type="button"></button>
   </header>
   <main id="view"></main>
@@ -349,6 +374,8 @@ const DATA = /*__DATA__*/null;
     trash: '<path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
     sound: '<path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/><path d="M16 9a5 5 0 0 1 0 6"/><path d="M19.364 18.364a9 9 0 0 0 0-12.728"/>',
     mute: '<path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/>',
+    nav: '<polygon points="3 11 22 2 13 21 11 13 3 11"/>',
+    store: '<path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/>',
     plus: '<path d="M5 12h14"/><path d="M12 5v14"/>',
     flame: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
   };
@@ -363,18 +390,18 @@ const DATA = /*__DATA__*/null;
     avoid: { beef: false, mutton: false, pedas: false }, allergy: {}, dislike: {} };
   const clone = o => JSON.parse(JSON.stringify(o));
   let S = { settings: clone(DEFAULTS), plan: null, bought: {}, pantryNeed: {}, flow: { locked: false, shopped: false, cooked: {} }, kitchen: {},
-    onboarded: false, ob: 0, tab: "week", filter: "all", q: "" };
-  try { const raw = localStorage.getItem(STORE); if (raw) Object.assign(S, JSON.parse(raw), { tab: "week", ob: 0 }); } catch (e) {}
-  const save = () => { try { localStorage.setItem(STORE, JSON.stringify({ settings: S.settings, plan: S.plan, bought: S.bought, pantryNeed: S.pantryNeed, flow: S.flow, kitchen: S.kitchen, onboarded: S.onboarded })); } catch (e) {} };
+    onboarded: false, ob: -1, guideSeen: false, tab: "week", filter: "all", q: "" };
+  try { const raw = localStorage.getItem(STORE); if (raw) Object.assign(S, JSON.parse(raw), { tab: "week", ob: -1 }); } catch (e) {}
+  const save = () => { try { localStorage.setItem(STORE, JSON.stringify({ settings: S.settings, plan: S.plan, bought: S.bought, pantryNeed: S.pantryNeed, flow: S.flow, kitchen: S.kitchen, onboarded: S.onboarded, guideSeen: S.guideSeen })); } catch (e) {} };
 
   // ---------- location ----------
   function lookupPostcode(pc) {
     if (!/^\d{5}$/.test(pc)) return null;
-    if (PC[pc]) return { lat: PC[pc][0], lng: PC[pc][1], place: PC[pc][2], exact: true };
+    if (PC[pc]) return { lat: PC[pc][0], lng: PC[pc][1], place: PC[pc][2], hood: PC[pc][3] || "", exact: true };
     const near = Object.keys(PC).filter(k => k.slice(0, 3) === pc.slice(0, 3));
     if (!near.length) return null;
     const k = near.reduce((a, b) => Math.abs(+b - +pc) < Math.abs(+a - +pc) ? b : a);
-    return { lat: PC[k][0], lng: PC[k][1], place: PC[k][2], exact: false };
+    return { lat: PC[k][0], lng: PC[k][1], place: PC[k][2], hood: PC[k][3] || "", exact: false };
   }
   function km(a, b, c, d) {
     const R = 6371, t = Math.PI / 180, dLat = (c - a) * t, dLng = (d - b) * t;
@@ -383,10 +410,12 @@ const DATA = /*__DATA__*/null;
   }
   let CTX = null;  // nearby shops + ring medians for the current postcode
   function ctx() {
-    const pc = S.settings.postcode;
-    if (CTX && CTX.pc === pc) return CTX;
-    const loc = lookupPostcode(pc);
-    if (!loc) return (CTX = { pc, loc: null, near: [], med: {}, stateIdx: -1 });
+    const pc = S.settings.postcode, hd = S.settings.hood && S.settings.hood.pc === pc ? S.settings.hood : null;
+    const key = pc + (hd ? "|" + hd.name : "");
+    if (CTX && CTX.key === key) return CTX;
+    let loc = lookupPostcode(pc);
+    if (loc) { if (hd) loc = { ...loc, lat: hd.lat, lng: hd.lng, hood: hd.name }; else { const h0 = hoodsNear(loc.lat, loc.lng)[0]; loc = { ...loc, hood: h0 ? h0.name : loc.hood }; } }
+    if (!loc) return (CTX = { key, pc, loc: null, near: [], med: {}, stateIdx: -1 });
     const near = PR.shops.map((s, i) => ({ i, s, d: km(loc.lat, loc.lng, s[2], s[3]) })).filter(x => x.d <= RADII[RADII.length - 1]).sort((a, b) => a.d - b.d);
     const med = {};  // key -> {v, r, n}
     for (const k of PR.keys) {
@@ -397,13 +426,18 @@ const DATA = /*__DATA__*/null;
       }
     }
     const stateIdx = near.length ? near[0].s[5] : -1;
-    return (CTX = { pc, loc, near, med, stateIdx });
+    return (CTX = { key, pc, loc, near, med, stateIdx });
   }
   const shopName = s => title(s[0]);
   const CHAINS = PR.chains.map(([name, pat, idx, n]) => ({ name, re: new RegExp(pat, "i"), idx, n }));
   const chainOf = name => CHAINS.find(c => c.re.test(name || "")) || null;
   const JG = PR.jg && PR.jg.items ? PR.jg : null;
   const OSM = DATA.osm || [];
+  const PLACES = DATA.places || [];
+  function hoodsNear(lat, lng) {  // OpenStreetMap neighbourhoods within ~5 km, nearest first
+    return PLACES.map(p => ({ name: p[2], lat: p[0], lng: p[1], d: Math.hypot(p[0] - lat, (p[1] - lng) * 0.998) }))
+      .filter(x => x.d < 0.045).sort((a, b) => a.d - b.d).filter((x, i, a) => a.findIndex(y => y.name === x.name) === i).slice(0, 15);
+  }
   // OpenStreetMap opening_hours, common forms: "24/7", "Mo-Fr 09:00-21:00; Sa,Su 10:00-22:00", "Mo-Su 07:00-01:00"
   const DN = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
   function parseHours(h) {
@@ -562,19 +596,37 @@ const DATA = /*__DATA__*/null;
   }
   const pool = kind => RECIPES.filter(r => r.kind === kind && allowed(r));
   const rand = arr => arr[Math.floor(Math.random() * arr.length)];
+  // Weekly protein mix: a typical Malaysian family week is mostly chicken and fish,
+  // red meat about once, and egg/tofu/dhal as an occasional light night, not the default.
+  const GROUP = r => ["egg", "tofu", "veg"].includes(r.protein) ? "light" : ["fish", "seafood"].includes(r.protein) ? "fish" : ["beef", "mutton"].includes(r.protein) ? "red" : "chicken";
+  function mixTarget(nights) {
+    const light = nights >= 6 ? 1 : nights >= 4 ? 1 : 0;
+    const red = nights >= 5 ? 1 : 0;
+    const fish = Math.max(1, Math.round((nights - light - red) * 0.45));
+    return { light, red, fish, chicken: Math.max(0, nights - light - red - fish) };
+  }
   function randomPlan() {
     const lauk = pool("lauk"), sayur = pool("sayur"), one = pool("onepot");
-    const used = new Set(); let prev = null, onepots = 0, red = 0; const days = [];
+    const nights = S.settings.nights.filter(Boolean).length;
+    // Build a shuffled list of protein groups for the week, then fill each night from that group.
+    const tgt = mixTarget(nights), slots = [];
+    for (const [g, n] of Object.entries(tgt)) for (let i = 0; i < n; i++) slots.push(g);
+    for (let i = slots.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [slots[i], slots[j]] = [slots[j], slots[i]]; }
+    for (let i = 1; i < slots.length; i++) if (slots[i] === slots[i - 1]) { const j = slots.findIndex((g, k) => k > i && g !== slots[i]); if (j > 0) [slots[i], slots[j]] = [slots[j], slots[i]]; }
+    const used = new Set(); let onepots = 0, si = 0; const days = [];
     for (let i = 0; i < 7; i++) {
       if (!S.settings.nights[i]) { days.push({ off: true }); continue; }
-      if (one.length && onepots < 2 && Math.random() < 0.2) {
-        const r = rand(one.filter(x => !used.has(x.id)));
-        if (r) { used.add(r.id); onepots++; prev = r.protein; days.push({ onepot: r.id }); continue; }
+      const want = slots[si++] || "chicken";
+      const fits = arr => arr.filter(x => !used.has(x.id) && GROUP(x) === want);
+      if (onepots < 1 && Math.random() < 0.18) {
+        const r = rand(fits(one));
+        if (r) { used.add(r.id); onepots++; days.push({ onepot: r.id }); continue; }
       }
-      let c = lauk.filter(x => !used.has(x.id) && x.protein !== prev && !((x.protein === "beef" || x.protein === "mutton") && red >= 2));
+      let c = fits(lauk);
+      if (!c.length) c = lauk.filter(x => !used.has(x.id) && GROUP(x) !== "light");  // group excluded by preferences
       if (!c.length) c = lauk.filter(x => !used.has(x.id));
       if (!c.length || !sayur.length) { const o = rand(one.filter(x => !used.has(x.id))); if (o) { used.add(o.id); days.push({ onepot: o.id }); } else days.push({ off: true }); continue; }
-      const l = rand(c); used.add(l.id); prev = l.protein; if (l.protein === "beef" || l.protein === "mutton") red++;
+      const l = rand(c); used.add(l.id);
       const s = rand(sayur.filter(x => !used.has(x.id))) || rand(sayur); used.add(s.id);
       days.push({ lauk: l.id, sayur: s.id });
     }
@@ -582,10 +634,12 @@ const DATA = /*__DATA__*/null;
   }
   function score(plan) {
     const t = totals(plan), b = S.settings.budget;
-    const proteins = new Set(plan.days.flatMap(d => dayItems(d).filter(r => r.kind !== "sayur").map(r => r.protein))).size;
     if (t.toBuy > b) return 1000 + (t.toBuy - b);
+    const mains = plan.days.flatMap(d => dayItems(d).filter(r => r.kind !== "sayur"));
+    const light = mains.filter(r => GROUP(r) === "light").length;
     const useK = plan.days.flatMap(d => dayItems(d)).reduce((a, r) => a + r.ing.filter(([k]) => S.kitchen[k] && !ING[k].pantry).reduce((x, [k]) => x + (S.kitchen[k].soon ? 2 : 1), 0), 0);
-    return -proteins * 3 + t.toBuy * 0.3 - useK * 2 + Math.random() * 4;
+    // Price matters, but only a little: the mix above decides what kind of week it is.
+    return light * 6 + t.toBuy * 0.06 - useK * 2 + Math.random() * 6;
   }
   function makePlan() {
     let best = null, bs = Infinity;
@@ -652,12 +706,18 @@ const DATA = /*__DATA__*/null;
       hero = `<div class="next"><div class="k">${when}${di !== ti && !S.plan.days[ti].off ? "" : ""}</div>
         <div class="dishes" style="margin-top:-4px">${dishesOf(d, di)}</div>
         <div class="d" style="margin-top:-4px">${d.onepot ? "One-pot dinner" : "With rice"} · about ${Math.max(...items.map(r => r.mins)) + (d.onepot ? 0 : 10)} min · about ${items.reduce((a, r) => a + r.macro[0], 0) + (d.onepot ? 0 : riceMacro()[0])} kcal and ${items.reduce((a, r) => a + r.macro[1], 0) + (d.onepot ? 0 : riceMacro()[1])} g protein a person</div>
-        <button class="btn primary big" data-cookday="${di}">${ic("flame")}Start cooking</button></div>`;
+        ${(() => { const miss = missingFor(di);
+          if (!miss.length) return `<button class="btn primary big" data-cookday="${di}">${ic("flame")}Start cooking</button>`;
+          const names = miss.slice(0, 3).map(m => esc(ING[m.k].name.replace(/ \(.*\)/, ""))).join(", ") + (miss.length > 3 ? ` and ${miss.length - 3} more` : "");
+          return `<div class="missing">${ic("cart")}<div><b>Still need ${miss.length} ${miss.length === 1 ? "item" : "items"}</b><span>${names}</span></div></div>
+            <button class="btn primary big" data-tonight="${di}">Get ${di === ti ? "tonight's" : "the"} items</button>
+            <button class="btn big" data-cookday="${di}">${ic("flame")}Start cooking anyway</button>`; })()}</div>`;
     }
     const shopCard = S.flow.shopped ? `<div class="summary" style="display:flex;justify-content:space-between;align-items:center;gap:12px"><div><div class="k">Groceries for the week</div><div style="font-size:18px;font-weight:500;margin-top:2px">${ic("check", 16)} Shopping done</div></div><button class="btn" data-go="shop">View list</button></div>`
       : all.length ? `<div class="summary" style="display:grid;gap:12px">
         <div style="display:flex;justify-content:space-between;gap:12px;align-items:baseline"><div><div class="k">Groceries for the week</div><div style="font-size:20px;font-weight:500;margin-top:2px">${left ? `${left} of ${all.length} left to buy` : "All bought"}</div></div><div style="text-align:right"><div class="money-v" style="font-weight:500" data-tw="wktotal" data-v="${t.toBuy.toFixed(2)}">${rm(t.toBuy)}</div><div class="k ${diff < 0 ? "pedas" : ""}" style="font-size:13px">${diff >= 0 ? `${rm(diff)} under budget` : `${rm(-diff)} over budget`}</div></div></div>
         <div class="meter" role="progressbar" aria-valuemin="0" aria-valuemax="${all.length}" aria-valuenow="${all.length - left}" aria-label="Groceries bought"><div data-tw="grocbar" data-s="${((all.length - left) / all.length).toFixed(3)}" style="transform:scaleX(${((all.length - left) / all.length).toFixed(3)})"></div></div>
+        ${left ? shopLine() : ""}
         ${left ? `<button class="btn big" data-go="shop">${ic("cart")}${left === all.length ? "Start shopping" : "Continue shopping"}</button>` : ""}
       </div>` : "";
     const days = S.plan.days.map((d, i) => {
@@ -670,12 +730,45 @@ const DATA = /*__DATA__*/null;
     return `<div class="enter">
       <h1>${new Date().toLocaleDateString("en-MY", { weekday: "long", day: "numeric", month: "short" })}</h1>
       <p class="sub">Dinner for ${S.settings.people} · prices from ${esc(priceLabel())}</p>
+      ${S.guideSeen ? "" : `<div class="guide"><div class="gh"><b>How your week works</b><button class="link" id="guideOk">Got it</button></div>
+        <ol class="how small">
+          <li><b>Check tonight's dinner</b><span>Tap Change on any dish to swap it. Tap a dish name to see the recipe</span></li>
+          <li><b>Shop once for the week</b><span>Tap Start shopping at the shop and tick items as they go in the trolley</span></li>
+          <li><b>Cook at dinner time</b><span>Tap Start cooking. Missing something? We'll tell you first</span></li>
+        </ol></div>`}
       <div class="week-grid">
         <aside class="side">${hero}${shopCard}
         </aside>
         <section class="week-main"><div class="section-h"><h2>Rest of the week</h2><button class="btn" id="regen">${ic("swap")}New plan</button></div><div class="days">${days}</div></section>
       </div>
     </div>`;
+  }
+
+  // What tonight's dinner still needs: not ticked as bought, not enough in the kitchen.
+  // Pantry staples count as at home unless marked Need on the shopping list.
+  function missingFor(di) {
+    const need = {};
+    for (const r of dayItems(S.plan.days[di])) for (const [k, q] of r.ing) need[k] = (need[k] || 0) + q * scale();
+    return Object.entries(need).filter(([k, q]) => {
+      const it = ING[k];
+      if (it.pantry && !S.pantryNeed[k]) return false;
+      if (S.bought[k]) return false;
+      return !(S.kitchen[k] && S.kitchen[k].q >= q * 0.9);
+    }).map(([k, q]) => ({ k, q }));
+  }
+  function openTonightList(di) {
+    const miss = missingFor(di), root = document.getElementById("sheetRoot");
+    const cost = miss.reduce((a, m) => { const it = ING[m.k], p = price(m.k), pack = p.src === "Jaya Grocer" ? JG.items[m.k].size : it.pack; return a + Math.max(1, Math.ceil(m.q / pack - 1e-9)) * pack * p.unit; }, 0);
+    root.innerHTML = `<div class="scrim open" id="scrim"></div><div class="sheet open" role="dialog" aria-modal="true" aria-labelledby="tl-t"><div class="sheet-in">
+      <div class="grab"></div><button class="icon-btn close" id="shClose" aria-label="Close">${ic("x", 18)}</button>
+      <h2 id="tl-t">For ${di === todayIdx() ? "tonight" : DAYS_LONG[di]}</h2>
+      <p class="sub" style="margin:4px 0 16px">${dayItems(S.plan.days[di]).map(r => esc(r.name)).join(" + ")} · about ${rm(cost)}. Tick items as you get them; they're ticked on the week's list too</p>
+      <div class="list">${miss.map(m => `<label class="item"><input type="checkbox" data-bought="${m.k}"><div><div class="n">${esc(ING[m.k].name)}</div><div class="q">${qty(m.q, ING[m.k].unit, m.k)} · ${unitPrice(m.k)}</div></div><span></span></label>`).join("")}</div>
+      <button class="btn primary big" id="tlDone" style="margin-top:16px">Done</button>
+      <button class="btn big" style="margin-top:8px" data-pickday="${di}">Change tonight's dishes instead</button>
+    </div></div>`;
+    const close = () => { root.innerHTML = ""; render(); };
+    document.getElementById("scrim").onclick = close; document.getElementById("shClose").onclick = close; document.getElementById("tlDone").onclick = close;
   }
 
   // ---------- dish picker (replaces random swap) ----------
@@ -748,7 +841,8 @@ const DATA = /*__DATA__*/null;
     const pct = all.length ? got / all.length : 0;
     return `<div class="enter">
       <h1>Shopping list</h1>
-      <p class="sub">Prices from ${esc(priceLabel())}. Rounded up to what shops sell.</p>
+      <p class="sub">Rounded up to what shops sell. Prices from ${esc(priceLabel())}</p>
+      ${shopLine()}
       ${lockNote}
       <div class="summary" style="margin-bottom:24px">
         <div style="display:flex;justify-content:space-between;gap:12px;align-items:baseline"><div class="k"><b style="color:var(--fg);font-size:18px">${got} of ${all.length}</b> items bought</div><div class="k">${rm(spent)} of ${rm(t.toBuy)}</div></div>
@@ -804,6 +898,21 @@ const DATA = /*__DATA__*/null;
   }
 
   // location block, shared by onboarding and setup
+  const dirUrl = (lat, lng) => `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+  // PriceCatcher-only shops have no exact location (postcode/town centre), so search Google Maps by name instead.
+  const searchUrl = (name, area) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name + ", " + area)}`;
+  const hoursText = (h, typ) => { if (h) return openStatus(h); if (typ) { const st = openStatus(typ); return { text: `${st.text} (usual hours)`, cls: st.cls }; } return null; };
+  function chosenShop() {
+    const s = S.settings;
+    if (s.shop === -3 && OSM[s.osm]) { const o = OSM[s.osm]; return { name: `${o[0]} · ${o[5]}`, url: dirUrl(o[2], o[3]), hrs: hoursText(o[4], o[7]) }; }
+    if (s.shop >= 0) { const p = PR.shops[s.shop]; return { name: shopName(p), url: searchUrl(shopName(p), p[6]), hrs: null }; }
+    if (s.shop === -2 && s.custom) return { name: s.custom.name, url: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.custom.name + " " + s.postcode)}`, hrs: null };
+    return null;
+  }
+  function shopLine() {
+    const c = chosenShop(); if (!c) return "";
+    return `<div class="shopline">${ic("store")}<div><b>${esc(c.name)}</b>${c.hrs ? `<span class="hrs ${c.hrs.cls}">${esc(c.hrs.text)}</span>` : ""}</div><a class="btn" href="${c.url}" target="_blank" rel="noopener" style="height:36px;padding:0 12px">${ic("nav")}Directions</a></div>`;
+  }
   function priceKind(name, pcIdx) {
     const c = chainOf(name);
     if (pcIdx >= 0) return { t: "Real prices", ok: true };
@@ -818,18 +927,18 @@ const DATA = /*__DATA__*/null;
     const q = (S.shopQ || "").trim().toLowerCase();
     // OpenStreetMap shops nearest first; PriceCatcher shops not linked to any OSM shop are added so their prices stay reachable
     const linked = new Set(OSM.map(o => o[6]).filter(i => i >= 0));
-    let cands = OSM.map((o, i) => ({ k: "o", i, name: o[0], type: o[1], area: o[5], hours: o[4], pc: o[6], d: km(loc.lat, loc.lng, o[2], o[3]) }))
-      .concat(PR.shops.map((p, i) => linked.has(i) ? null : { k: "p", i, name: shopName(p), type: p[1], area: p[6], hours: "", pc: i, d: km(loc.lat, loc.lng, p[2], p[3]) }).filter(Boolean));
+    let cands = OSM.map((o, i) => ({ k: "o", i, name: o[0], type: o[1], area: o[5], hours: o[4], typ: o[7], lat: o[2], lng: o[3], pc: o[6], d: km(loc.lat, loc.lng, o[2], o[3]) }))
+      .concat(PR.shops.map((p, i) => linked.has(i) ? null : { k: "p", i, name: shopName(p), type: p[1], area: p[6], hours: "", typ: "", lat: p[2], lng: p[3], pc: i, d: km(loc.lat, loc.lng, p[2], p[3]) }).filter(Boolean));
     cands = q ? cands.filter(x => x.name.toLowerCase().includes(q)).sort((a, b) => a.d - b.d).slice(0, 12)
               : cands.filter(x => x.d <= 15).sort((a, b) => a.d - b.d).slice(0, S.nearN || 8);
     const checked = x => x.k === "o" ? s.shop === -3 && s.osm === x.i : s.shop === x.i;
     const ring = c.near.filter(x => x.d <= 5).length;
-    const cu = s.custom, cuChain = cu && chainOf(cu.name);
-    const row = x => { const pk = priceKind(x.name, x.pc), st = openStatus(x.hours);
-      const hrs = x.hours ? `<span class="hrs ${st.cls}">${esc(st.text)}</span> · ` : "";
-      return `<label class="shop"><input type="radio" name="shop" value="${x.k}:${x.i}" ${checked(x) ? "checked" : ""}><div><div class="n">${esc(x.name)}</div><div class="q">${esc(x.type)}${x.area ? " · " + esc(x.area) : ""}</div><div class="q">${hrs}<span class="${pk.ok ? "src-ok" : ""}">${pk.t}</span></div></div></label>`; };
+    const cu = s.custom && (!s.custom.postcode || s.custom.postcode === s.postcode) ? s.custom : null, cuChain = cu && chainOf(cu.name);
+    const row = x => { const pk = priceKind(x.name, x.pc), st = hoursText(x.hours, x.typ);
+      const hrs = st ? `<span class="hrs ${st.cls}">${esc(st.text)}</span> · ` : "";
+      return `<label class="shop"><input type="radio" name="shop" value="${x.k}:${x.i}" ${checked(x) ? "checked" : ""}><div><div class="n">${esc(x.name)}</div><div class="q">${esc(x.type)}${x.area ? " · " + esc(x.area) : ""}</div><div class="q">${hrs}<span class="${pk.ok ? "src-ok" : ""}">${pk.t}</span> · <a class="dir" href="${x.k === "o" ? dirUrl(x.lat, x.lng) : searchUrl(x.name, x.area)}" target="_blank" rel="noopener">Directions</a></div></div></label>`; };
     const rows = [
-      `<label class="shop"><input type="radio" name="shop" value="-1" ${s.shop === -1 ? "checked" : ""}><div><div class="n">Any shop near me</div><div class="q">Typical price across ${ring >= MIN_SHOPS ? `${ring} surveyed shops around ${esc(loc.place)}` : "the nearest surveyed shops"}</div></div></label>`,
+      `<label class="shop"><input type="radio" name="shop" value="-1" ${s.shop === -1 ? "checked" : ""}><div><div class="n">Any shop near me</div><div class="q">Typical price across ${ring >= MIN_SHOPS ? `${ring} surveyed shops around ${esc(loc.hood || loc.place)}` : "the nearest surveyed shops"}</div></div></label>`,
       cu ? `<label class="shop"><input type="radio" name="shop" value="-2" ${s.shop === -2 ? "checked" : ""}><div><div class="n">${esc(cu.name)}</div><div class="q">Added by you</div><div class="q"><span class="${priceKind(cu.name, -1).ok ? "src-ok" : ""}">${priceKind(cu.name, -1).t}</span></div></div></label>` : "",
       ...cands.map(row),
     ].join("");
@@ -837,7 +946,11 @@ const DATA = /*__DATA__*/null;
     const add = S.adding ? `<div class="addshop"><label for="newshop" style="font-weight:500;font-size:15px">Your shop's name</label>
         <div class="row"><input class="inp" id="newshop" placeholder="e.g. TMG Alam Budiman" value="${esc(draft)}" style="background:var(--card)"><button class="btn primary" id="saveshop" style="height:48px" ${draft.trim().length < 3 ? "disabled" : ""}>Add</button></div>
         <div class="chainmsg">${draft.trim().length < 3 ? "We'll use prices from shops near your postcode." : dChain ? (JG && dChain.name === "Jaya Grocer" ? `Recognised <b>Jaya Grocer</b>. We'll use its online-store prices for ${Object.keys(JG.items).length} ingredients (checked ${jgDate}).` : `Recognised <b>${dChain.name}</b>. Its surveyed branches are ${pctLabel(dChain.idx)} average, so we'll adjust nearby prices by that.`) : "Not a chain we have data for. We'll use typical prices from shops near you."}</div></div>` : "";
+    const base = lookupPostcode(s.postcode), hoods = base ? hoodsNear(base.lat, base.lng) : [];
+    const cur = loc.hood;
+    const hoodSel = hoods.length ? `<div class="field"><label for="hood">Your neighbourhood</label><select class="inp" id="hood">${hoods.map(h => `<option ${h.name === cur ? "selected" : ""}>${esc(h.name)}</option>`).join("")}</select><div class="hint">Pick the closest one. Shops are listed from here</div></div>` : "";
     return `<div class="field"><label for="postcode">Your postcode</label><div class="pc-row"><input class="inp" id="postcode" inputmode="numeric" maxlength="5" autocomplete="postal-code" value="${esc(s.postcode)}">${place}</div></div>
+      ${hoodSel}
       <div class="field"><span class="lbl">Where you usually shop</span>
         <div class="search-wrap">${ic("search")}<input class="search" id="shopq" type="search" placeholder="Search shops" value="${esc(S.shopQ || "")}" aria-label="Search shops"></div>
         <div class="shops" role="radiogroup" aria-label="Where you shop">${rows}${q && !cands.length ? `<div class="shop"><span></span><div class="q">No shop matches "${esc(S.shopQ)}"</div><span></span></div>` : ""}</div>
@@ -866,16 +979,33 @@ const DATA = /*__DATA__*/null;
 
   function viewOnboarding() {
     const i = S.ob;
-    const heads = [["Where do you shop?", "We price your list with real unit prices from shops near you"], ["Who's eating?", "Portions and nights to plan for"], ["Food preferences", "Allergies and things your family won't eat"], ["Your budget", "We'll plan dinners that fit it"]];
+    if (i === -1) return `<div class="enter narrow" style="margin:0 auto">
+      <h1 style="margin-top:24px">Home dinners for the week, planned and priced</h1>
+      <p class="sub">MasakJe picks a week of Malaysian dinners your family will eat, makes the shopping list with real prices near you, and walks you through cooking</p>
+      <ol class="how">
+        <li><b>Plan</b><span>Get a week of rice + lauk + sayur dinners. Change any dish you don't fancy</span></li>
+        <li><b>Shop</b><span>One list for the week, with prices at your shop. Tick things off in the aisle</span></li>
+        <li><b>Cook</b><span>Step by step, with timers, the whole dinner ready together</span></li>
+      </ol>
+      <p class="sub" style="margin-top:20px">Setup is 4 quick questions, about a minute</p>
+      <div class="ob-actions solo"><button class="btn primary big" id="obNext">Get started</button></div>
+    </div>`;
+    const heads = [
+      ["Where do you shop?", "Type your postcode, then tap the shop you usually go to. Not sure? Keep <b>Any shop near me</b>"],
+      ["Who's eating dinner?", "Pick how many people, then untick nights you usually eat out"],
+      ["Anything to avoid?", "Tap allergies and food your family won't eat. Nothing to avoid? Just tap Next"],
+      ["Your weekly budget", "Roughly what you'd spend on dinner groceries in a week. We'll keep the plan under it"],
+    ];
+    const nextLabel = ["Next: who's eating", "Next: food to avoid", "Next: budget", "Plan my week"][i];
     const body = [locationBlock, householdBlock, prefsBlock, budgetBlock][i]();
     const canNext = i !== 0 || !!ctx().loc;
     return `<div class="enter narrow" style="margin:0 auto">
       <div class="ob-bar">${[0, 1, 2, 3].map(k => `<i class="${k <= i ? "on" : ""}"></i>`).join("")}</div>
-      <div class="ob-step">Step ${i + 1} of 4</div>
+      <div class="ob-step">Question ${i + 1} of 4</div>
       <h1>${heads[i][0]}</h1><p class="sub">${heads[i][1]}</p>
       ${body}
-      <div class="ob-actions ${i === 0 ? "solo" : ""}">${i > 0 ? `<button class="btn big" id="obBack" style="width:auto;padding:0 20px">Back</button>` : ""}<button class="btn primary big" id="obNext" ${canNext ? "" : "disabled"}>${i < 3 ? "Next" : "Plan my week"}</button></div>
-      ${i === 0 ? `<p class="fine">Prices: ${esc(PR.source)}, ${PR.shops.length.toLocaleString()} shops, latest ${PR.date}. Shops and opening hours © OpenStreetMap contributors (ODbL). Postcode locations from GeoNames (CC BY 4.0).</p>` : ""}
+      <div class="ob-actions"><button class="btn big" id="obBack" style="width:auto;padding:0 20px">Back</button><button class="btn primary big" id="obNext" ${canNext ? "" : "disabled"}>${nextLabel}</button></div>
+      ${i === 0 ? `<p class="fine">Prices: ${esc(PR.source)}, latest ${PR.date}. Shops and opening hours © OpenStreetMap contributors (ODbL). Postcode locations from GeoNames (CC BY 4.0).</p>` : ""}
     </div>`;
   }
 
@@ -975,7 +1105,7 @@ const DATA = /*__DATA__*/null;
     const n = S.settings.people, sc = scale(), steps = [];
     const withRice = day != null && !S.plan.days[day].onepot;
     if (withRice) steps.push({ dish: "rice", t: `Rinse ${qty(RICE_PER_PERSON * n, "g", "rice")} rice and start the rice cooker`, ing: [["rice", RICE_PER_PERSON * n]], sec: 0 });
-    const fromGuide = r => r.guide.map(st => ({ dish: r.id, t: st.t, ing: st.ing.map(k => [k, r.ing.find(x => x[0] === k)[1] * sc]), sec: st.sec }));
+    const fromGuide = r => r.guide.map(st => ({ dish: r.id, t: st.t, ing: st.ing.map(k => [k, r.ing.find(x => x[0] === k)[1] * sc]), sec: st.sec, cue: st.cue || "" }));
     const main = RX[ids[0]], side = ids[1] ? RX[ids[1]] : null;
     const ms = fromGuide(main);
     if (side) {
@@ -1040,7 +1170,9 @@ const DATA = /*__DATA__*/null;
         ${C.ids.length > 1 || C.steps[0].dish === "rice" ? `<div class="tip">${ic("info")}<div>MasakJe runs these together: ${C.steps[0].dish === "rice" ? "rice first, then " : ""}${esc(RX[C.ids[0]].name)}${C.ids[1] ? `, and you prep the ${esc(RX[C.ids[1]].name.toLowerCase())} while it cooks so it's served hot` : ""}.</div></div>` : ""}
         <div style="display:flex;justify-content:space-between;font-size:14px;color:var(--fg2);margin-bottom:8px"><span><b style="color:var(--fg)">${ready} of ${keys.length}</b> ready</span>${ready === keys.length ? '<span style="color:var(--pos);font-weight:600">All set</span>' : ""}</div>
         <div class="meter" style="margin-bottom:12px" role="progressbar" aria-valuemin="0" aria-valuemax="${keys.length}" aria-valuenow="${ready}" aria-label="Ingredients ready"><div data-tw="prep" data-s="${(ready / keys.length).toFixed(3)}" style="transform:scaleX(${(ready / keys.length).toFixed(3)})"></div></div>
-        <div class="prep">${keys.map(k => `<label><input type="checkbox" data-prep="${k}" ${C.prepped[k] ? "checked" : ""}><span>${esc(ING[k].name)}</span><span class="q">${qty(merged[k], ING[k].unit, k)}</span></label>`).join("")}</div>`;
+        ${(() => { const miss = C.day != null ? new Set(missingFor(C.day).map(m => m.k)) : new Set(); C.miss = miss;
+          return `${miss.size ? `<div class="tip">${ic("cart")}<div>${miss.size} ${miss.size === 1 ? "item isn't" : "items aren't"} ticked as bought yet. Check you have ${miss.size === 1 ? "it" : "them"}, or swap something similar</div></div>` : ""}
+        <div class="prep">${keys.map(k => `<label><input type="checkbox" data-prep="${k}" ${C.prepped[k] ? "checked" : ""}><span>${esc(ING[k].name)}${miss.has(k) ? '<span class="nb">not bought</span>' : ""}</span><span class="q">${qty(merged[k], ING[k].unit, k)}</span></label>`).join("")}</div>`; })()}`;
       foot = `<button class="btn" id="ckBack">Close</button><button class="btn primary" id="ckNext">${ic("play")}Start cooking</button>`;
     } else if (C.step < total) {
       const st = C.steps[C.step], kind = dishKind(st);
@@ -1051,7 +1183,8 @@ const DATA = /*__DATA__*/null;
         const t = C.timers[C.step] || { left: st.sec, running: false };
         timer = `<div class="timer ${t.rang ? "ring" : ""}"><div><div class="clock" data-tclock="${C.step}">${fmtClock(t.left)}</div><div class="lbl">${t.rang ? "Time's up" : t.running ? "Running. You can go to the next step" : "Timer"}</div></div><div class="acts">${t.rang && !t.acked ? `<button class="btn primary" id="tAck">${ic("check")}Stop alarm</button>` : t.running ? `<button class="btn" id="tPause" aria-label="Pause timer">${ic("pause")}</button>` : `<button class="btn primary" id="tStart">${ic("play")}${t.left === st.sec ? "Start" : "Resume"}</button>`}${t.left !== st.sec && !(t.rang && !t.acked) ? `<button class="btn" id="tReset" aria-label="Reset timer">${ic("reset")}</button>` : ""}</div></div>`;
       }
-      body = `<div class="step-no">Step ${C.step + 1} of ${total}</div>${tag}<h2 class="step-t">${esc(st.t)}</h2>${need}${timer}`;
+      const cue = st.cue ? `<div class="cue"><span>Wait until</span>${esc(st.cue)}</div>` : "";
+      body = `<div class="step-no">Step ${C.step + 1} of ${total}</div>${tag}<h2 class="step-t">${esc(st.t)}</h2>${need}${cue}${timer}`;
       foot = `<button class="btn" id="ckBack">Back</button><button class="btn primary" id="ckNext">${C.step + 1 < total ? "Next" : "Finish"}</button>`;
     } else {
       const took = C.started ? Math.max(1, Math.round((Date.now() - C.started) / 60000)) : 0;
@@ -1113,12 +1246,12 @@ const DATA = /*__DATA__*/null;
     v.innerHTML = S.tab === "week" ? viewWeek() : S.tab === "shop" ? viewShop() : S.tab === "recipes" ? viewRecipes() : S.tab === "kitchen" ? viewKitchen() : viewSetup();
     document.getElementById("tabs").innerHTML = TABS.map(([k, l, i]) => `<button class="tab" data-tab="${k}" ${S.tab === k ? 'aria-current="page"' : ""}>${ic(i, 20)}<span>${l}</span></button>`).join("");
     playTweens(viewKey !== lastView); lastView = viewKey;
-    document.getElementById("where").innerHTML = `${ic("pin", 14)}<span>${esc(S.settings.postcode)} · ${S.settings.people} ${S.settings.people === 1 ? "person" : "people"}</span>`;
+    document.getElementById("where").innerHTML = `${ic("pin", 14)}<span>${esc((ctx().loc && ctx().loc.hood) || S.settings.postcode)} · ${S.settings.people} ${S.settings.people === 1 ? "person" : "people"}</span>`;
   }
   function go(tab) { S.tab = tab; render(); window.scrollTo({ top: 0 }); }
 
   document.addEventListener("click", e => {
-    const el = e.target.closest("[data-tab],[data-go],[data-swap],[data-off],[data-recipe],[data-filter],[data-people],[data-night],[data-avoid],[data-allergy],[data-dislike],[data-pick],[data-sound],[data-clear],[data-pneed],[data-cookday],[data-cookone],#regen,#replan,#where,#lock,#shopped,#newweek,#obNext,#obBack,#moreshops,#addshop,#saveshop,#replanK,[data-kadd],[data-kdel],[data-kmove],[data-ksoon]");
+    const el = e.target.closest("[data-tab],[data-go],[data-swap],[data-off],[data-recipe],[data-filter],[data-people],[data-night],[data-avoid],[data-allergy],[data-dislike],[data-pick],[data-sound],[data-clear],[data-pneed],[data-tonight],[data-pickday],[data-cookday],[data-cookone],#regen,#replan,#where,#lock,#shopped,#newweek,#obNext,#obBack,#guideOk,#logo,#moreshops,#addshop,#saveshop,#replanK,[data-kadd],[data-kdel],[data-kmove],[data-ksoon]");
     if (!el) return;
     const s = S.settings;
     if (el.dataset.tab) return go(el.dataset.tab);
@@ -1127,6 +1260,8 @@ const DATA = /*__DATA__*/null;
     if (el.dataset.swap) { const [i, slot] = el.dataset.swap.split(":"); return swap(+i, slot); }
     if (el.dataset.off !== undefined) return toggleOff(+el.dataset.off);
     if (el.dataset.recipe) return openRecipe(el.dataset.recipe);
+    if (el.dataset.tonight !== undefined) return openTonightList(+el.dataset.tonight);
+    if (el.dataset.pickday !== undefined) { const di = +el.dataset.pickday; closeSheet(); return openPicker(di, S.plan.days[di].onepot ? "onepot" : "lauk"); }
     if (el.dataset.pneed) { const [k, v] = el.dataset.pneed.split(":"); captureTweens(); S.pantryNeed[k] = v === "1"; v === "1" ? SFX.tick() : SFX.untick(); save(); return render(); }
     if (el.dataset.clear) { const k = el.dataset.clear; s[k] = k === "avoid" ? { chicken: false, beef: false, mutton: false, pedas: false } : {}; save(); return render(); }
     if (el.dataset.pick) { const [i, slot] = el.dataset.pick.split(":"); return openPicker(+i, slot); }
@@ -1154,8 +1289,10 @@ const DATA = /*__DATA__*/null;
     if (el.id === "replanK") { newWeek(); toast("New plan built around your fridge"); return go("week"); }
     if (el.id === "moreshops") { S.nearN = (S.nearN || 8) + 10; return render(); }
     if (el.id === "addshop") { S.adding = true; render(); const n = document.getElementById("newshop"); n && n.focus(); return; }
-    if (el.id === "saveshop") { const name = (S.shopDraft || "").trim(); if (name.length < 3) return; s.custom = { name }; s.shop = -2; S.adding = false; S.shopDraft = ""; save(); return render(); }
-    if (el.id === "obBack") { S.ob = Math.max(0, S.ob - 1); render(); return window.scrollTo({ top: 0 }); }
+    if (el.id === "saveshop") { const name = (S.shopDraft || "").trim(); if (name.length < 3) return; s.custom = { name, postcode: s.postcode }; s.shop = -2; S.adding = false; S.shopDraft = ""; save(); return render(); }
+    if (el.id === "logo") { if (!S.onboarded) { S.ob = -1; render(); } else go("week"); return; }
+    if (el.id === "guideOk") { S.guideSeen = true; save(); const g = document.querySelector(".guide"); if (G && g) G.to(g, { opacity: 0, y: -6, duration: 0.25, ease: EASE, onComplete: render }); else render(); return; }
+    if (el.id === "obBack") { S.ob = Math.max(-1, S.ob - 1); render(); return window.scrollTo({ top: 0 }); }
     if (el.id === "obNext") {
       if (S.ob < 3) { S.ob++; render(); return window.scrollTo({ top: 0 }); }
       S.onboarded = true; newWeek(); return go("week");
@@ -1167,6 +1304,7 @@ const DATA = /*__DATA__*/null;
     if (t.dataset.need) { S.pantryNeed[t.dataset.need] = t.checked; save(); return render(); }
     if (t.name === "shop") { if (t.value.startsWith("o:")) { s.shop = -3; s.osm = +t.value.slice(2); } else if (t.value.startsWith("p:")) { s.shop = +t.value.slice(2); } else s.shop = +t.value; save(); return render(); }
     if (t.dataset.kqty) { const v = +t.value; if (v > 0) S.kitchen[t.dataset.kqty].q = v; else delete S.kitchen[t.dataset.kqty]; save(); return render(); }
+    if (t.id === "hood") { const base = lookupPostcode(s.postcode), h = hoodsNear(base.lat, base.lng).find(x => x.name === t.value); if (h) { s.hood = { pc: s.postcode, name: h.name, lat: h.lat, lng: h.lng }; s.shop = s.shop === -2 ? -2 : -1; save(); return render(); } }
     if (t.id === "budget") { s.budget = Math.max(20, +t.value || DEFAULTS.budget); save(); }
   });
   document.addEventListener("input", e => {
@@ -1178,7 +1316,7 @@ const DATA = /*__DATA__*/null;
     }
     if (t.id === "postcode") {
       const v = t.value.replace(/\D/g, "").slice(0, 5);
-      if (v !== S.settings.postcode) { S.settings.postcode = v; S.settings.shop = -1; save(); render(); const p = document.getElementById("postcode"); p.focus(); p.setSelectionRange(v.length, v.length); }
+      if (v !== S.settings.postcode) { S.settings.postcode = v; S.settings.shop = -1; S.nearN = 8; save(); render(); const p = document.getElementById("postcode"); p.focus(); p.setSelectionRange(v.length, v.length); }
     }
   });
   document.addEventListener("keydown", e => { if (e.key === "Escape") { if (C) stopCooking(); else closeSheet(); } });

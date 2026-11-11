@@ -109,6 +109,23 @@ def main():
                         bd, best = d, nm
         if best:
             s["area"] = best
+    # Typical hours per chain, from its branches that do list hours (>= 3 branches, >= 40% agree).
+    from collections import Counter
+    def chain_key(s):
+        return (s["brand"] or re.sub(r"\s*[\(@\-–].*$", "", s["name"])).strip().lower()
+    by = {}
+    for s in h.out:
+        if s["hours"]:
+            by.setdefault(chain_key(s), []).append(s["hours"].strip())
+    typical = {}
+    for k, hs in by.items():
+        if len(hs) >= 3:
+            val, n = Counter(hs).most_common(1)[0]
+            if n / len(hs) >= 0.4:
+                typical[k] = val
+    for s in h.out:
+        if not s["hours"] and chain_key(s) in typical:
+            s["typ"] = typical[chain_key(s)]
     linked = 0
     for s in h.out:
         sw = words(s["name"] + " " + s["brand"])
@@ -124,8 +141,12 @@ def main():
             s["pc"] = best[1]
             linked += 1
     json.dump(h.out, open(OUT, "w"), separators=(",", ":"), ensure_ascii=False)
+    json.dump([[round(a, 4), round(b, 4), n] for a, b, n in h.places], open(os.path.join(P, "osm_places.json"), "w"), separators=(",", ":"), ensure_ascii=False)
     with_hours = sum(1 for s in h.out if s["hours"])
-    print(f"osm shops={len(h.out)} with_hours={with_hours} linked_to_pricecatcher={linked}", file=sys.stderr)
+    with_typ = sum(1 for s in h.out if s.get("typ"))
+    print(f"osm shops={len(h.out)} with_hours={with_hours} typical_hours={with_typ} chains_with_typical={len(typical)} linked_to_pricecatcher={linked}", file=sys.stderr)
+    for k, v in sorted(typical.items(), key=lambda kv: -len(by[kv[0]]))[:15]:
+        print(f"  {k:28s} {v}  ({len(by[k])} branches with hours)", file=sys.stderr)
 
 
 if __name__ == "__main__":

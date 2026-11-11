@@ -94,14 +94,33 @@ def main():
     recipes = json.load(open(os.path.join(ROOT, "src", "data", "recipes.json")))["recipes"]
     index = json.load(open(os.path.join(P, "index.json")))
     postcodes = json.load(open(os.path.join(P, "postcodes.json")))
+    # Neighbourhood for each postcode (nearest OpenStreetMap suburb/neighbourhood to its centre), e.g. "Section U8"
+    pl = os.path.join(P, "osm_places.json")
+    if os.path.exists(pl):
+        grid = {}
+        for la, ln, nm in json.load(open(pl)):
+            grid.setdefault((round(la, 1), round(ln, 1)), []).append((la, ln, nm))
+        for k, v in postcodes.items():
+            best, bd = "", 0.03 ** 2   # within ~3 km
+            for dla in (-0.1, 0, 0.1):
+                for dln in (-0.1, 0, 0.1):
+                    for la, ln, nm in grid.get((round(v[0] + dla, 1), round(v[1] + dln, 1)), []):
+                        dd = (la - v[0]) ** 2 + (ln - v[1]) ** 2
+                        if dd < bd:
+                            bd, best = dd, nm
+            v.append(best)
     keys = sorted(k for k, v in ingredients.items() if v.get("codes"))
 
     def pack(m):
         return [m.get(k) or 0 for k in keys]
 
     nutri = json.load(open(os.path.join(ROOT, "src", "data", "nutrition.json")))["per"]
+    written = json.load(open(os.path.join(ROOT, "src", "data", "steps.json")))["steps"]
     for r in recipes:
-        r["guide"] = guided_steps(r)
+        if r["id"] in written:   # hand-written pot-order steps with "wait until" cues
+            r["guide"] = [{"t": t, "ing": ing, "sec": sec, "cue": cue} for t, ing, sec, cue in written[r["id"]]]
+        else:
+            r["guide"] = guided_steps(r)
         r["macro"] = macros(r, ingredients, nutri)
 
     state_names = sorted(index["states"])
@@ -130,7 +149,7 @@ def main():
         if n >= MIN_CHAIN_SHOPS:
             chains.append([name, pat.replace("\\b", "\\b"), round(statistics.median(ratios), 3), n])
 
-    # OpenStreetMap shops: [name, type, lat, lng, opening_hours, area, PriceCatcher shop index or -1]
+    # OpenStreetMap shops: [name, type, lat, lng, opening_hours, area, PriceCatcher shop index or -1, chain's typical hours]
     osm = []
     op = os.path.join(P, "osm_shops.json")
     if os.path.exists(op):
@@ -150,13 +169,14 @@ def main():
         for o in json.load(open(op)):
             area = o["area"].split(",")[0].strip() or place(o["lat"], o["lng"])
             name = o["name"] if o["brand"].lower() in o["name"].lower() or not o["brand"] else f'{o["brand"]} {o["name"]}'
-            osm.append([name, o["type"], o["lat"], o["lng"], o["hours"], area, pc_index.get(o.get("pc"), -1)])
+            osm.append([name, o["type"], o["lat"], o["lng"], o["hours"], area, pc_index.get(o.get("pc"), -1), o.get("typ", "")])
 
     data = {
         "ingredients": ingredients,
         "recipes": recipes,
         "postcodes": postcodes,
         "osm": osm,
+        "places": json.load(open(os.path.join(P, "osm_places.json"))) if os.path.exists(os.path.join(P, "osm_places.json")) else [],
         "prices": {"source": index["source"], "date": index["latestPriceDate"], "keys": keys,
                    "national": pack(index["national"]["median"]),
                    "states": state_names,

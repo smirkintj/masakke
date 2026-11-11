@@ -1,0 +1,401 @@
+{
+  "_doc": "Guided steps per recipe, in pot order. Each step: [instruction, [ingredient keys added in this step], timer seconds (0 = none), 'wait until' cue]. Quantities come from recipes.json. DRAFT: needs checking by a home cook.",
+  "steps": {
+    "ayam-masak-merah": [
+      ["Rub the chicken with half the salt", ["chicken"], 0, ""],
+      ["Heat the oil and fry the chicken in batches", ["oil"], 600, "Golden on both sides, about 10 min. Lift out and set aside"],
+      ["Blend the soaked dried chili with the shallots, garlic and ginger", ["dried_chili", "shallot", "garlic", "ginger"], 0, "A smooth red paste"],
+      ["Pour off all but 3 tbsp oil. Fry the cinnamon and star anise", ["cinnamon", "star_anise"], 60, "Naik bau: fragrant, about 1 min"],
+      ["Add the chili paste. Tumis on low-medium heat, stirring often", [], 600, "Pecah minyak: the oil separates and pools on top, 8 to 10 min"],
+      ["Stir in the tomato sauce, sugar and the rest of the salt", ["tomato_sauce", "sugar", "salt"], 120, "Paste darkens and thickens, 2 min"],
+      ["Add the santan and put the chicken back in. Simmer, stirring now and then", ["santan"], 600, "Gravy thick enough to coat the chicken, 10 min"],
+      ["Add the sliced onion and tomato wedges", ["onion", "tomato"], 120, "Onion just soft but still holds its shape"]
+    ],
+    "ayam-masak-kicap": [
+      ["Heat the oil and fry the potato wedges", ["oil", "potato"], 480, "Golden at the edges, about 8 min. Set aside"],
+      ["Fry the chicken in the same oil", ["chicken"], 600, "Lightly browned all over, 10 min. Set aside"],
+      ["Leave 2 tbsp oil. Fry the cinnamon and star anise, then the pounded garlic and ginger", ["cinnamon", "star_anise", "garlic", "ginger"], 90, "Fragrant and light golden. Don't let the garlic burn"],
+      ["Add the kicap manis, dark soy, sugar, salt and 1 cup water", ["kicap_manis", "soy_dark", "sugar", "salt"], 120, "Comes to the boil"],
+      ["Put the chicken and potato back in. Simmer uncovered", [], 900, "Sauce glossy and thick enough to coat a spoon, 15 min"],
+      ["Add the onion rings, toss and turn off the heat", ["onion"], 60, "Onion just wilted"]
+    ],
+    "ayam-goreng-berempah": [
+      ["Blend the shallots, garlic, ginger and lemongrass", ["shallot", "garlic", "ginger", "lemongrass"], 0, "A fine paste"],
+      ["Mix the paste with the turmeric, chili powder and salt, and rub it all over the chicken", ["turmeric_powder", "chili_powder", "salt", "chicken"], 1800, "Marinate at least 30 min. Overnight in the fridge is best"],
+      ["Heat the oil for deep frying on medium", ["oil"], 0, "A bit of paste dropped in sizzles straight away"],
+      ["Fry the chicken in batches, turning once", [], 900, "Deep golden and crisp, juices run clear, 12 to 15 min"],
+      ["Fry the curry leaves in the same oil and scatter over the chicken", ["curry_leaves"], 30, "Leaves turn crisp, 20 to 30 sec"]
+    ],
+    "kari-ayam": [
+      ["Mix the curry powder with a little water into a thick paste", ["curry_meat"], 0, "Like wet sand, no dry lumps"],
+      ["Heat the oil. Fry the cinnamon, star anise and curry leaves", ["oil", "cinnamon", "star_anise", "curry_leaves"], 60, "Leaves crackle and smell fragrant"],
+      ["Add the sliced onion, garlic and ginger. Tumis", ["onion", "garlic", "ginger"], 180, "Onion soft and light golden, 3 min"],
+      ["Add the curry paste. Lower the heat and keep stirring", [], 480, "Pecah minyak: oil separates and the paste darkens, 6 to 8 min"],
+      ["Add the chicken and stir to coat, then the potato and 2 cups water. Cover", ["chicken", "potato"], 1500, "Potato tender when poked, 25 min"],
+      ["Stir in the santan and salt. Simmer gently", ["santan", "salt"], 300, "Smooth and slightly thick. Don't boil hard or the santan splits"]
+    ],
+    "ayam-masak-lemak-cili-api": [
+      ["Pound the chili padi, shallots, garlic and ginger with the turmeric", ["chili_padi", "shallot", "garlic", "ginger", "turmeric_powder"], 0, "A coarse yellow paste"],
+      ["Bring the paste, bruised lemongrass and 1 cup water to the boil", ["lemongrass"], 120, "Boiling and fragrant"],
+      ["Add the chicken and potato. Cover and cook", ["chicken", "potato"], 1200, "Chicken cooked through, potato nearly soft, 20 min"],
+      ["Pour in the santan and salt. Lower the heat and stir often", ["santan", "salt"], 480, "Gentle bubbles only, never a hard boil, or the santan splits (pecah santan)"]
+    ],
+    "ayam-kurma": [
+      ["Mix the kurma powder with a little water into a paste", ["kurma_powder"], 0, "No dry lumps"],
+      ["Heat the oil. Fry the cinnamon and star anise", ["oil", "cinnamon", "star_anise"], 60, "Fragrant, about 1 min"],
+      ["Add the sliced onion, garlic and ginger. Tumis", ["onion", "garlic", "ginger"], 180, "Onion soft and translucent"],
+      ["Add the kurma paste and stir on low heat", [], 360, "Pecah minyak, 5 to 6 min"],
+      ["Add the chicken, potato and 1.5 cups water. Cover", ["chicken", "potato"], 1500, "Potato tender, 25 min"],
+      ["Add the santan, tomato wedges and salt. Simmer gently", ["santan", "tomato", "salt"], 300, "Tomato softened, gravy creamy, 5 min"]
+    ],
+    "ayam-halia": [
+      ["Marinate the chicken with the light soy, sesame oil and cornflour", ["chicken", "soy_light", "sesame_oil", "cornflour"], 900, "15 min, while you cut the ginger into strips"],
+      ["Heat the oil and fry the ginger strips", ["oil", "ginger"], 180, "Golden at the edges and very fragrant, 2 to 3 min"],
+      ["Add the chicken on high heat and spread it out", [], 240, "Sealed and lightly browned, 4 min"],
+      ["Add the oyster sauce, dark soy, sugar and half a cup of water. Cover", ["oyster_sauce", "soy_dark", "sugar"], 600, "Chicken cooked through and the sauce reduced, 10 min"],
+      ["Toss in the spring onion and turn off the heat", ["spring_onion"], 30, "Just wilted"]
+    ],
+    "ayam-masam-manis": [
+      ["Dip the chicken cubes in beaten egg, then coat in the flour mixed with half the cornflour", ["chicken_breast", "egg", "flour", "cornflour"], 0, "Every piece evenly coated"],
+      ["Deep fry in hot oil in batches", ["oil"], 360, "Crisp and pale golden, 5 to 6 min. Drain"],
+      ["Leave 1 tbsp oil. Fry the onion and capsicum", ["onion", "capsicum"], 60, "Bright and just softened, 1 min"],
+      ["Add the tomato, tomato sauce, chili sauce, sugar, salt and half a cup of water", ["tomato", "tomato_sauce", "chili_sauce", "sugar", "salt"], 120, "Bubbling"],
+      ["Stir in the rest of the cornflour mixed with a little water", [], 60, "Sauce turns glossy and thick"],
+      ["Toss the chicken in the sauce and serve straight away", [], 0, "Toss at the last minute so the coating stays crisp"]
+    ],
+    "ayam-kung-pao": [
+      ["Marinate the diced chicken with the light soy and cornflour", ["chicken_thigh", "soy_light", "cornflour"], 600, "10 min"],
+      ["Toast the peanuts in a dry pan. Set aside", ["peanuts"], 240, "Golden and fragrant, 3 to 4 min"],
+      ["Heat the oil. Fry the cut dried chili, garlic and ginger", ["oil", "dried_chili", "garlic", "ginger"], 45, "Chili darkens a shade. Not black"],
+      ["Add the chicken on high heat", [], 300, "Cooked through and browned, 5 min"],
+      ["Add the dark soy, oyster sauce, sugar and onion. Toss", ["soy_dark", "oyster_sauce", "sugar", "onion"], 60, "Sauce coats every piece"],
+      ["Turn off the heat and toss in the peanuts", [], 0, ""]
+    ],
+    "ayam-lada-hitam": [
+      ["Marinate the chicken with the cornflour and a spoon of the oyster sauce", ["chicken_thigh", "cornflour"], 600, "10 min"],
+      ["Heat the oil. Fry the garlic and crushed black pepper", ["oil", "garlic", "black_pepper"], 45, "Fragrant, garlic pale golden"],
+      ["Add the chicken and spread it out", [], 420, "Cooked through and browned, 6 to 7 min"],
+      ["Add the rest of the oyster sauce, the kicap manis and a splash of water", ["oyster_sauce", "kicap_manis"], 60, "Bubbling and glossy"],
+      ["Add the onion and capsicum and toss", ["onion", "capsicum"], 120, "Still crunchy, 2 min"]
+    ],
+    "sup-ayam": [
+      ["Heat the oil. Fry the pounded onion, garlic and ginger with the soup spice", ["oil", "onion", "garlic", "ginger", "soup_spice"], 120, "Naik bau: strongly fragrant, 2 min"],
+      ["Add the chicken, stir for a minute, then pour in 1.5 litres water", ["chicken"], 600, "Comes to the boil. Skim off any foam"],
+      ["Add the potato and carrot. Simmer", ["potato", "carrot"], 1500, "Potato soft, chicken tender, 25 min"],
+      ["Season with salt. Add the tomato and spring onion, then turn off the heat", ["salt", "tomato", "spring_onion"], 60, ""]
+    ],
+    "tomyam-ayam": [
+      ["Boil 1.2 litres water with the bruised lemongrass and tom yam paste", ["lemongrass", "tomyam_paste"], 180, "Rolling boil, fragrant"],
+      ["Add the chicken", ["chicken"], 900, "Cooked through, 15 min"],
+      ["Add the cabbage, onion, tomato and chili padi", ["cabbage", "onion", "tomato", "chili_padi"], 240, "Cabbage just tender, 4 min"],
+      ["Season with the fish sauce and sugar. Turn off the heat, then squeeze in the lime", ["fish_sauce", "sugar", "lime"], 0, "Lime goes in off the heat so it stays fresh, not bitter"]
+    ],
+    "daging-masak-kicap": [
+      ["Boil the thinly sliced beef in 2 cups water", ["beef"], 2400, "Tender when pressed with a spoon, about 40 min. Keep the stock"],
+      ["Heat the oil. Fry the garlic, ginger and half the onion", ["oil", "garlic", "ginger", "onion"], 180, "Onion soft and golden"],
+      ["Add the beef with a cup of its stock, the kicap manis, dark soy, sugar and salt", ["kicap_manis", "soy_dark", "sugar", "salt"], 600, "Sauce reduced and sticky, 10 min"],
+      ["Add the rest of the onion, the tomato and the sliced chili", ["tomato", "chili_red"], 120, "Onion just wilted"]
+    ],
+    "rendang-daging": [
+      ["Blend the soaked dried chili, shallots, garlic, ginger, galangal and lemongrass", ["dried_chili", "shallot", "garlic", "ginger", "galangal", "lemongrass"], 0, "A smooth paste"],
+      ["Heat the oil and tumis the paste with the turmeric on medium-low", ["oil", "turmeric_powder"], 900, "Pecah minyak and a shade darker, 12 to 15 min"],
+      ["Add the beef and stir to coat", ["beef"], 300, "Beef sealed all over, 5 min"],
+      ["Add the santan and 1 cup water. Simmer uncovered, stirring every 10 minutes", ["santan"], 5400, "Gravy reduced by half and beef tender, about 1.5 hours"],
+      ["Add the sugar and salt and keep stirring on low heat", ["sugar", "salt"], 1200, "Almost dry, dark brown, oil coming out again, 20 min"]
+    ],
+    "kari-daging": [
+      ["Mix the curry powder with a little water into a thick paste", ["curry_meat"], 0, "No dry lumps"],
+      ["Heat the oil. Fry the cinnamon, star anise and curry leaves", ["oil", "cinnamon", "star_anise", "curry_leaves"], 60, "Leaves crackle"],
+      ["Add the sliced onion, garlic and ginger. Tumis", ["onion", "garlic", "ginger"], 180, "Onion soft and light golden"],
+      ["Add the curry paste. Stir on low heat", [], 480, "Pecah minyak, 6 to 8 min"],
+      ["Add the beef and 3 cups water. Cover and simmer", ["beef"], 3600, "Beef tender, about 60 min"],
+      ["Add the potato", ["potato"], 1200, "Potato soft, 20 min"],
+      ["Stir in the santan and salt. Simmer gently", ["santan", "salt"], 300, "Gravy creamy. Don't boil hard"]
+    ],
+    "sup-daging": [
+      ["Pound the onion, garlic and ginger", ["onion", "garlic", "ginger"], 0, ""],
+      ["Boil the beef with the paste and soup spice in 1.5 litres water", ["beef", "soup_spice"], 3600, "Beef tender, 60 min. Top up the water if it drops"],
+      ["Add the potato and carrot", ["potato", "carrot"], 1200, "Soft, 20 min"],
+      ["Season with salt, add the spring onion and turn off the heat", ["salt", "spring_onion"], 0, ""]
+    ],
+    "kari-kambing": [
+      ["Mix the curry powder with a little water into a thick paste", ["curry_meat"], 0, "No dry lumps"],
+      ["Heat the oil. Fry the fennel, cinnamon, star anise and curry leaves", ["oil", "fennel", "cinnamon", "star_anise", "curry_leaves"], 60, "Seeds crackle"],
+      ["Add the sliced onion, garlic and ginger. Tumis", ["onion", "garlic", "ginger"], 180, "Onion soft and golden"],
+      ["Add the curry paste and tomato. Stir on low heat", ["tomato"], 480, "Pecah minyak and the tomato broken down, 8 min"],
+      ["Add the mutton and 3 cups water. Cover and simmer", ["mutton"], 3600, "Mutton tender, about 60 min"],
+      ["Add the potato and salt", ["potato", "salt"], 1200, "Potato soft and gravy thick, 20 min"]
+    ],
+    "ikan-goreng-kunyit": [
+      ["Clean the fish and score both sides", ["fish_kembung"], 0, ""],
+      ["Rub with the turmeric and salt", ["turmeric_powder", "salt"], 600, "Rest 10 min"],
+      ["Heat the oil and slide in the fish", ["oil"], 0, "Oil shimmers; a pinch of turmeric sizzles hard"],
+      ["Fry without moving the fish, then turn once", [], 420, "Crisp and golden on both sides, 3 to 4 min each side"]
+    ],
+    "asam-pedas": [
+      ["Blend the soaked dried chili, shallots, garlic, ginger and belacan", ["dried_chili", "shallot", "garlic", "ginger", "belacan"], 0, "A smooth paste"],
+      ["Heat the oil and tumis the paste with the lemongrass", ["oil", "lemongrass"], 600, "Pecah minyak, 8 to 10 min"],
+      ["Squeeze the tamarind in 3 cups water, strain, and pour it in", ["tamarind"], 180, "Comes to the boil"],
+      ["Add the okra and tomato", ["okra", "tomato"], 180, "Okra bright green, 3 min"],
+      ["Add the fish, salt and sugar. Simmer gently without stirring", ["fish_tenggiri", "salt", "sugar"], 480, "Fish opaque and flakes easily, 8 min"]
+    ],
+    "gulai-lemak-ikan": [
+      ["Pound the chili padi, shallots, garlic and ginger with the turmeric", ["chili_padi", "shallot", "garlic", "ginger", "turmeric_powder"], 0, ""],
+      ["Bring the paste, bruised lemongrass and 1 cup water to the boil", ["lemongrass"], 120, "Fragrant"],
+      ["Add the santan and okra. Keep it at a gentle simmer", ["santan", "okra"], 300, "Small bubbles only, never a hard boil"],
+      ["Add the fish, a little tamarind water and the salt", ["fish_selar", "tamarind", "salt"], 480, "Fish cooked through, 8 min"]
+    ],
+    "kari-ikan": [
+      ["Mix the fish curry powder with a little water into a paste", ["curry_fish"], 0, "No dry lumps"],
+      ["Heat the oil. Fry the curry leaves, then the onion, garlic and ginger", ["oil", "curry_leaves", "onion", "garlic", "ginger"], 180, "Onion soft and golden"],
+      ["Add the curry paste. Stir on low heat", [], 360, "Pecah minyak, 6 min"],
+      ["Add 2 cups tamarind water, the brinjal and okra", ["tamarind", "brinjal", "okra"], 480, "Brinjal soft, 8 min"],
+      ["Add the fish, tomato, santan and salt. Simmer gently", ["fish_tenggiri", "tomato", "santan", "salt"], 480, "Fish flakes easily, 8 min"]
+    ],
+    "ikan-masak-kicap": [
+      ["Salt the fish and fry in hot oil", ["fish_selar", "salt", "oil"], 480, "Crisp on both sides, about 8 min. Set aside"],
+      ["Leave 2 tbsp oil. Fry the garlic and ginger", ["garlic", "ginger"], 60, "Fragrant, 1 min"],
+      ["Add the kicap manis and half a cup of water", ["kicap_manis"], 60, "Bubbling"],
+      ["Add the onion, chili and tomato", ["onion", "chili_red", "tomato"], 120, "Onion just soft, 2 min"],
+      ["Pour the sauce over the fish", [], 0, ""]
+    ],
+    "siakap-stim-limau": [
+      ["Clean and score the fish, rub with a little salt, and lay it on the bruised lemongrass on a steaming plate", ["fish_siakap", "lemongrass", "salt"], 0, ""],
+      ["Steam over rapidly boiling water", [], 840, "Flesh white right to the bone, 12 to 15 min"],
+      ["Meanwhile mix the chopped garlic, chili padi, lime juice, fish sauce and sugar with 3 tbsp hot water", ["garlic", "chili_padi", "lime", "fish_sauce", "sugar"], 0, "Taste it: sour, salty, sweet and spicy in balance"],
+      ["Pour off the steaming water, spoon the sauce over and top with spring onion", ["spring_onion"], 0, ""]
+    ],
+    "tilapia-masam-manis": [
+      ["Salt the fish and deep fry", ["fish_tilapia", "salt", "oil"], 600, "Crisp all over, about 10 min. Drain"],
+      ["Leave 1 tbsp oil. Fry the onion", ["onion"], 60, "Just soft"],
+      ["Add the tomato sauce, chili sauce, sugar and half a cup of water", ["tomato_sauce", "chili_sauce", "sugar"], 60, "Bubbling"],
+      ["Add the tomato and cucumber, then the cornflour mixed with a little water", ["tomato", "cucumber", "cornflour"], 60, "Sauce glossy and thick"],
+      ["Pour the sauce over the fish", [], 0, ""]
+    ],
+    "sambal-udang": [
+      ["Blend the soaked dried chili, shallots, garlic and belacan", ["dried_chili", "shallot", "garlic", "belacan"], 0, "A smooth paste"],
+      ["Heat the oil and tumis the paste on low heat", ["oil"], 720, "Pecah minyak and deep red, 10 to 12 min"],
+      ["Add the tamarind water, sugar and salt", ["tamarind", "sugar", "salt"], 120, "Thick and jammy, 2 min"],
+      ["Add the prawns and onion rings", ["prawn", "onion"], 240, "Prawns pink and curled, 3 to 4 min"]
+    ],
+    "udang-masak-lemak": [
+      ["Pound the chili padi, shallots and garlic with the turmeric", ["chili_padi", "shallot", "garlic", "turmeric_powder"], 0, ""],
+      ["Boil the paste with the bruised lemongrass and half a cup of water", ["lemongrass"], 120, "Fragrant"],
+      ["Add the santan. Keep it at a gentle simmer", ["santan"], 180, "Small bubbles only"],
+      ["Add the prawns and salt", ["prawn", "salt"], 240, "Prawns pink and curled, 4 min"]
+    ],
+    "sotong-sambal": [
+      ["Blend the soaked dried chili, shallots and garlic", ["dried_chili", "shallot", "garlic"], 0, ""],
+      ["Heat the oil and tumis the paste on low heat", ["oil"], 600, "Pecah minyak, 8 to 10 min"],
+      ["Add the tamarind water, sugar and salt", ["tamarind", "sugar", "salt"], 120, "Thick, 2 min"],
+      ["Add the squid rings and onion", ["squid", "onion"], 180, "Squid just opaque, 3 min. Longer makes it rubbery"]
+    ],
+    "sambal-ikan-bilis": [
+      ["Heat the oil and fry the ikan bilis", ["oil", "ikan_bilis"], 180, "Crisp and golden, 3 min. Set aside"],
+      ["Fry the peanuts in the same oil", ["peanuts"], 240, "Golden, 4 min. Set aside"],
+      ["Blend the soaked dried chili, shallots and garlic", ["dried_chili", "shallot", "garlic"], 0, ""],
+      ["Leave 4 tbsp oil. Tumis the paste on low heat", [], 720, "Pecah minyak, 10 to 12 min"],
+      ["Add the tamarind water, sugar, salt and onion rings", ["tamarind", "sugar", "salt", "onion"], 180, "Thick and glossy, 3 min"],
+      ["Toss in half the ikan bilis. Serve the rest and the peanuts on top", [], 0, "Add them last so they stay crunchy"]
+    ],
+    "telur-dadar": [
+      ["Beat the eggs with the onion, chili, spring onion and salt", ["egg", "onion", "chili_red", "spring_onion", "salt"], 0, ""],
+      ["Heat the oil until hot and pour in the eggs", ["oil"], 120, "Edges puffed, crisp and lacy, 2 min"],
+      ["Flip and cook the other side", [], 60, "Golden, 1 min"]
+    ],
+    "sambal-telur": [
+      ["Boil the eggs, cool in water and peel", ["egg"], 540, "9 min for firm yolks"],
+      ["Fry the peeled eggs in the oil", ["oil"], 180, "Blistered and golden, 3 min. Set aside"],
+      ["Blend the soaked dried chili, shallots and garlic", ["dried_chili", "shallot", "garlic"], 0, ""],
+      ["Tumis the paste in the same oil on low heat", [], 600, "Pecah minyak, 8 to 10 min"],
+      ["Add the tamarind water, sugar, salt and onion rings", ["tamarind", "sugar", "salt", "onion"], 180, "Thick, 3 min"],
+      ["Roll the eggs in the sambal", [], 0, ""]
+    ],
+    "tauhu-goreng-kicap": [
+      ["Cut the tofu into cubes and fry in the oil", ["tofu", "oil"], 360, "Golden and crisp on all sides, 6 min. Set aside"],
+      ["Leave 1 tbsp oil. Fry the garlic, onion and chili", ["garlic", "onion", "chili_red"], 60, "Fragrant"],
+      ["Add the kicap manis, light soy and a splash of water", ["kicap_manis", "soy_light"], 60, "Bubbling"],
+      ["Toss the tofu in the sauce and top with spring onion", ["spring_onion"], 0, ""]
+    ],
+    "sambal-tempe-bilis": [
+      ["Cut the tempe into thin sticks and fry in the oil", ["tempe", "oil"], 300, "Crisp, 5 min. Set aside"],
+      ["Fry the ikan bilis, then the peanuts, in the same oil", ["ikan_bilis", "peanuts"], 360, "Both golden. Set aside"],
+      ["Blend the soaked dried chili, shallots and garlic and tumis in 3 tbsp of the oil", ["dried_chili", "shallot", "garlic"], 600, "Pecah minyak, 8 to 10 min"],
+      ["Add the kicap manis, sugar and a little tamarind water", ["kicap_manis", "sugar", "tamarind"], 180, "Sticky, 3 min"],
+      ["Turn off the heat and toss everything together", [], 0, "Off the heat so it stays crunchy"]
+    ],
+    "telur-kukus": [
+      ["Beat the eggs with salt and 1.5 times their volume of warm water, then strain", ["egg", "salt"], 0, "No bubbles on top"],
+      ["Cover and steam on low heat", [], 720, "Set but still wobbles like custard, 12 min"],
+      ["Drizzle the soy and sesame oil and top with spring onion", ["soy_light", "sesame_oil", "spring_onion"], 0, ""]
+    ],
+    "kari-dhal": [
+      ["Rinse the dhal and boil with the turmeric in 1 litre water", ["dhal", "turmeric_powder"], 1200, "Soft and breaking up, 20 min"],
+      ["Add the potato, carrot and brinjal", ["potato", "carrot", "brinjal"], 600, "Vegetables tender, 10 min"],
+      ["In a small pan, heat the oil and fry the dried chili and curry leaves", ["oil", "dried_chili", "curry_leaves"], 30, "Crackling"],
+      ["Add the onion and garlic, then the curry powder", ["onion", "garlic", "curry_meat"], 240, "Onion golden, spices fragrant"],
+      ["Pour this into the dhal with the tomato and salt", ["tomato", "salt"], 180, "Tomato soft, 3 min"]
+    ],
+    "kangkung-belacan": [
+      ["Pound the chili, shallots, garlic, belacan and dried shrimp", ["chili_red", "shallot", "garlic", "belacan", "dried_shrimp"], 0, ""],
+      ["Heat the oil on high and fry the paste", ["oil"], 60, "Strong belacan smell, about 1 min"],
+      ["Add the kangkung stems first", ["kangkung"], 30, "30 sec"],
+      ["Add the leaves and sugar and toss", ["sugar"], 60, "Just wilted (layu) and still bright green"]
+    ],
+    "sawi-bawang-putih": [
+      ["Heat the oil and fry the chopped garlic", ["oil", "garlic"], 30, "Light golden. Not brown"],
+      ["Add the sawi stems", ["sawi"], 60, "1 min"],
+      ["Add the leaves, oyster sauce, salt and a splash of water", ["oyster_sauce", "salt"], 60, "Leaves just wilted"]
+    ],
+    "kubis-goreng": [
+      ["Heat the oil. Fry the garlic, onion and dried shrimp", ["oil", "garlic", "onion", "dried_shrimp"], 60, "Fragrant"],
+      ["Add the shredded cabbage and carrot", ["cabbage", "carrot"], 180, "Cabbage softened but still crunchy, 3 min"],
+      ["Push to one side and scramble the egg in the gap", ["egg"], 30, "Egg just set"],
+      ["Season with salt and toss everything together", ["salt"], 0, ""]
+    ],
+    "taugeh-ikan-masin": [
+      ["Heat the oil and fry the diced salted fish", ["oil", "salted_fish"], 60, "Crisp, 1 min"],
+      ["Add the garlic and chili", ["garlic", "chili_red"], 30, "Fragrant"],
+      ["Add the taugeh on high heat with the salt", ["taugeh", "salt"], 45, "Hot through but still crunchy, 45 sec"]
+    ],
+    "bayam-masak-air": [
+      ["Boil 3 cups water with the garlic, onion and dried shrimp", ["garlic", "onion", "dried_shrimp"], 180, "Broth smells of shrimp, 3 min"],
+      ["Add the bayam", ["bayam"], 120, "Wilted, 2 min"],
+      ["Pour the beaten egg in a thin stream while stirring, then season", ["egg", "salt"], 30, "Egg sets in ribbons"]
+    ],
+    "kacang-panjang-telur": [
+      ["Heat the oil. Fry the garlic and onion", ["oil", "garlic", "onion"], 60, "Fragrant"],
+      ["Add the cut long beans and a splash of water", ["long_bean"], 240, "Tender but still bite, 4 min"],
+      ["Add the beaten eggs and scramble through, then season", ["egg", "salt"], 60, "Egg just set"]
+    ],
+    "bendi-belacan": [
+      ["Pound the chili, shallots, belacan and dried shrimp", ["chili_red", "shallot", "belacan", "dried_shrimp"], 0, ""],
+      ["Heat the oil and fry the paste", ["oil"], 60, "Fragrant, about 1 min"],
+      ["Add the sliced okra and stir-fry", ["okra"], 240, "Tender-crisp, 4 min"]
+    ],
+    "terung-sambal": [
+      ["Cut the brinjal and fry in the oil", ["brinjal", "oil"], 240, "Soft and golden, 4 min. Drain"],
+      ["Blend the soaked dried chili, shallots, garlic and belacan. Tumis in 3 tbsp of the oil", ["dried_chili", "shallot", "garlic", "belacan"], 480, "Pecah minyak, 6 to 8 min"],
+      ["Add a little tamarind water and the sugar", ["tamarind", "sugar"], 60, "Thick"],
+      ["Spoon the sambal over the brinjal", [], 0, ""]
+    ],
+    "kailan-sos-tiram": [
+      ["Blanch the kailan in boiling water and drain", ["kailan"], 60, "Bright green, 1 min"],
+      ["Heat the oil and fry the garlic", ["oil", "garlic"], 30, "Light golden"],
+      ["Add the oyster sauce, sugar and a splash of water, then pour over the kailan", ["oyster_sauce", "sugar"], 30, "Bubbling"]
+    ],
+    "pakchoy-sos-tiram": [
+      ["Blanch the halved pak choy and drain", ["pak_choy"], 60, "Bright green, 1 min"],
+      ["Heat the oil and fry the garlic", ["oil", "garlic"], 30, "Light golden"],
+      ["Add the oyster sauce, sesame oil and a splash of water, then pour over", ["oyster_sauce", "sesame_oil"], 30, "Bubbling"]
+    ],
+    "sayur-campur": [
+      ["Heat the oil and fry the garlic", ["oil", "garlic"], 30, "Light golden"],
+      ["Add the carrot and cauliflower with a splash of water", ["carrot", "cauliflower"], 120, "Starting to soften, 2 min"],
+      ["Add the broccoli and cabbage", ["broccoli", "cabbage"], 180, "All tender-crisp, 3 min"],
+      ["Season with the oyster sauce and salt, then stir in the cornflour mixed with a little water", ["oyster_sauce", "salt", "cornflour"], 30, "Sauce glossy"]
+    ],
+    "kubis-masak-lemak": [
+      ["Pound the shallots, chili padi, turmeric and dried shrimp", ["shallot", "chili_padi", "turmeric_powder", "dried_shrimp"], 0, ""],
+      ["Boil the paste with 1 cup water", [], 120, "Fragrant"],
+      ["Add the cabbage and carrot", ["cabbage", "carrot"], 180, "Cabbage softened, 3 min"],
+      ["Add the santan and salt. Simmer gently", ["santan", "salt"], 180, "Small bubbles only, 3 min"]
+    ],
+    "sayur-lodeh": [
+      ["Cube the tofu and fry in a little oil", ["tofu"], 300, "Golden, 5 min. Set aside"],
+      ["Pound the shallots, garlic, turmeric and dried shrimp and fry in the same pan", ["shallot", "garlic", "turmeric_powder", "dried_shrimp"], 120, "Fragrant, 2 min"],
+      ["Add 1 cup water, the carrot and long beans", ["carrot", "long_bean"], 240, "4 min"],
+      ["Add the cabbage and brinjal", ["cabbage", "brinjal"], 180, "Brinjal soft, 3 min"],
+      ["Add the santan, tofu and salt. Simmer gently", ["santan", "salt"], 300, "Small bubbles only, 5 min"]
+    ],
+    "brokoli-bawang-putih": [
+      ["Blanch the broccoli and drain", ["broccoli"], 60, "Bright green, 1 min"],
+      ["Heat the oil and fry plenty of garlic", ["oil", "garlic"], 30, "Light golden"],
+      ["Add the broccoli and salt, then a splash of cornflour mixed with water", ["salt", "cornflour"], 60, "Lightly glazed"]
+    ],
+    "buncis-telur": [
+      ["Heat the oil. Fry the garlic and onion", ["oil", "garlic", "onion"], 60, "Fragrant"],
+      ["Add the sliced beans and a splash of water", ["french_bean"], 240, "Tender, 4 min"],
+      ["Add the beaten eggs and scramble through, then season", ["egg", "salt"], 60, "Egg just set"]
+    ],
+    "kubis-cina-udang-kering": [
+      ["Soak the dried shrimp 10 min and chop", ["dried_shrimp"], 600, "Soft"],
+      ["Heat the oil and fry the garlic and dried shrimp", ["oil", "garlic"], 60, "Fragrant, 1 min"],
+      ["Add the cabbage and a splash of water", ["chinese_cabbage"], 180, "Just soft, 3 min"],
+      ["Season with salt", ["salt"], 0, ""]
+    ],
+    "nasi-goreng-kampung": [
+      ["Cook the rice ahead and let it cool", ["rice"], 0, "Cold rice fries best"],
+      ["Heat the oil and fry the ikan bilis", ["oil", "ikan_bilis"], 180, "Crisp, 3 min. Set aside"],
+      ["Fry the eggs sunny side up in the same oil", ["egg"], 120, "Crispy edges, 2 min. Set aside"],
+      ["Pound the shallots, garlic, chili padi and belacan and fry in the oil left in the pan", ["shallot", "garlic", "chili_padi", "belacan"], 120, "Fragrant, 2 min"],
+      ["Add the rice on high heat and toss", [], 180, "Grains separate and hot, 3 min"],
+      ["Add the kangkung, light soy and salt", ["kangkung", "soy_light", "salt"], 60, "Kangkung just wilted"],
+      ["Serve topped with the eggs and ikan bilis", [], 0, ""]
+    ],
+    "nasi-goreng-ayam": [
+      ["Cook the rice ahead and let it cool", ["rice"], 0, "Cold rice fries best"],
+      ["Heat the oil. Fry the garlic and onion", ["oil", "garlic", "onion"], 60, "Fragrant"],
+      ["Add the diced chicken", ["chicken_breast"], 240, "Cooked through, 4 min"],
+      ["Push aside and scramble the eggs", ["egg"], 60, "Just set"],
+      ["Add the cabbage and carrot", ["cabbage", "carrot"], 120, "2 min"],
+      ["Add the rice, chili sauce, kicap manis and light soy on high heat", ["chili_sauce", "kicap_manis", "soy_light"], 180, "Evenly coloured and hot, 3 min"]
+    ],
+    "mee-goreng-mamak": [
+      ["Boil the potato, then dice", ["potato"], 720, "Soft, 12 min"],
+      ["Cube and fry the tofu in the oil", ["tofu", "oil"], 300, "Golden, 5 min. Set aside"],
+      ["Fry the garlic and onion with the chili powder", ["garlic", "onion", "chili_powder"], 60, "Fragrant"],
+      ["Add the eggs and scramble", ["egg"], 30, "Just set"],
+      ["Add the noodles with the tomato sauce, chili sauce, kicap manis and light soy", ["yellow_mee", "tomato_sauce", "chili_sauce", "kicap_manis", "soy_light"], 180, "Noodles evenly coated, 3 min"],
+      ["Add the potato, tofu and cabbage", ["cabbage"], 120, "2 min"],
+      ["Add the taugeh, toss and serve with lime", ["taugeh", "lime"], 30, "Taugeh still crunchy"]
+    ],
+    "bihun-goreng": [
+      ["Soak the bihun in water and drain", ["bihun"], 600, "Soft and pliable, 10 min"],
+      ["Heat the oil. Fry the shallots, garlic and chili powder", ["oil", "shallot", "garlic", "chili_powder"], 60, "Fragrant"],
+      ["Add the sliced chicken", ["chicken_breast"], 180, "Cooked through, 3 min"],
+      ["Add the egg and scramble, then the carrot and cabbage", ["egg", "carrot", "cabbage"], 120, "2 min"],
+      ["Add the bihun with the light soy, kicap manis, oyster sauce and half a cup of water. Toss", ["soy_light", "kicap_manis", "oyster_sauce"], 180, "Liquid absorbed, 3 min"],
+      ["Add the sawi and taugeh", ["sawi", "taugeh"], 60, "Just wilted"]
+    ],
+    "kuetiau-goreng": [
+      ["Loosen the kuetiau strands with your hands", ["kuetiau"], 0, ""],
+      ["Heat the oil on high. Fry the garlic", ["oil", "garlic"], 20, "Fragrant, 20 sec"],
+      ["Add the prawns", ["prawn"], 120, "Pink, 2 min"],
+      ["Add the kuetiau with the dark soy, light soy, oyster sauce and chili sauce", ["soy_dark", "soy_light", "oyster_sauce", "chili_sauce"], 120, "Charred in spots (wok hei), 2 min"],
+      ["Push aside, fry the eggs in the gap, then mix in", ["egg"], 60, "Egg just set"],
+      ["Add the taugeh and spring onion and toss", ["taugeh", "spring_onion"], 30, "Taugeh still crunchy"]
+    ],
+    "mee-sup-ayam": [
+      ["Pound the onion, garlic and ginger", ["onion", "garlic", "ginger"], 0, ""],
+      ["Boil the chicken with the paste and soup spice in 2 litres water", ["chicken", "soup_spice"], 1800, "Chicken cooked, 30 min"],
+      ["Shred the chicken and season the broth with salt and light soy", ["salt", "soy_light"], 0, ""],
+      ["Blanch the noodles, sawi and taugeh", ["yellow_mee", "sawi", "taugeh"], 60, "1 min"],
+      ["Assemble the bowls and top with chicken and spring onion. Serve chili padi in soy on the side", ["spring_onion", "chili_padi"], 0, ""]
+    ],
+    "nasi-lemak": [
+      ["Rinse the rice and cook it with the santan, water, lemongrass, ginger and half the salt", ["rice", "santan", "lemongrass", "ginger"], 0, "Rice cooker on normal setting"],
+      ["Heat the oil and fry the ikan bilis, then the peanuts", ["oil", "ikan_bilis", "peanuts"], 420, "Both golden, about 7 min. Set aside"],
+      ["Blend the soaked dried chili, shallots and garlic", ["dried_chili", "shallot", "garlic"], 0, ""],
+      ["Tumis the paste in 4 tbsp of the oil on low heat", [], 720, "Pecah minyak, 10 to 12 min"],
+      ["Add the tamarind water, sugar, the rest of the salt and the onion rings", ["tamarind", "sugar", "salt", "onion"], 180, "Thick, 3 min"],
+      ["Boil the eggs", ["egg"], 540, "9 min. Peel and halve"],
+      ["Serve the rice with sambal, eggs, ikan bilis, peanuts and sliced cucumber", ["cucumber"], 0, ""]
+    ],
+    "bubur-ayam": [
+      ["Boil the rice with the ginger in 2 litres water, stirring often", ["rice", "ginger"], 900, "Grains start to burst, 15 min"],
+      ["Add the chicken and simmer", ["chicken"], 2400, "Porridge creamy and chicken tender, 40 min. Shred the chicken"],
+      ["Fry the sliced shallots and garlic in the oil", ["oil", "shallot", "garlic"], 240, "Golden and crispy, 4 min. Drain"],
+      ["Season with salt, white pepper and light soy", ["salt", "white_pepper", "soy_light"], 0, ""],
+      ["Serve topped with spring onion and the crispy shallots", ["spring_onion"], 0, ""]
+    ],
+    "nasi-ayam": [
+      ["Poach the chicken with half the ginger in water", ["chicken"], 2100, "Juices run clear, 35 min. Keep the broth"],
+      ["Heat the oil. Fry the garlic, shallots and the rest of the ginger", ["oil", "garlic", "shallot", "ginger"], 120, "Fragrant, 2 min"],
+      ["Add the rinsed rice and stir to coat, then cook it in the broth with salt", ["rice", "salt"], 0, "Rice cooker on normal setting"],
+      ["Blend the chili with a little garlic, ginger, lime juice, broth and sugar", ["chili_red", "lime", "sugar"], 0, "A loose, tangy sauce"],
+      ["Slice the chicken and dress with the dark soy, light soy and sesame oil", ["soy_dark", "soy_light", "sesame_oil"], 0, ""],
+      ["Serve with sliced cucumber and tomato", ["cucumber", "tomato"], 0, ""]
+    ]
+  }
+}
