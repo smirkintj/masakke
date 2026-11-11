@@ -7,7 +7,7 @@ builds the shopping list, and prices it with real shop prices from KPDN PriceCat
 
 ## Households
 
-- Create a household → get a 6-digit PIN → family joins with PIN + their name.
+- Create a household → get a 6-digit PIN → family joins with the PIN, then taps their name (another phone or laptop of someone already in) or joins as someone new. One person, many devices; a name already in the household can't be added twice. Signing out removes the device, and the person only when it was their last one.
 - Plan, shopping ticks (with who ticked), pantry and fridge sync between phones (~12 s, and on open).
 - Storage: Upstash Redis via Vercel Marketplace (`KV_REST_API_URL`, `KV_REST_API_TOKEN`). Device tokens are stored hashed. Wrong PINs: 10 per IP per 15 min.
 - Local: `npm run dev` (in-memory storage) → http://localhost:3000
@@ -43,7 +43,9 @@ python3 scripts/build_prototype.py
 - Allergies (incl. hidden in sauces) and vegetable dislikes
 - Recipe browser: sort by quickest, cheapest per plate, most protein, fewest calories, family favourites; filter by protein, time, type, heat, fridge
 - Household recipes ("Write your own" or "Make my version" of ours): shared with everyone, anyone can edit; the planner starts picking one after it has been cooked once and nobody said "Not again"
-- Sounds and springy feedback on taps, selections and completions (mute from cooking mode)
+- Defrost: an evening card for tomorrow's meat or fish, and one tap to add this week's 9 pm reminders to your calendar
+- Send the shopping list to WhatsApp, grouped by aisle
+- Sounds and springy feedback on taps, selections and completions (switch off in Settings)
 
 ## Weekly refresh
 

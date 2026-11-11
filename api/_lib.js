@@ -63,15 +63,19 @@ export const cleanName = s => String(s || "").replace(/\s+/g, " ").trim().slice(
 export const clientIp = req => String(req.headers["x-forwarded-for"] || req.socket?.remoteAddress || "unknown").split(",")[0].trim();
 
 // Create a member + device token inside a household.
-export async function addMember(hh, name) {
-  const id = newId(), token = newToken();
-  await redis([
-    ["SET", `tok:${sha256(token)}`, JSON.stringify({ hh, id, name })],
-    ["HSET", `members:${hh}`, id, JSON.stringify({ name, joinedAt: Date.now() })],
-    ["INCR", `ver:${hh}`],
-  ]);
-  return { id, token };
+// One person can sign in on several devices: each device has its own token, all pointing at the same member.
+// dev:<hh> maps token hash -> member id, so leaving removes one device and the person only when it was their last.
+export async function addDevice(hh, id, name) {
+  const token = newToken(), th = sha256(token);
+  await redis([["SET", `tok:${th}`, JSON.stringify({ hh, id, name })], ["HSET", `dev:${hh}`, th, id], ["INCR", `ver:${hh}`]]);
+  return token;
 }
+export async function addMember(hh, name) {
+  const id = newId();
+  await redis([["HSET", `members:${hh}`, id, JSON.stringify({ name, joinedAt: Date.now() })]]);
+  return { id, token: await addDevice(hh, id, name) };
+}
+export const sameName = (a, b) => String(a).trim().toLowerCase().replace(/\s+/g, " ") === String(b).trim().toLowerCase().replace(/\s+/g, " ");
 
 export async function auth(req) {
   const h = String(req.headers.authorization || "");

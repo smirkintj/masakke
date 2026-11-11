@@ -4,7 +4,7 @@
 // Shared state is a Redis hash. Whole objects use plain names (settings, plan, flow, onboarded);
 // per-item maps use one field per item (bought.kangkung, kitchen.chicken, ratings.<dish>~<member>), so two people ticking
 // different items at the same time never overwrite each other.
-import { redis, send, readBody, auth, hashToObj, guard } from "./_lib.js";
+import { redis, send, readBody, auth, hashToObj, guard, sha256 } from "./_lib.js";
 
 const FIELD = /^(settings|plan|flow|onboarded|(bought|pantryNeed|kitchen|recipes)\.[A-Za-z0-9_-]{1,60}|ratings\.[A-Za-z0-9_-]{1,60}~[A-Za-z0-9_-]{1,60})$/;
 
@@ -20,14 +20,15 @@ export default async function handler(req, res) {
       const [ver] = await redis([["GET", `ver:${hh}`]]);
       if (since !== null && since === String(ver || 0)) return send(res, 200, { ver: Number(ver || 0), same: true });
       // a full read happens when the app opens: remember when this member was last active
-      const [fields, members, raw, seen] = await redis([["HGETALL", `state:${hh}`], ["HGETALL", `members:${hh}`], ["GET", `hh:${hh}`], ["HGETALL", `seen:${hh}`], ["HSET", `seen:${hh}`, me.id, String(Date.now())]]);
-      const lastSeen = hashToObj(seen);
+      const [fields, members, raw, seen, , , devs] = await redis([["HGETALL", `state:${hh}`], ["HGETALL", `members:${hh}`], ["GET", `hh:${hh}`], ["HGETALL", `seen:${hh}`], ["HSET", `seen:${hh}`, me.id, String(Date.now())], ["HSET", `dev:${hh}`, sha256(me.token), me.id], ["HGETALL", `dev:${hh}`]]);
+      const lastSeen = hashToObj(seen), devCount = {};
+      Object.values(hashToObj(devs)).forEach(id => { devCount[id] = (devCount[id] || 0) + 1; });
       const h = JSON.parse(raw || "{}");
       return send(res, 200, {
         ver: Number(ver || 0),
         household: { id: h.id, name: h.name, pin: h.pin },
         me: { id: me.id, name: me.name },
-        members: Object.entries(hashToObj(members)).map(([id, v]) => ({ id, ...JSON.parse(v), lastSeen: id === me.id ? Date.now() : Number(lastSeen[id] || 0) || null })),
+        members: Object.entries(hashToObj(members)).map(([id, v]) => ({ id, ...JSON.parse(v), devices: devCount[id] || 1, lastSeen: id === me.id ? Date.now() : Number(lastSeen[id] || 0) || null })),
         fields: hashToObj(fields),
       });
     }

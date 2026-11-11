@@ -226,6 +226,30 @@ h1 { font-size: 30px; line-height: 1.15; font-weight: 500; margin: 12px 0 4px; t
 .chip:active, .seg button:active, .toggle button:active, .tab:active, .ed-hit:active, .icon-btn:active { transform: scale(0.94); }
 .rrow:active { transform: scale(0.985); }
 @media (prefers-reduced-motion: reduce) { .chip:active, .seg button:active, .toggle button:active, .tab:active, .rrow:active, .icon-btn:active { transform: none; } }
+.thaw { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 12px; padding: 14px 16px; border-radius: 18px; background: #eef6ff; color: #12395c; margin: 0 0 16px; overflow: hidden; }
+.thaw > svg { width: 22px; height: 22px; margin-top: 2px; }
+.thaw b { display: block; font-weight: 500; font-size: 16px; }
+.thaw span { display: block; font-size: 14px; margin-top: 2px; opacity: 0.85; }
+.thaw-acts { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
+.thaw .btn { height: 38px; background: #fff; border-color: rgba(18, 57, 92, 0.15); color: #12395c; }
+.thaw .linkbtn { color: #12395c; text-decoration: underline; text-underline-offset: 3px; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .thaw { background: rgba(96, 165, 250, 0.12); color: #cfe3ff; } :root:not([data-theme="light"]) .thaw .btn { background: transparent; color: #cfe3ff; border-color: rgba(207, 227, 255, 0.25); } :root:not([data-theme="light"]) .thaw .linkbtn { color: #cfe3ff; } }
+.btn.wa { width: 100%; margin-top: 12px; }
+.setrow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 14px 0; border-top: 1px solid var(--line); }
+.setrow:last-of-type { margin-bottom: 20px; }
+.setrow b { display: block; font-weight: 500; }
+.setrow span { display: block; font-size: 14px; color: var(--muted); }
+.switch { width: 52px; height: 32px; border-radius: 16px; border: 0; background: var(--line); position: relative; transition: background-color 180ms var(--ease); padding: 0; }
+.switch i { position: absolute; top: 3px; left: 3px; width: 26px; height: 26px; border-radius: 13px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.2); transition: transform 220ms cubic-bezier(.34,1.56,.64,1); }
+.switch[aria-checked="true"] { background: var(--accent); }
+.switch[aria-checked="true"] i { transform: translateX(20px); }
+.pickme { display: grid; gap: 8px; margin: 16px 0 8px; }
+.pickme .mrow { grid-template-columns: 36px minmax(0, 1fr) 16px; width: 100%; padding: 12px 14px; border: 1px solid var(--line); border-radius: 16px; background: var(--card); text-align: left; color: var(--fg); }
+.pickme .mrow > svg { transform: rotate(180deg); color: var(--muted); }
+.pickme .mrow b { display: block; font-weight: 500; }
+.pickme .mrow span:not(.av) { font-size: 13px; color: var(--muted); }
+.or { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 13px; margin: 20px 0 8px; }
+.or::before, .or::after { content: ""; flex: 1; height: 1px; background: var(--line); }
 .chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
 .rlist { display: grid; gap: 8px; }
 .rrow { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; padding: 14px 16px; border: 1px solid var(--line); border-radius: 18px; background: var(--card); text-align: left; width: 100%; transition: background-color 150ms var(--ease); }
@@ -483,6 +507,7 @@ const DATA = {"ingredients":{"chicken":{"name":"Chicken (whole, cleaned)","unit"
     plus: '<path d="M5 12h14"/><path d="M12 5v14"/>',
     edit: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
     back: '<path d="m15 18-6-6 6-6"/>',
+    share: '<path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><path d="m16 6-4-4-4 4"/><path d="M12 2v13"/>',
     flame: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
   };
   const ic = (n, s = 16) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n]}</svg>`;
@@ -874,6 +899,7 @@ const DATA = {"ingredients":{"chicken":{"name":"Chicken (whole, cleaned)","unit"
       <h1>${new Date().toLocaleDateString("en-MY", { weekday: "long", day: "numeric", month: "short" })}</h1>
       <p class="sub">Dinner for ${S.settings.people} · prices from ${esc(priceLabel())}</p>
       ${householdLine()}
+      ${thawCard()}
       ${S.guideSeen ? "" : `<div class="guide"><div class="gh"><b>How your week works</b><button class="link" id="guideOk">Got it</button></div>
         <ol class="how small">
           <li><b>Check tonight's dinner</b><span>Tap Change on any dish to swap it. Tap a dish name to see the recipe</span></li>
@@ -1018,6 +1044,7 @@ const DATA = {"ingredients":{"chicken":{"name":"Chicken (whole, cleaned)","unit"
       <div class="summary" style="margin-bottom:24px">
         <div style="display:flex;justify-content:space-between;gap:12px;align-items:baseline"><div class="k"><b style="color:var(--fg);font-size:18px">${got} of ${all.length}</b> items bought</div><div class="k">${rm(spent)} of ${rm(t.toBuy)}</div></div>
         <div class="meter" style="margin-top:12px" role="progressbar" aria-valuemin="0" aria-valuemax="${all.length}" aria-valuenow="${got}" aria-label="Items bought"><div data-tw="shopbar" data-s="${pct.toFixed(3)}" style="transform:scaleX(${pct.toFixed(3)})"></div></div>
+        ${all.length - got ? `<button class="btn big wa" id="waShare">${ic("share", 18)}Send list to WhatsApp</button>` : ""}
       </div>
       <details class="group" ${S.flow.shopped ? "" : "open"}><summary style="cursor:pointer;font-size:14px;font-weight:500;color:var(--fg2);margin-bottom:8px">Before you go: pantry check (${needP.length} to buy)</summary><p class="sub" style="font-size:14px;margin:0 0 8px">Tap Need for anything you've run out of. It's added to your list</p><div class="list">${pantry.sort((a, b) => a.it.name.localeCompare(b.it.name)).map(prow).join("")}</div></details>
       ${covered.length ? `<div class="tip">${ic("fridge")}<div><b>Already at home, not on the list:</b> ${covered.map(r => esc(r.it.name)).join(", ")}</div></div>` : ""}
@@ -1266,6 +1293,8 @@ const DATA = {"ingredients":{"chicken":{"name":"Chicken (whole, cleaned)","unit"
       <p class="sub">Changes apply when you replan</p>
       ${householdCard()}
       ${locationBlock()}${householdBlock()}<h2 style="font-size:17px;font-weight:500;margin:28px 0 12px">Food preferences</h2>${prefsBlock()}<div style="height:20px"></div>${budgetBlock()}
+      <div class="setrow"><div><b>Sounds</b><span>Taps, ticks, timers and alarms</span></div><button class="switch" data-sound="1" role="switch" aria-checked="${S.settings.sound !== false}" aria-label="Sounds"><i></i></button></div>
+      <div class="setrow"><div><b>Defrost reminders</b><span>A calendar alarm at 9 pm the night before meat or fish</span></div><button class="btn" data-thawcal="1">${ic("clock", 16)}Add this week</button></div>
       <button class="btn primary big" id="replan">Save and plan a new week</button>
       <p class="fine">Prices: ${esc(PR.source)}, ${PR.shops.length.toLocaleString()} shops, latest ${PR.date}. Shop locations: GeoNames postcodes (CC BY 4.0). Recipes are drafts and still need checking by a home cook.</p>
     </div>`;
@@ -1599,7 +1628,7 @@ const DATA = {"ingredients":{"chicken":{"name":"Chicken (whole, cleaned)","unit"
   }
   const isMe = m => AUTH && m.id === AUTH.member.id;
   function membersHtml() {
-    return `<div class="mlist">${MEMBERS.slice().sort((a, b) => isMe(b) - isMe(a) || (a.joinedAt || 0) - (b.joinedAt || 0)).map(m => `<div class="mrow"><span class="av" aria-hidden="true">${esc((m.name || "?").charAt(0).toUpperCase())}</span><div><b>${esc(m.name)}${isMe(m) ? " (you)" : ""}</b><span>${isMe(m) ? "on this phone" : ago(m.lastSeen)}${m.joinedAt ? ` · joined ${new Date(m.joinedAt).toLocaleDateString("en-MY", { day: "numeric", month: "short" })}` : ""}</span></div></div>`).join("")}</div>`;
+    return `<div class="mlist">${MEMBERS.slice().sort((a, b) => isMe(b) - isMe(a) || (a.joinedAt || 0) - (b.joinedAt || 0)).map(m => `<div class="mrow"><span class="av" aria-hidden="true">${esc((m.name || "?").charAt(0).toUpperCase())}</span><div><b>${esc(m.name)}${isMe(m) ? " (you)" : ""}</b><span>${isMe(m) ? (m.devices > 1 ? `on this device and ${m.devices - 1} more` : "on this device") : ago(m.lastSeen) + (m.devices > 1 ? ` · ${m.devices} devices` : "")}${m.joinedAt ? ` · joined ${new Date(m.joinedAt).toLocaleDateString("en-MY", { day: "numeric", month: "short" })}` : ""}</span></div></div>`).join("")}</div>`;
   }
   function householdLine() {
     if (!CLOUD || !AUTH || !HH) return "";
@@ -1617,6 +1646,12 @@ const DATA = {"ingredients":{"chicken":{"name":"Chicken (whole, cleaned)","unit"
     document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") pull(false); });
     document.addEventListener("focusout", () => setTimeout(() => { if (deferRender && !(document.activeElement && /INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName))) { deferRender = false; render(); } }, 50));
   }
+  async function checkPin() {
+    A.busy = true; A.err = ""; render();
+    try { const r = await api("join", { method: "POST", body: JSON.stringify({ pin: A.pin || "" }) }); A.joinHH = { household: r.household, members: r.members || [] }; }
+    catch (e) { A.err = e.message; }
+    A.busy = false; render();
+  }
   async function signIn(path, payload) {
     A.busy = true; A.err = ""; render();
     try {
@@ -1626,7 +1661,7 @@ const DATA = {"ingredients":{"chicken":{"name":"Chicken (whole, cleaned)","unit"
       try { localStorage.setItem(AUTH_KEY, JSON.stringify(AUTH)); } catch (e) {}
       // a new device starts from the household's state, not whatever this browser had before
       S.onboarded = false; S.plan = null; S.bought = {}; S.pantryNeed = {}; S.kitchen = {}; S.ratings = {}; S.flow = { shopped: false, cooked: {} };
-      A.busy = false; A.mode = path === "household" ? "created" : "start";
+      A.busy = false; A.joinHH = null; A.mode = path === "household" ? "created" : "start";
       SYNCED = null; await pull(true); startSyncOnce();
       if (path === "join") { S.ob = S.onboarded ? S.ob : 0; render(); }
       else render();
@@ -1648,11 +1683,16 @@ const DATA = {"ingredients":{"chicken":{"name":"Chicken (whole, cleaned)","unit"
       <div class="field"><label for="hhname">Household name</label><input class="inp" id="hhname" maxlength="40" placeholder="e.g. Rumah Hamid" value="${esc(A.hh || "")}"></div>
       <div class="field"><label for="myname">Your name</label><input class="inp" id="myname" maxlength="40" autocomplete="given-name" placeholder="e.g. Aisyah" value="${esc(A.name || "")}"></div>
       <div class="ob-actions"><button class="btn big" data-amode="start" style="width:auto;padding:0 20px">Back</button><button class="btn primary big" id="doCreate" ${A.busy ? "disabled" : ""}>${A.busy ? "Creating…" : "Create household"}</button></div></div>`;
-    if (A.mode === "join") return `<div class="enter narrow" style="margin:0 auto">
-      <h1 style="margin-top:24px">Join your household</h1><p class="sub">Ask whoever set up MasakJe for the 6-digit PIN</p>${err}
-      <div class="field"><label for="pin">Household PIN</label><input class="inp pin" id="pin" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="000000" value="${esc(A.pin || "")}"></div>
+    if (A.mode === "join" && A.joinHH) { const J = A.joinHH; return `<div class="enter narrow" style="margin:0 auto">
+      <h1 style="margin-top:24px">Who are you?</h1><p class="sub">In ${esc(J.household.name)}. Already joined on another phone? Tap your name and this device signs in as you</p>${err}
+      ${J.members.length ? `<div class="mlist pickme">${J.members.map(m => `<button class="mrow" data-joinas="${esc(m.id)}" ${A.busy ? "disabled" : ""}><span class="av" aria-hidden="true">${esc((m.name || "?").charAt(0).toUpperCase())}</span><div><b>${esc(m.name)}</b><span>This is me</span></div>${ic("back", 16)}</button>`).join("")}</div>` : ""}
+      <div class="or"><span>or join as someone new</span></div>
       <div class="field"><label for="myname">Your name</label><input class="inp" id="myname" maxlength="40" autocomplete="given-name" placeholder="e.g. Hafiz" value="${esc(A.name || "")}"></div>
-      <div class="ob-actions"><button class="btn big" data-amode="start" style="width:auto;padding:0 20px">Back</button><button class="btn primary big" id="doJoin" ${A.busy ? "disabled" : ""}>${A.busy ? "Joining…" : "Join household"}</button></div></div>`;
+      <div class="ob-actions"><button class="btn big" data-amode="join" style="width:auto;padding:0 20px">Back</button><button class="btn primary big" id="doJoinNew" ${A.busy ? "disabled" : ""}>${A.busy ? "Joining…" : "Join as new member"}</button></div></div>`; }
+    if (A.mode === "join") return `<div class="enter narrow" style="margin:0 auto">
+      <h1 style="margin-top:24px">Join your household</h1><p class="sub">Ask whoever set up MasakJe for the 6-digit PIN. Use the same PIN on each of your phones and laptops</p>${err}
+      <div class="field"><label for="pin">Household PIN</label><input class="inp pin" id="pin" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="000000" value="${esc(A.pin || "")}"></div>
+      <div class="ob-actions"><button class="btn big" data-amode="start" style="width:auto;padding:0 20px">Back</button><button class="btn primary big" id="doJoin" ${A.busy ? "disabled" : ""}>${A.busy ? "Checking…" : "Continue"}</button></div></div>`;
     return `<div class="enter narrow" style="margin:0 auto">
       <h1 style="margin-top:24px">Home dinners for the week, planned together</h1>
       <p class="sub">MasakJe plans a week of Malaysian dinners, makes one shopping list with real prices near you, and walks you through cooking. Everyone in your household sees the same plan and list</p>
@@ -1680,7 +1720,7 @@ const DATA = {"ingredients":{"chicken":{"name":"Chicken (whole, cleaned)","unit"
       <div class="summary" style="display:grid;gap:12px;margin-bottom:24px">
         <div style="display:flex;justify-content:space-between;gap:12px;align-items:baseline"><b style="font-weight:500;font-size:17px">${esc(HH ? HH.name : "")}</b><span class="k">PIN <b class="num" style="font-weight:500;color:var(--fg);letter-spacing:.08em">${esc(HH ? HH.pin : "")}</b></span></div>
         <div id="members">${membersHtml()}</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><a class="btn" href="https://wa.me/?text=${encodeURIComponent(`Join our MasakJe household "${HH ? HH.name : ""}": open ${location.origin} and enter PIN ${HH ? HH.pin : ""}`)}" target="_blank" rel="noopener">Share PIN</a>${A.confirmLeave ? `<button class="btn" id="leaveYes" style="color:var(--neg)">Tap again to leave</button>` : `<button class="btn" id="leave">Leave household</button>`}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><a class="btn" href="https://wa.me/?text=${encodeURIComponent(`Join our MasakJe household "${HH ? HH.name : ""}": open ${location.origin} and enter PIN ${HH ? HH.pin : ""}`)}" target="_blank" rel="noopener">Share PIN</a>${A.confirmLeave ? `<button class="btn" id="leaveYes" style="color:var(--neg)">Tap again to sign out</button>` : `<button class="btn" id="leave">Sign out here</button>`}</div>
       </div>`;
   }
 
@@ -1708,6 +1748,56 @@ const DATA = {"ingredients":{"chicken":{"name":"Chicken (whole, cleaned)","unit"
     document.getElementById("where").innerHTML = `${ic("pin", 14)}<span>${esc((ctx().loc && ctx().loc.hood) || S.settings.postcode)} · ${S.settings.people} ${S.settings.people === 1 ? "person" : "people"}</span>`;
   }
   function go(tab) { ED = null; S.tab = tab; render(); window.scrollTo({ top: 0 }); }
+
+  // ---------- defrost: meat and fish for the next dinner, the evening before ----------
+  const FROZEN = new Set(["chicken", "chicken_thigh", "chicken_breast", "chicken_wing", "beef", "mutton", "fish_kembung", "fish_selar", "fish_tenggiri", "fish_siakap", "fish_tilapia", "prawn", "squid", "cockle"]);
+  const pad2 = n => String(n).padStart(2, "0");
+  const ymd = d => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+  function thawItems(i) {
+    const d = S.plan && S.plan.days[i]; if (!d || d.off || S.flow.cooked[i]) return [];
+    const ks = new Set(); dayItems(d).forEach(r => r.ing.forEach(([k]) => { if (FROZEN.has(k) && !(S.kitchen[k] && S.kitchen[k].where === "fridge")) ks.add(k); }));
+    return [...ks];
+  }
+  const thawNames = ks => joinNames([...new Set(ks.map(k => ING[k].name.replace(/\s*\(.*?\)\s*/g, " ").trim().toLowerCase()))]);
+  function thawCard() {
+    const h = new Date().getHours(), ti = todayIdx();
+    let i, eve;
+    if (h >= 16 && ti < 6) { i = ti + 1; eve = true; } else if (h < 12) { i = ti; eve = false; } else return "";
+    const ks = thawItems(i); if (!ks.length || (S.flow.thawed || {})[ymd(dateOf(i))]) return "";
+    const dishes = dayItems(S.plan.days[i]).map(r => r.name).join(" and ");
+    return `<div class="thaw">${ic("fridge")}<div><b>${eve ? `Tonight: move the ${esc(thawNames(ks))} to the fridge` : `Still frozen? Thaw the ${esc(thawNames(ks))} now`}</b>
+      <span>${eve ? `For ${DAYS_LONG[i]}'s ${esc(dishes)}. Skip this if you're buying it fresh` : `For tonight's ${esc(dishes)}. Seal it in a bag and keep it under cold running water, about an hour. Not on the counter`}</span>
+      <div class="thaw-acts"><button class="btn" data-thaw="${ymd(dateOf(i))}">${ic("check", 16)}Done</button><button class="linkbtn" data-thawcal="1">Remind me in my calendar</button></div></div></div>`;
+  }
+  function thawCalendar() {   // one alarm at 9 pm the night before each dinner that needs defrosting
+    const ti = todayIdx(), now = new Date(), esc2 = t => t.replace(/[\\;,]/g, m => "\\" + m), stamp = new Date().toISOString().replace(/[-:]/g, "").slice(0, 15) + "Z";
+    const ev = [];
+    for (let i = ti; i < 7; i++) {
+      const ks = thawItems(i); if (!ks.length) continue;
+      const at = dateOf(i); at.setDate(at.getDate() - 1); at.setHours(21, 0, 0, 0); if (at < now) continue;
+      const t = `${at.getFullYear()}${pad2(at.getMonth() + 1)}${pad2(at.getDate())}T210000`, what = `Defrost the ${thawNames(ks)}`, why = `For ${DAYS_LONG[i]}'s ${dayItems(S.plan.days[i]).map(r => r.name).join(" and ")}. Move it from the freezer to the fridge.`;
+      ev.push(["BEGIN:VEVENT", `UID:masakje-thaw-${ymd(dateOf(i))}@masakje.vercel.app`, `DTSTAMP:${stamp}`, `DTSTART:${t}`, "DURATION:PT10M", `SUMMARY:${esc2(what)}`, `DESCRIPTION:${esc2(why)}`, "BEGIN:VALARM", "TRIGGER:PT0M", "ACTION:DISPLAY", `DESCRIPTION:${esc2(what)}`, "END:VALARM", "END:VEVENT"].join("\r\n"));
+    }
+    if (!ev.length) return toast("Nothing left to defrost this week");
+    const ics = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//MasakJe//Defrost//EN", "CALSCALE:GREGORIAN", ...ev, "END:VCALENDAR"].join("\r\n");
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([ics], { type: "text/calendar" })); a.download = "masakje-defrost.ics";
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+    toast(`${ev.length} ${ev.length === 1 ? "reminder" : "reminders"} for this week. Open the file to add ${ev.length === 1 ? "it" : "them"}`);
+  }
+
+  // ---------- share the list to WhatsApp ----------
+  const buyText = r => r.src === "Jaya Grocer" ? `${r.packs} × ${r.it.unit === "pc" && JG.items[r.k].size % 1 ? "pack" : qty(JG.items[r.k].size, r.it.unit, r.k)}` : qty(r.buy, r.it.unit, r.k);
+  function shareList() {
+    const t = totals(S.plan), order = ["Vegetables", "Onion, garlic & chili", "Meat & poultry", "Fish & seafood", "Eggs & tofu", "Noodles", "Dry goods", "Pantry", "Spices"];
+    const rows = t.rows.filter(r => (r.pantry ? S.pantryNeed[r.k] : r.buy) && !S.bought[r.k]);
+    if (!rows.length) return toast("Nothing left to buy");
+    const shop = chosenShop(), groups = order.map(a => [a, rows.filter(r => r.it.aisle === a)]).filter(([, g]) => g.length);
+    const strip = x => x.replace(/<[^>]+>/g, "");
+    const txt = [`*MasakJe shopping list*${HH && HH.name ? ` · ${HH.name}` : ""}`, `${rows.length} ${rows.length === 1 ? "item" : "items"}, about ${rm(rows.reduce((a, r) => a + r.cost, 0))}${shop ? ` at ${shop.name}` : ""}`,
+      ...groups.flatMap(([a, g]) => ["", `*${a}*`, ...g.map(r => `• ${r.it.name}, ${strip(buyText(r))}`)]), "", "Tick them off in MasakJe: https://masakje.vercel.app"].join("\n");
+    window.open("https://wa.me/?text=" + encodeURIComponent(txt), "_blank", "noopener");
+  }
+
   // ---------- write your own recipe ----------
   const DRAFT_KEY = "masakje.draft.v1";
   let ED = null;
@@ -1829,7 +1919,7 @@ const DATA = {"ingredients":{"chicken":{"name":"Chicken (whole, cleaned)","unit"
 
 
   // ---------- feel: a soft tap on every press, tick/untick when something is selected, a spring on the selected item ----------
-  const OWN_SOUND = "[data-rate],[data-sound],[data-pneed],#ckNext,#ckBack,#ckSound,#tStart,#tPause,#tReset,#tAck,[data-jump],[data-ed='save']";
+  const OWN_SOUND = "[data-rate],[data-sound],[data-thaw],[data-pneed],#ckNext,#ckBack,#ckSound,#tStart,#tPause,#tReset,#tAck,[data-jump],[data-ed='save']";
   const selectorFor = b => { if (b.id) return "#" + CSS.escape(b.id); const a = [...b.attributes].find(x => x.name.startsWith("data-") && x.name !== "data-tw"); return a ? `[${a.name}="${CSS.escape(a.value)}"]` : null; };
   document.addEventListener("click", e => {
     const b = e.target.closest("button, a.btn, .rrow"); if (!b || b.disabled || b.matches(OWN_SOUND)) return;
@@ -1840,7 +1930,7 @@ const DATA = {"ingredients":{"chicken":{"name":"Chicken (whole, cleaned)","unit"
     requestAnimationFrame(() => { const n = q && document.querySelector(q); if (n) G.fromTo(n, { scale: 0.92 }, { scale: 1, duration: 0.32, ease: "back.out(2.6)", clearProps: "transform" }); });
   }, true);
   document.addEventListener("click", e => {
-    const el = e.target.closest("[data-tab],[data-go],[data-swap],[data-off],[data-recipe],[data-filter],[data-ed],[data-rxtab],[data-rxon],[data-rxoff],[data-rxreset],#rxsort,[data-people],[data-night],[data-avoid],[data-allergy],[data-dislike],[data-pick],[data-sound],[data-clear],[data-pneed],[data-applysave],[data-rate],[data-tonight],[data-pickday],[data-cookday],[data-cookone],#regen,#replan,#where,#lock,#shopped,#newweek,#obNext,#obBack,#guideOk,#logo,#savehood,[data-hide],[data-amode],#doCreate,#doJoin,#copyPin,#afterCreated,#leave,#leaveYes,#moreshops,#addshop,#saveshop,#replanK,[data-kadd],[data-kdel],[data-kmove],[data-ksoon]");
+    const el = e.target.closest("[data-tab],[data-go],[data-swap],[data-off],[data-recipe],[data-filter],[data-ed],[data-thaw],[data-thawcal],#waShare,[data-rxtab],[data-rxon],[data-rxoff],[data-rxreset],#rxsort,[data-people],[data-night],[data-avoid],[data-allergy],[data-dislike],[data-pick],[data-sound],[data-clear],[data-pneed],[data-applysave],[data-rate],[data-tonight],[data-pickday],[data-cookday],[data-cookone],#regen,#replan,#where,#lock,#shopped,#newweek,#obNext,#obBack,#guideOk,#logo,#savehood,[data-hide],[data-amode],#doCreate,#doJoin,#doJoinNew,[data-joinas],#copyPin,#afterCreated,#leave,#leaveYes,#moreshops,#addshop,#saveshop,#replanK,[data-kadd],[data-kdel],[data-kmove],[data-ksoon]");
     if (!el) return;
     const s = S.settings;
     if (el.dataset.tab) return go(el.dataset.tab);
@@ -1850,6 +1940,9 @@ const DATA = {"ingredients":{"chicken":{"name":"Chicken (whole, cleaned)","unit"
     if (el.dataset.off !== undefined) return toggleOff(+el.dataset.off);
     if (el.dataset.recipe) return openRecipe(el.dataset.recipe);
     if (el.dataset.ed) return edAction(el.dataset.ed);
+    if (el.dataset.thaw) { S.flow.thawed = { ...(S.flow.thawed || {}), [el.dataset.thaw]: (CLOUD && myName()) || "You" }; save(); SFX.done(); const c = el.closest(".thaw"); if (G && c) { G.to(c, { opacity: 0, height: 0, marginBottom: 0, paddingTop: 0, paddingBottom: 0, duration: 0.35, ease: EASE }); setTimeout(render, 380); } else render(); return; }
+    if (el.dataset.thawcal) return thawCalendar();
+    if (el.id === "waShare") return shareList();
     if (el.dataset.tonight !== undefined) return openTonightList(+el.dataset.tonight);
     if (el.dataset.pickday !== undefined) { const di = +el.dataset.pickday; closeSheet(); return openPicker(di, S.plan.days[di].onepot ? "onepot" : "lauk"); }
     if (el.dataset.pneed) { const [k, v] = el.dataset.pneed.split(":"); captureTweens(); if (v === "1") S.pantryNeed[k] = true; else delete S.pantryNeed[k]; v === "1" ? SFX.tick() : SFX.untick(); save(); return render(); }
@@ -1887,9 +1980,11 @@ const DATA = {"ingredients":{"chicken":{"name":"Chicken (whole, cleaned)","unit"
     if (el.id === "moreshops") { S.nearN = (S.nearN || 8) + 10; return render(); }
     if (el.id === "addshop") { S.adding = true; render(); const n = document.getElementById("newshop"); n && n.focus(); return; }
     if (el.id === "saveshop") { const name = (S.shopDraft || "").trim(); if (name.length < 3) return; s.custom = { name, postcode: s.postcode }; s.shop = -2; S.adding = false; S.shopDraft = ""; save(); return render(); }
-    if (el.dataset.amode) { A.mode = el.dataset.amode; A.err = ""; render(); const f = document.querySelector("#hhname, #pin"); f && f.focus(); return; }
+    if (el.dataset.amode) { A.mode = el.dataset.amode; A.err = ""; A.joinHH = null; render(); const f = document.querySelector("#hhname, #pin"); f && f.focus(); return; }
     if (el.id === "doCreate") return signIn("household", { household: A.hh || "", name: A.name || "" });
-    if (el.id === "doJoin") return signIn("join", { pin: A.pin || "", name: A.name || "" });
+    if (el.id === "doJoin") return checkPin();
+    if (el.dataset.joinas) return signIn("join", { pin: A.pin || "", member: el.dataset.joinas });
+    if (el.id === "doJoinNew") return signIn("join", { pin: A.pin || "", name: A.name || "" });
     if (el.id === "copyPin") { try { navigator.clipboard.writeText(HH.pin).then(() => toast("PIN copied"), () => toast(`PIN: ${HH.pin}`)); } catch (e) { toast(`PIN: ${HH.pin}`); } return; }
     if (el.id === "afterCreated") { A.mode = "start"; S.ob = 0; render(); return window.scrollTo({ top: 0 }); }
     if (el.id === "leave") { A.confirmLeave = true; render(); setTimeout(() => { A.confirmLeave = false; }, 4000); return; }
