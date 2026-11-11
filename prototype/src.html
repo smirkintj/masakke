@@ -128,6 +128,8 @@ h1 { font-size: 30px; line-height: 1.15; font-weight: 500; margin: 12px 0 4px; t
 .day-foot .link { color: var(--fg2); text-decoration: none; display: inline-flex; gap: 6px; align-items: center; min-height: 32px; }
 .day-foot .link:hover { color: var(--fg); }
 .day-foot .link.go { color: var(--accent); font-weight: 600; }
+.warnbox { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; border: 1px solid rgba(220, 38, 38, 0.25); background: rgba(220, 38, 38, 0.05); border-radius: 16px; padding: 14px 14px 14px 16px; font-size: 14px; color: var(--fg2); }
+.warnbox b { display: block; font-weight: 500; color: var(--neg); font-size: 15px; margin-bottom: 2px; }
 .offrow { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 14px; background: var(--surface); font-size: 14px; color: var(--muted); }
 .offrow b { font-weight: 500; color: var(--fg2); }
 .offrow .link { text-decoration: none; font-size: 14px; }
@@ -753,7 +755,7 @@ const DATA = /*__DATA__*/null;
           <li><b>Cook at dinner time</b><span>Tap Start cooking. Missing something? We'll tell you first</span></li>
         </ol></div>`}
       <div class="week-grid">
-        <aside class="side">${hero}${shopCard}
+        <aside class="side">${hero}${budgetWarning(t)}${shopCard}
         </aside>
         <section class="week-main"><div class="section-h"><h2>Rest of the week</h2><button class="btn" id="regen">${ic("swap")}New plan</button></div>${past.length ? `<p class="sub" style="margin:-4px 0 12px;font-size:14px">Earlier this week: ${past.join(" · ")}</p>` : ""}<div class="days">${days || `<p class="sub">That's the week. Plan next week from Settings</p>`}</div></section>
       </div>
@@ -785,6 +787,32 @@ const DATA = /*__DATA__*/null;
     </div></div>`;
     const close = () => { root.innerHTML = ""; render(); };
     document.getElementById("scrim").onclick = close; document.getElementById("shClose").onclick = close; document.getElementById("tlDone").onclick = close;
+  }
+
+  // Over budget: keep the variety, but suggest the one swap (same protein group) that saves the most.
+  function bestSaving() {
+    const base = totals(S.plan).toBuy, used = inPlan(), ti = todayIdx();
+    let best = null;
+    S.plan.days.forEach((d, i) => {
+      if (d.off || i < ti || S.flow.cooked[i]) return;
+      ["lauk", "sayur", "onepot"].forEach(slot => {
+        if (!d[slot]) return;
+        const cur = RX[d[slot]];
+        pool(slot).filter(r => !used.has(r.id) && (slot === "sayur" || GROUP(r) === GROUP(cur))).forEach(r => {
+          const save = base - totals({ days: S.plan.days.map((x, j) => j === i ? { ...x, [slot]: r.id } : x) }).toBuy;
+          if (save > 0.5 && (!best || save > best.save)) best = { i, slot, from: cur, to: r, save };
+        });
+      });
+    });
+    return best;
+  }
+  function budgetWarning(t) {
+    const over = t.toBuy - S.settings.budget;
+    if (over <= 0) return "";
+    const b = bestSaving();
+    return `<div class="warnbox" role="status"><div><b>${rm(over)} over your ${rm0(S.settings.budget)} budget</b>
+      <span>${b ? `Swap ${esc(b.from.name)} for ${esc(b.to.name)} on ${DAYS_LONG[b.i]} to save ${rm(b.save)}` : "Prices at your shop are high this week. Raise the budget in Settings or change a dish"}</span></div>
+      ${b ? `<button class="btn" data-applysave="${b.i}:${b.slot}:${b.to.id}">Apply</button>` : `<button class="btn" data-go="setup">Settings</button>`}</div>`;
   }
 
   // ---------- dish picker (replaces random swap) ----------
@@ -1428,7 +1456,7 @@ const DATA = /*__DATA__*/null;
   function go(tab) { S.tab = tab; render(); window.scrollTo({ top: 0 }); }
 
   document.addEventListener("click", e => {
-    const el = e.target.closest("[data-tab],[data-go],[data-swap],[data-off],[data-recipe],[data-filter],[data-people],[data-night],[data-avoid],[data-allergy],[data-dislike],[data-pick],[data-sound],[data-clear],[data-pneed],[data-tonight],[data-pickday],[data-cookday],[data-cookone],#regen,#replan,#where,#lock,#shopped,#newweek,#obNext,#obBack,#guideOk,#logo,#savehood,[data-hide],[data-amode],#doCreate,#doJoin,#copyPin,#afterCreated,#leave,#leaveYes,#moreshops,#addshop,#saveshop,#replanK,[data-kadd],[data-kdel],[data-kmove],[data-ksoon]");
+    const el = e.target.closest("[data-tab],[data-go],[data-swap],[data-off],[data-recipe],[data-filter],[data-people],[data-night],[data-avoid],[data-allergy],[data-dislike],[data-pick],[data-sound],[data-clear],[data-pneed],[data-applysave],[data-tonight],[data-pickday],[data-cookday],[data-cookone],#regen,#replan,#where,#lock,#shopped,#newweek,#obNext,#obBack,#guideOk,#logo,#savehood,[data-hide],[data-amode],#doCreate,#doJoin,#copyPin,#afterCreated,#leave,#leaveYes,#moreshops,#addshop,#saveshop,#replanK,[data-kadd],[data-kdel],[data-kmove],[data-ksoon]");
     if (!el) return;
     const s = S.settings;
     if (el.dataset.tab) return go(el.dataset.tab);
@@ -1441,6 +1469,7 @@ const DATA = /*__DATA__*/null;
     if (el.dataset.pickday !== undefined) { const di = +el.dataset.pickday; closeSheet(); return openPicker(di, S.plan.days[di].onepot ? "onepot" : "lauk"); }
     if (el.dataset.pneed) { const [k, v] = el.dataset.pneed.split(":"); captureTweens(); if (v === "1") S.pantryNeed[k] = true; else delete S.pantryNeed[k]; v === "1" ? SFX.tick() : SFX.untick(); save(); return render(); }
     if (el.dataset.clear) { const k = el.dataset.clear; s[k] = k === "avoid" ? { chicken: false, beef: false, mutton: false, pedas: false } : {}; save(); return render(); }
+    if (el.dataset.applysave) { const [i, slot, id] = el.dataset.applysave.split(":"); captureTweens(); S.plan.days[+i][slot] = id; save(); render(); toast(`Changed to ${RX[id].name}`); return; }
     if (el.dataset.pick) { const [i, slot] = el.dataset.pick.split(":"); return openPicker(+i, slot); }
     if (el.dataset.sound !== undefined) { S.settings.sound = S.settings.sound === false; save(); if (S.settings.sound !== false) SFX.tick(); return render(); }
     if (el.dataset.cookday !== undefined) { const di = +el.dataset.cookday; return startCooking(dayItems(S.plan.days[di]).map(r => r.id), di); }
