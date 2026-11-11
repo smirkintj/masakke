@@ -120,7 +120,8 @@ def main():
                    "national": pack(index["national"]["median"]),
                    "states": state_names,
                    "stateMedian": [pack(index["states"][s]["median"]) for s in state_names],
-                   "shops": shops, "chains": chains},
+                   "shops": shops, "chains": chains,
+                   "jg": json.load(open(os.path.join(P, "jayagrocer.json"))) if os.path.exists(os.path.join(P, "jayagrocer.json")) else None},
     }
     src = open(os.path.join(ROOT, "prototype", "src.html")).read()
     blob = json.dumps(data, separators=(",", ":"), ensure_ascii=False).replace("</", "<\\/")

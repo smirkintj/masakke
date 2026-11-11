@@ -13,6 +13,7 @@ builds the shopping list, and prices it with real shop prices from KPDN PriceCat
 | Ingredient catalog: PriceCatcher item codes, pack sizes, fallback prices | `src/data/ingredients.json` |
 | Price pipeline: downloads PriceCatcher, keeps latest price per shop (last 45 days), district/state medians | `scripts/build_prices.py` |
 | Geocodes shops (postcode → town name → district centre) with GeoNames postcodes | `scripts/build_prices.py` |
+| Jaya Grocer online prices (personal use, weekly, polite) matched to ingredients | `scripts/fetch_jayagrocer.py` + `src/data/jayagrocer_map.json` |
 | Bundles everything into one offline page, derives per-step ingredients and timers | `scripts/build_prototype.py` |
 | Prototype UI | `prototype/src.html` → `prototype/index.html` |
 
@@ -32,10 +33,15 @@ python3 scripts/build_prototype.py
 - Cooking mode: get-ready checklist with progress, one step per screen, step timers, total elapsed time
 - Allergies (incl. hidden in sauces) and vegetable dislikes
 
+## Weekly refresh
+
+`.github/workflows/weekly-prices.yml` runs every Monday 03:17 MYT: PriceCatcher → Jaya Grocer → rebuild → commit.
+
 ## Known limits
 
 - Only 37% of shops geocode by postcode; 31% by town name, 28% fall back to district centre (shown as approx.).
 - KPDN surveys ~2,100 shops; many branches (e.g. Jaya Grocer Bukit Jelutong) are missing. Chain price levels (Jaya Grocer +6%, Lotus's −13%…) adjust nearby prices for user-added shops.
+- Jaya Grocer prices are the Online Store KL list, may differ in-store; personal use only, commercial use needs their permission. 7 ingredients unmatched (chicken breast, kembung, tilapia, salted fish, cornflour, flour, star anise) fall back to PriceCatcher.
 - Step ingredients and timers are matched from step text; wording in recipes.json matters.
 - ~15 ingredients (tauhu, taugeh, light/dark soy, whole spices…) have no recent PriceCatcher data and use estimates, labelled "Estimate".
 - Recipes are AI-drafted and need review by a home cook.

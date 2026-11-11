@@ -1,0 +1,337 @@
+{
+ "_doc": "Ingredient -> Jaya Grocer product matching. match/exclude are case-insensitive regexes on the product title. Pack size is parsed from the title (500g, 1kg, 10pcs). assume = size to use when the title has none (e.g. '1unit'). per_piece_g converts grams to pieces for pc ingredients (tofu, lemongrass). The cheapest per unit wins, ignoring outliers below a third of the median.",
+ "rules": {
+  "chicken": {
+   "match": "spring chicken|whole chicken|ayam (segar|bersih)",
+   "exclude": "egg|sausage|chop|nugget|pepperoni|salami|toast|minced|pineapple",
+   "assume": 900
+  },
+  "chicken_thigh": {
+   "match": "chicken.*(thigh|whole leg|quarter leg)",
+   "exclude": "sausage|nugget|teriyaki"
+  },
+  "chicken_breast": {
+   "match": "chicken.*(breast|fillet)",
+   "exclude": "sausage|nugget|smoked|roast"
+  },
+  "chicken_wing": {
+   "match": "chicken.*(wing|drummet)",
+   "exclude": "spicy|bbq|marinated"
+  },
+  "beef": {
+   "match": "local beef|daging segar|topside|stir fry beef|beef (cubes|slices|chunk)",
+   "exclude": "salami|pepperoni|sausage|patty|pastrami|streaky|breakfast|minced|sirloin|tulang"
+  },
+  "mutton": {
+   "match": "mutton|lamb (shoulder|leg|cube)",
+   "exclude": "sausage|patty|masala|shabu|cutlet"
+  },
+  "fish_kembung": {
+   "match": "kembung|mackerel",
+   "exclude": "canned|sauce|tin"
+  },
+  "fish_selar": {
+   "match": "selar|cencaru|ikan sardin",
+   "exclude": "canned|sauce|tin"
+  },
+  "fish_tenggiri": {
+   "match": "tenggiri",
+   "exclude": "ball|cake|keropok"
+  },
+  "fish_siakap": {
+   "match": "siakap|barramundi|sea ?bass",
+   "exclude": "fillet|ball|cake"
+  },
+  "fish_tilapia": {
+   "match": "tilapia",
+   "exclude": "fillet"
+  },
+  "prawn": {
+   "match": "udang (putih|minyak|harimau)|white prawn|tiger prawn|isi udang",
+   "exclude": "kering|sambal|noodle|soya|chil+i|oil|dried"
+  },
+  "squid": {
+   "match": "sotong putih|white squid|squid (ring|tube)",
+   "exclude": "salt and pepper|ink"
+  },
+  "cockle": {
+   "match": "kerang",
+   "exclude": "sambal"
+  },
+  "ikan_bilis": {
+   "match": "ikan bilis|anchov",
+   "exclude": "cucur|tepung|sambal|nasi|perencah|stock|crisp|cracker|fried rice|seasoning"
+  },
+  "dried_shrimp": {
+   "match": "udang kering|dried prawn|dried shrimp",
+   "exclude": "sambal|crispy"
+  },
+  "salted_fish": {
+   "match": "ikan masin|salted fish",
+   "exclude": "fried rice|sauce|curry|powder"
+  },
+  "egg": {
+   "match": "chicken eggs?|telur ayam|fresh eggs",
+   "exclude": "kampung|omega|salted|quail|century|jumbo|organic|tofu|noodle|dha|liquid"
+  },
+  "tofu": {
+   "match": "(pressed|block|traditional) tofu|tauhu keras",
+   "exclude": "smooth|japanese|egg tofu|fried|soybean cooking",
+   "per_piece_g": 200
+  },
+  "tempe": {
+   "match": "tempe",
+   "exclude": "chip|kerepek|fried",
+   "per_piece_g": 200
+  },
+  "kangkung": {
+   "match": "kangkung|water spinach"
+  },
+  "bayam": {
+   "match": "bayam|spinach",
+   "exclude": "baby|hong kong|water|kangkung"
+  },
+  "sawi": {
+   "match": "\\bsawi\\b(?! jepun)|choy sam",
+   "exclude": "baby|probiotic|vesawit"
+  },
+  "kailan": {
+   "match": "kailan|kai lan"
+  },
+  "pak_choy": {
+   "match": "pak choy|sawi jepun",
+   "exclude": "baby|probiotic"
+  },
+  "cabbage": {
+   "match": "cabbage",
+   "exclude": "beijing|long|chinese|kimchi|red|napa|purple"
+  },
+  "chinese_cabbage": {
+   "match": "beijing cabbage|long cabbage|napa|wong bok"
+  },
+  "taugeh": {
+   "match": "taugeh|bean sprout"
+  },
+  "long_bean": {
+   "match": "long bean|kacang panjang"
+  },
+  "french_bean": {
+   "match": "french bean|buncis"
+  },
+  "okra": {
+   "match": "lady finger|bendi|okra"
+  },
+  "brinjal": {
+   "match": "brinjal|eggplant|terung"
+  },
+  "carrot": {
+   "match": "carrot",
+   "exclude": "baby|juice|cake"
+  },
+  "potato": {
+   "match": "potato",
+   "exclude": "sweet|leaf|chip|starch|mash|wedge|fries"
+  },
+  "tomato": {
+   "match": "tomato",
+   "exclude": "cherry|sauce|ketchup|paste|puree|canned|dried|plum|juice|soup"
+  },
+  "cucumber": {
+   "match": "cucumber|timun",
+   "exclude": "mini|kimchi|pickle|sea"
+  },
+  "broccoli": {
+   "match": "broccoli",
+   "exclude": "chinese|kailan|frozen",
+   "assume": 400
+  },
+  "cauliflower": {
+   "match": "cauliflower",
+   "exclude": "frozen|rice",
+   "assume": 500
+  },
+  "capsicum": {
+   "match": "capsicum|bell pepper|sweet pepper|pepper sweet",
+   "exclude": "mini|habanero|charleston|smoked|salmon|italian|sauce|pasta|paste"
+  },
+  "spring_onion": {
+   "match": "spring onion|daun bawang|coriander|daun sup",
+   "exclude": "powder|seed"
+  },
+  "lemongrass": {
+   "match": "lemongrass|serai",
+   "exclude": "paste|powder|tea|drink",
+   "per_piece_g": 35
+  },
+  "curry_leaves": {
+   "match": "curry lea|daun kari",
+   "per_piece_g": 2.5
+  },
+  "lime": {
+   "match": "limau kasturi|calamansi",
+   "exclude": "juice|drink",
+   "per_piece_g": 15
+  },
+  "shallot": {
+   "match": "shallot|bawang kecil|bawang merah",
+   "exclude": "fried|crispy|goreng|besar|oil"
+  },
+  "onion": {
+   "match": "yellow onion|bawang besar|\\bonion\\b",
+   "exclude": "spring|red|fried|crisp|powder|ring|shallot|cream|soup"
+  },
+  "garlic": {
+   "match": "^garlic \\(|bawang putih|whole garlic|garlic \\(bawang",
+   "exclude": "chive|chopped|powder|black|fried|crisp|paste|bread|sauce|pickled|puree|chili|oil"
+  },
+  "ginger": {
+   "match": "ginger|halia",
+   "exclude": "flower|bunga|powder|paste|tea|drink|young|pickled|candied|garlic"
+  },
+  "galangal": {
+   "match": "galangal|lengkuas",
+   "exclude": "powder|paste"
+  },
+  "chili_red": {
+   "match": "red chil+i|cili merah",
+   "exclude": "padi|dried|powder|sauce|paste|flake|oil|sambal"
+  },
+  "chili_green": {
+   "match": "green chil+i|cili hijau",
+   "exclude": "padi|sauce|pickled"
+  },
+  "chili_padi": {
+   "match": "chil+i padi|cili padi|bird.?s eye"
+  },
+  "dried_chili": {
+   "match": "dried chil+i|cili kering",
+   "exclude": "flake|powder|paste|crushed|sambal"
+  },
+  "santan": {
+   "match": "santan|coconut milk|coconut cream",
+   "exclude": "powder|drink|yogurt|ice|light"
+  },
+  "tamarind": {
+   "match": "tamarind|asam jawa",
+   "exclude": "powder|drink|candy|sauce|pakcu"
+  },
+  "peanuts": {
+   "match": "groundnut|peanut|kacang tanah",
+   "exclude": "butter|sauce|roasted|coated|candy|oil|salted"
+  },
+  "dhal": {
+   "match": "dhal|dhall|lentil",
+   "exclude": "urad|urundu|chana|soup"
+  },
+  "rice": {
+   "match": "beras|\\brice\\b",
+   "exclude": "glutinous|pulut|brown|basmat|calrose|japanese|bran|paper|vermicelli|noodle|flour|ponni|furikake|seasoning|paste|powder|mix|herbal|wild|red|black|cooker|cake|wine|vinegar|organic|unpolished|parboiled|fried|chicken"
+  },
+  "yellow_mee": {
+   "match": "mee kuning|yellow noodle"
+  },
+  "kuetiau": {
+   "match": "kuey ?teow|kway ?teow|flat rice noodle",
+   "exclude": "paste|sauce|instant|soup"
+  },
+  "bihun": {
+   "match": "bihun|rice vermicelli",
+   "exclude": "paste|goreng|instant|soup|x ?10"
+  },
+  "oil": {
+   "match": "cooking oil|minyak masak",
+   "exclude": "coconut|rice bran|omega|olive|sesame|canola|sunflower|red palm|tiga udang|medella|neuvida|spray"
+  },
+  "salt": {
+   "match": "garam|fine salt|table salt",
+   "exclude": "himalayan|rock|sea salt|pink|celery|garlic|seasoning|egg|fish|vegetable|beancurd"
+  },
+  "sugar": {
+   "match": "sugar|gula",
+   "exclude": "brown|palm|melaka|caster|icing|rock|candy|free|syrup|cane|aren|coconut|stevia"
+  },
+  "kicap_manis": {
+   "match": "kicap manis|sweet soy|lemak manis|sweet soya",
+   "exclude": "salty|masin|light|dark|cicah|pedas"
+  },
+  "soy_light": {
+   "match": "light soy|kicap masin|salty soya",
+   "exclude": "low sodium|organic"
+  },
+  "soy_dark": {
+   "match": "dark soy|kicap pekat|thick soy|caramel soy"
+  },
+  "oyster_sauce": {
+   "match": "oyster sauce|sos tiram",
+   "exclude": "vegetarian|mushroom"
+  },
+  "chili_sauce": {
+   "match": "chil+i sauce|sos cili",
+   "exclude": "sweet|thai|sriracha|garlic|ginger|chicken rice|hot sauce"
+  },
+  "tomato_sauce": {
+   "match": "tomato sauce|ketchup|sos tomato",
+   "exclude": "pasta|spaghetti|baked beans|squeeze"
+  },
+  "fish_sauce": {
+   "match": "fish sauce|sos ikan|budu",
+   "exclude": "asam|steamed|instant|portuguese"
+  },
+  "sesame_oil": {
+   "match": "sesame oil",
+   "exclude": "black"
+  },
+  "belacan": {
+   "match": "belacan",
+   "exclude": "sambal|powder|chil+i|cili"
+  },
+  "cornflour": {
+   "match": "corn ?flour|tepung jagung|corn ?starch"
+  },
+  "flour": {
+   "match": "wheat flour|tepung gandum|plain flour|all.purpose flour",
+   "exclude": "self|cake|bread|whole|top|hong kong|pau|corn|cucur|rice|glutinous|batter|mix"
+  },
+  "tomyam_paste": {
+   "match": "perencah tom ?yam|tom ?yam paste",
+   "exclude": "noodle|cube|instant tom yam sauce"
+  },
+  "chili_powder": {
+   "match": "chil+i powder|serbuk cili",
+   "exclude": "korean|kashmir|flake"
+  },
+  "turmeric_powder": {
+   "match": "turmeric powder|tumeric powder|serbuk kunyit"
+  },
+  "curry_meat": {
+   "match": "meat curry|serbuk kari daging|chicken curry powder|kari ayam",
+   "exclude": "fish|paste"
+  },
+  "curry_fish": {
+   "match": "fish curry|kari ikan",
+   "exclude": "paste|sauce"
+  },
+  "kurma_powder": {
+   "match": "kurma|korma",
+   "exclude": "paste|date"
+  },
+  "black_pepper": {
+   "match": "black pepper|lada hitam",
+   "exclude": "salmon|sauce|steak|chicken|marinated|cracker|beef|paste|marinate"
+  },
+  "white_pepper": {
+   "match": "white pepper|lada putih",
+   "exclude": "sauce"
+  },
+  "cinnamon": {
+   "match": "cinnamon|kayu manis",
+   "exclude": "powder|roll|bun|tea|cereal|ground"
+  },
+  "star_anise": {
+   "match": "star anise|bunga lawang"
+  },
+  "fennel": {
+   "match": "fennel|jintan manis|adas"
+  }
+ }
+}

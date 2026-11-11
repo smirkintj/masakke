@@ -373,6 +373,13 @@ const DATA = /*__DATA__*/null;
   const shopName = s => title(s[0]);
   const CHAINS = PR.chains.map(([name, pat, idx, n]) => ({ name, re: new RegExp(pat, "i"), idx, n }));
   const chainOf = name => CHAINS.find(c => c.re.test(name || "")) || null;
+  const JG = PR.jg && PR.jg.items ? PR.jg : null;
+  const jgDate = JG ? new Date(JG.fetchedAt).toLocaleDateString("en-MY", { day: "numeric", month: "short" }) : "";
+  function isJG() {
+    const s = S.settings;
+    const name = s.shop >= 0 ? PR.shops[s.shop][0] : s.shop === -2 && s.custom ? s.custom.name : "";
+    const c = chainOf(name); return !!(JG && c && c.name === "Jaya Grocer");
+  }
   const pctLabel = idx => { const p = Math.round((idx - 1) * 100); return p === 0 ? "about the same as" : p > 0 ? `${p}% above` : `${-p}% below`; };
   const precisionNote = s => (s[4] === "postcode" || s[4] === "near-postcode") ? "" : "approx. location";
 
@@ -384,10 +391,12 @@ const DATA = /*__DATA__*/null;
       const shop = S.settings.shop >= 0 ? PR.shops[S.settings.shop] : null;
       const custom = S.settings.shop === -2 && S.settings.custom ? chainOf(S.settings.custom.name) : null;
       if (shop && shop[7][ki] > 0) { per = shop[7][ki]; src = "This shop"; }
+      else if (isJG() && JG.items[key]) { per = JG.items[key].per; src = "Jaya Grocer"; }
       else if (c.med[key]) { per = c.med[key].v * (custom ? custom.idx : 1); src = custom ? `${custom.name} est.` : `Within ${c.med[key].r} km`; }
       else if (c.stateIdx >= 0 && PR.stateMedian[c.stateIdx][ki] > 0) { per = PR.stateMedian[c.stateIdx][ki]; src = "State"; }
       else if (PR.national[ki] > 0) { per = PR.national[ki]; src = "Malaysia"; }
     }
+    if (per == null && isJG() && JG.items[key]) { per = JG.items[key].per; src = "Jaya Grocer"; }
     if (per == null) per = it.fallback;
     return { unit: per / it.size, src };
   }
@@ -429,15 +438,16 @@ const DATA = /*__DATA__*/null;
     const stock = haveMap();
     for (const [k, q] of Object.entries(agg)) {
       const it = ING[k], p = price(k);
+      const pack = p.src === "Jaya Grocer" ? JG.items[k].size : it.pack;   // real pack size on the shelf
       if (it.pantry) {
-        const packs = Math.max(1, Math.ceil(q / it.pack - 1e-9)), cost = packs * it.pack * p.unit;
+        const packs = Math.max(1, Math.ceil(q / pack - 1e-9)), cost = packs * pack * p.unit;
         pantryUse += q * p.unit; if (S.pantryNeed[k]) pantryBuy += cost;
-        rows.push({ k, it, q, have: 0, buy: packs * it.pack, cost, src: p.src, pantry: true });
+        rows.push({ k, it, q, have: 0, buy: packs * pack, packs, cost, src: p.src, pantry: true });
       } else {
         const have = Math.min(stock[k] || 0, q), need = q - have;
-        const packs = need > 1e-6 ? Math.ceil(need / it.pack - 1e-9) : 0, cost = packs * it.pack * p.unit;
+        const packs = need > 1e-6 ? Math.ceil(need / pack - 1e-9) : 0, cost = packs * pack * p.unit;
         fresh += cost; fromKitchen += have * p.unit;
-        rows.push({ k, it, q, have, need, buy: packs * it.pack, cost, src: p.src, pantry: false });
+        rows.push({ k, it, q, have, need, buy: packs * pack, packs, cost, src: p.src, pantry: false });
       }
     }
     const nights = plan.days.filter(d => !d.off).length, plates = nights * S.settings.people;
@@ -622,10 +632,11 @@ const DATA = /*__DATA__*/null;
     const covered = fresh.filter(r => !r.buy);
     for (const r of [...fresh.filter(r => r.buy), ...needP]) (groups[r.it.aisle] = groups[r.it.aisle] || []).push(r);
     const order = ["Vegetables", "Onion, garlic & chili", "Meat & poultry", "Fish & seafood", "Eggs & tofu", "Noodles", "Dry goods", "Pantry", "Spices"];
-    const srcTag = s => `<span class="tag ${s === "This shop" ? "ok" : ""}">${s}</span>`;
+    const srcTag = s => `<span class="tag ${s === "This shop" || s === "Jaya Grocer" ? "ok" : ""}">${s}</span>`;
+    const jgLine = r => r.src === "Jaya Grocer" ? `<div class="q"><a href="${esc(JG.items[r.k].url)}" target="_blank" rel="noopener" style="color:var(--fg2)">${esc(JG.items[r.k].title)} · RM ${JG.items[r.k].price.toFixed(2)}</a></div>` : "";
     const row = r => {
       const done = !!S.bought[r.k];
-      return `<label class="item ${done ? "done" : ""}"><input type="checkbox" id="b-${r.k}" data-bought="${r.k}" ${done ? "checked" : ""}><div><div class="n">${esc(r.it.name)}</div><div class="q"><b style="font-weight:600;color:var(--fg2)">${qty(r.buy, r.it.unit, r.k)}</b><span>· ${unitPrice(r.k)}</span>${srcTag(r.src)}</div>${r.have ? `<div class="q">${qty(r.have, r.it.unit, r.k)} already in your ${S.kitchen[r.k] ? S.kitchen[r.k].where : "kitchen"}</div>` : ""}${r.buy - r.need > r.it.pack * 0.25 && r.it.unit !== "pc" ? `<div class="q">Recipes use ${qty(r.need, r.it.unit, r.k)}, the rest goes to your fridge</div>` : ""}</div><span class="p">${rm(r.cost)}</span></label>`;
+      return `<label class="item ${done ? "done" : ""}"><input type="checkbox" id="b-${r.k}" data-bought="${r.k}" ${done ? "checked" : ""}><div><div class="n">${esc(r.it.name)}</div><div class="q"><b style="font-weight:600;color:var(--fg2)">${r.src === "Jaya Grocer" ? `${r.packs} × ${r.it.unit === "pc" && JG.items[r.k].size % 1 ? "pack" : qty(JG.items[r.k].size, r.it.unit, r.k)}` : qty(r.buy, r.it.unit, r.k)}</b><span>· ${unitPrice(r.k)}</span>${srcTag(r.src)}</div>${jgLine(r)}${r.have ? `<div class="q">${qty(r.have, r.it.unit, r.k)} already in your ${S.kitchen[r.k] ? S.kitchen[r.k].where : "kitchen"}</div>` : ""}${r.buy - r.need > r.it.pack * 0.25 && r.it.unit !== "pc" ? `<div class="q">Recipes use ${qty(r.need, r.it.unit, r.k)}, the rest goes to your fridge</div>` : ""}</div><span class="p">${rm(r.cost)}</span></label>`;
     };
     const sec = order.filter(a => groups[a]).map(a => {
       const g = groups[a].sort((x, y) => (!!S.bought[x.k] - !!S.bought[y.k]) || y.cost - x.cost);
@@ -647,7 +658,7 @@ const DATA = /*__DATA__*/null;
       ${covered.length ? `<div class="tip">${ic("fridge")}<div><b>Already at home, not on the list:</b> ${covered.map(r => esc(r.it.name)).join(", ")}</div></div>` : ""}
       <div class="groups">${sec}</div>
       <div class="totals"><div><div class="k">${all.length - got ? `${all.length - got} left to buy` : "Everything bought"}</div><div class="v">${rm(t.toBuy)}</div></div><button class="btn primary" id="shopped" ${S.flow.shopped ? "disabled" : ""}>${S.flow.shopped ? "Shopping done" : "Done shopping"}</button></div>
-      <p class="fine">Each price is the shop's unit price (per kg, per 10 eggs, per bottle) times what you actually buy. This shop = its latest PriceCatcher price. Within N km = typical price of at least 3 shops that close to your postcode. Chain estimate = nearby price adjusted by that chain's price level. Estimate = PriceCatcher does not track it.</p>
+      <p class="fine">Each price is the shop's unit price (per kg, per 10 eggs, per bottle) times what you actually buy. This shop = its latest PriceCatcher price. Within N km = typical price of at least 3 shops that close to your postcode. Chain estimate = nearby price adjusted by that chain's price level. Jaya Grocer = its online-store price (Online Store KL, may differ in-store), checked weekly, for personal use. Estimate = PriceCatcher does not track it.</p>
     </div>`;
   }
 
@@ -705,13 +716,13 @@ const DATA = /*__DATA__*/null;
     const cu = s.custom, cuChain = cu && chainOf(cu.name);
     const rows = [
       `<label class="shop"><input type="radio" name="shop" value="-1" ${s.shop === -1 ? "checked" : ""}><div><div class="n">Any shop near me</div><div class="q">Typical price across ${ring >= MIN_SHOPS ? `${ring} shops within 5 km` : "the nearest shops"}</div></div><span class="km"></span></label>`,
-      cu ? `<label class="shop"><input type="radio" name="shop" value="-2" ${s.shop === -2 ? "checked" : ""}><div><div class="n">${esc(cu.name)}</div><div class="q">Your shop · ${cuChain ? `${cuChain.name} prices are ${pctLabel(cuChain.idx)} average` : "priced like shops near you"}</div></div><span class="km">yours</span></label>` : "",
+      cu ? `<label class="shop"><input type="radio" name="shop" value="-2" ${s.shop === -2 ? "checked" : ""}><div><div class="n">${esc(cu.name)}</div><div class="q">Your shop · ${cuChain && JG && cuChain.name === "Jaya Grocer" ? `Jaya Grocer online prices, checked ${jgDate}` : cuChain ? `${cuChain.name} prices are ${pctLabel(cuChain.idx)} average` : "priced like shops near you"}</div></div><span class="km">yours</span></label>` : "",
       ...pool.map(x => `<label class="shop"><input type="radio" name="shop" value="${x.i}" ${s.shop === x.i ? "checked" : ""}><div><div class="n">${esc(shopName(x.s))}</div><div class="q">${esc(x.s[1])}${precisionNote(x.s) ? " · approx. location" : ""}</div></div><span class="km">${kmTxt(x)}</span></label>`),
     ].join("");
     const draft = S.shopDraft || "", dChain = chainOf(draft);
     const add = S.adding ? `<div class="addshop"><label for="newshop" style="font-weight:600;font-size:15px">Your shop's name</label>
         <div class="row"><input class="inp" id="newshop" placeholder="e.g. Jaya Grocer Bukit Jelutong" value="${esc(draft)}" style="background:var(--card)"><button class="btn primary" id="saveshop" style="height:48px" ${draft.trim().length < 3 ? "disabled" : ""}>Add</button></div>
-        <div class="chainmsg">${draft.trim().length < 3 ? "We'll use prices from shops near your postcode." : dChain ? `Recognised <b>${dChain.name}</b>. KPDN surveys ${dChain.n} of its branches; they are ${pctLabel(dChain.idx)} average, so we'll adjust nearby prices by that.` : "Not a chain we have data for. We'll use typical prices from shops near you."}</div></div>` : "";
+        <div class="chainmsg">${draft.trim().length < 3 ? "We'll use prices from shops near your postcode." : dChain ? (JG && dChain.name === "Jaya Grocer" ? `Recognised <b>Jaya Grocer</b>. We'll use its online-store prices for ${Object.keys(JG.items).length} ingredients (checked ${jgDate}), and nearby prices +${Math.round((dChain.idx - 1) * 100)}% for the rest.` : `Recognised <b>${dChain.name}</b>. KPDN surveys ${dChain.n} of its branches; they are ${pctLabel(dChain.idx)} average, so we'll adjust nearby prices by that.`) : "Not a chain we have data for. We'll use typical prices from shops near you."}</div></div>` : "";
     return `<div class="field"><label for="postcode">Your postcode</label><div class="pc-row"><input class="inp" id="postcode" inputmode="numeric" maxlength="5" autocomplete="postal-code" value="${esc(s.postcode)}">${place}</div></div>
       <div class="field"><span class="lbl">Where you usually shop</span>
         <div class="search-wrap">${ic("search")}<input class="search" id="shopq" type="search" placeholder="Search shops by name" value="${esc(S.shopQ || "")}" aria-label="Search shops"></div>
