@@ -19,13 +19,15 @@ export default async function handler(req, res) {
       const since = new URL(req.url, "http://x").searchParams.get("since");
       const [ver] = await redis([["GET", `ver:${hh}`]]);
       if (since !== null && since === String(ver || 0)) return send(res, 200, { ver: Number(ver || 0), same: true });
-      const [fields, members, raw] = await redis([["HGETALL", `state:${hh}`], ["HGETALL", `members:${hh}`], ["GET", `hh:${hh}`]]);
+      // a full read happens when the app opens: remember when this member was last active
+      const [fields, members, raw, seen] = await redis([["HGETALL", `state:${hh}`], ["HGETALL", `members:${hh}`], ["GET", `hh:${hh}`], ["HGETALL", `seen:${hh}`], ["HSET", `seen:${hh}`, me.id, String(Date.now())]]);
+      const lastSeen = hashToObj(seen);
       const h = JSON.parse(raw || "{}");
       return send(res, 200, {
         ver: Number(ver || 0),
         household: { id: h.id, name: h.name, pin: h.pin },
         me: { id: me.id, name: me.name },
-        members: Object.entries(hashToObj(members)).map(([id, v]) => ({ id, ...JSON.parse(v) })),
+        members: Object.entries(hashToObj(members)).map(([id, v]) => ({ id, ...JSON.parse(v), lastSeen: id === me.id ? Date.now() : Number(lastSeen[id] || 0) || null })),
         fields: hashToObj(fields),
       });
     }

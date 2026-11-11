@@ -228,6 +228,15 @@ h1 { font-size: 30px; line-height: 1.15; font-weight: 500; margin: 12px 0 4px; t
 .toggle button { height: 34px; min-width: 56px; padding: 0 12px; border: 0; border-radius: 9px; background: transparent; color: var(--fg2); font-size: 14px; font-weight: 500; transition: background-color 150ms var(--ease), color 150ms var(--ease); }
 .toggle button[aria-pressed="true"] { background: var(--card); color: var(--fg); box-shadow: 0 1px 2px var(--shadow); }
 .toggle button[data-pneed$=":1"][aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.mlist { display: grid; gap: 4px; }
+.mrow { display: grid; grid-template-columns: 36px 1fr; gap: 12px; align-items: center; padding: 6px 0; }
+.mrow b { display: block; font-weight: 500; font-size: 15px; }
+.mrow span:not(.av) { font-size: 13px; color: var(--muted); }
+.av { width: 36px; height: 36px; border-radius: 18px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); font-weight: 500; font-size: 15px; }
+.av.sm { width: 26px; height: 26px; font-size: 12px; margin-right: -8px; border: 2px solid var(--bg); }
+.hhline { display: flex; align-items: center; gap: 0; background: none; border: 0; padding: 0; margin: -8px 0 16px; color: var(--fg2); font-size: 14px; text-align: left; }
+.hhline > span:last-child { margin-left: 16px; }
+.hhline b { font-weight: 500; color: var(--fg); }
 .pinbox { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-top: 8px; }
 .pinbox span { display: grid; place-items: center; height: 64px; border-radius: 12px; background: var(--accent-soft); color: var(--accent); font-size: 32px; font-weight: 500; }
 .inp.pin { font-size: 28px; letter-spacing: 0.3em; text-align: center; font-weight: 500; }
@@ -794,6 +803,7 @@ const DATA = /*__DATA__*/null;
       ${offlineBanner()}
       <h1>${new Date().toLocaleDateString("en-MY", { weekday: "long", day: "numeric", month: "short" })}</h1>
       <p class="sub">Dinner for ${S.settings.people} · prices from ${esc(priceLabel())}</p>
+      ${householdLine()}
       ${S.guideSeen ? "" : `<div class="guide"><div class="gh"><b>How your week works</b><button class="link" id="guideOk">Got it</button></div>
         <ol class="how small">
           <li><b>Check tonight's dinner</b><span>Tap Change on any dish to swap it. Tap a dish name to see the recipe</span></li>
@@ -1440,7 +1450,22 @@ const DATA = /*__DATA__*/null;
     render();
   }
   function updateMembersLine() { const el = document.getElementById("members"); if (el) el.innerHTML = membersHtml(); }
-  function membersHtml() { return MEMBERS.map(m => `<span class="tag">${esc(m.name)}${AUTH && m.id === AUTH.member.id ? " (you)" : ""}</span>`).join(" "); }
+  function ago(t) {
+    if (!t) return "not opened yet";
+    const m = Math.round((Date.now() - t) / 60000);
+    if (m < 5) return "active now"; if (m < 60) return `active ${m} min ago`;
+    const h = Math.round(m / 60); if (h < 24) return `active ${h} h ago`;
+    const d = Math.round(h / 24); return d === 1 ? "active yesterday" : `active ${d} days ago`;
+  }
+  const isMe = m => AUTH && m.id === AUTH.member.id;
+  function membersHtml() {
+    return `<div class="mlist">${MEMBERS.slice().sort((a, b) => isMe(b) - isMe(a) || (a.joinedAt || 0) - (b.joinedAt || 0)).map(m => `<div class="mrow"><span class="av" aria-hidden="true">${esc((m.name || "?").charAt(0).toUpperCase())}</span><div><b>${esc(m.name)}${isMe(m) ? " (you)" : ""}</b><span>${isMe(m) ? "on this phone" : ago(m.lastSeen)}${m.joinedAt ? ` · joined ${new Date(m.joinedAt).toLocaleDateString("en-MY", { day: "numeric", month: "short" })}` : ""}</span></div></div>`).join("")}</div>`;
+  }
+  function householdLine() {
+    if (!CLOUD || !AUTH || !HH) return "";
+    const names = MEMBERS.slice().sort((a, b) => isMe(b) - isMe(a)).map(m => isMe(m) ? "you" : m.name);
+    return `<button class="hhline" data-go="setup" aria-label="Household ${esc(HH.name)}: ${esc(names.join(", "))}">${MEMBERS.slice(0, 4).map(m => `<span class="av sm">${esc((m.name || "?").charAt(0).toUpperCase())}</span>`).join("")}<span><b>${esc(HH.name)}</b> · ${esc(names.length ? joinNames(names) : "just you")}</span></button>`;
+  }
   function startSync() {
     if (!CLOUD || !AUTH) return;
     loadSync();
@@ -1514,7 +1539,7 @@ const DATA = /*__DATA__*/null;
     return `<h2 style="font-size:17px;font-weight:500;margin:28px 0 12px">Household</h2>
       <div class="summary" style="display:grid;gap:12px;margin-bottom:24px">
         <div style="display:flex;justify-content:space-between;gap:12px;align-items:baseline"><b style="font-weight:500;font-size:17px">${esc(HH ? HH.name : "")}</b><span class="k">PIN <b class="num" style="font-weight:500;color:var(--fg);letter-spacing:.08em">${esc(HH ? HH.pin : "")}</b></span></div>
-        <div id="members" style="display:flex;gap:6px;flex-wrap:wrap">${membersHtml()}</div>
+        <div id="members">${membersHtml()}</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><a class="btn" href="https://wa.me/?text=${encodeURIComponent(`Join our MasakJe household "${HH ? HH.name : ""}": open ${location.origin} and enter PIN ${HH ? HH.pin : ""}`)}" target="_blank" rel="noopener">Share PIN</a>${A.confirmLeave ? `<button class="btn" id="leaveYes" style="color:var(--neg)">Tap again to leave</button>` : `<button class="btn" id="leave">Leave household</button>`}</div>
       </div>`;
   }
