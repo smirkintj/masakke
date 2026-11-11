@@ -2,6 +2,8 @@
 """Build MasakJe price files from KPDN PriceCatcher open data (CC BY 4.0).
 
 Source: https://open.dosm.gov.my/data-catalogue/pricecatcher
+Shop locations: geocoded from the address postcode or town name using
+GeoNames postcode centroids (CC BY 4.0), falling back to the district centre.
 
 Outputs (in public/data/prices/):
   index.json            national/state/district median prices + tapau prices
@@ -26,6 +28,7 @@ import re
 import statistics
 import sys
 import urllib.request
+import zipfile
 
 BASE = "https://storage.data.gov.my/pricecatcher/"
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -39,6 +42,7 @@ RESTAURANT_TYPES = {"Restoran Melayu", "Restoran India Muslim", "Restoran Cina",
                     "Medan Selera", "Foodcourt"}
 TAPAU_CODES = {1161, 1162, 1163}  # NASI + SAYUR + IKAN / AYAM / DAGING
 MIN_ITEMS_PER_SHOP = 5
+GEONAMES = "https://download.geonames.org/export/zip/MY.zip"  # CC BY 4.0
 
 
 def fetch(name, cache):
@@ -51,6 +55,49 @@ def fetch(name, cache):
                 f.write(chunk)
         os.replace(tmp, path)
     return path
+
+
+def load_postcodes(cache):
+    """GeoNames postcode centroids -> ({postcode: (lat, lng)}, [(place, state, lat, lng)])."""
+    path = os.path.join(cache, "geonames_MY.zip")
+    if not os.path.exists(path):
+        print("downloading geonames MY", file=sys.stderr)
+        urllib.request.urlretrieve(GEONAMES, path)
+    pcs, places, names = {}, {}, {}
+    with zipfile.ZipFile(path) as z:
+        for line in z.read("MY.txt").decode("utf-8").splitlines():
+            f = line.split("\t")
+            lat, lng = float(f[9]), float(f[10])
+            pcs[f[1]] = (lat, lng)
+            names[f[1]] = f[2].strip()
+            places.setdefault((f[2].upper(), f[3].upper()), []).append((lat, lng))
+    place_list = [(name, state, sum(p[0] for p in v) / len(v), sum(p[1] for p in v) / len(v))
+                  for (name, state), v in places.items() if len(name) >= 4]
+    place_list.sort(key=lambda x: -len(x[0]))  # longest name first: "KOTA BHARU" before "KOTA"
+    return pcs, place_list, names
+
+
+STATE_ALIASES = {"W.P. KUALA LUMPUR": "WILAYAH PERSEKUTUAN KUALA LUMPUR", "W.P. PUTRAJAYA": "WILAYAH PERSEKUTUAN PUTRAJAYA",
+                 "W.P. LABUAN": "WILAYAH PERSEKUTUAN LABUAN", "PULAU PINANG": "PENANG"}
+
+
+def geocode(address, state, pcs, places):
+    """Return (lat, lng, precision) or None. precision: postcode | near-postcode | place."""
+    found = re.findall(r"\b(\d{5})\b", address)
+    if found:
+        pc = found[-1]
+        if pc in pcs:
+            return (*pcs[pc], "postcode")
+        near = [k for k in pcs if k[:3] == pc[:3]]
+        if near:
+            k = min(near, key=lambda k: abs(int(k) - int(pc)))
+            return (*pcs[k], "near-postcode")
+    up = " " + re.sub(r"[^A-Z0-9 ]", " ", address.upper()) + " "
+    st = STATE_ALIASES.get(state.upper(), state.upper())
+    for name, pstate, lat, lng in places:
+        if (pstate == st or st in pstate or pstate in st) and f" {name} " in up:
+            return (lat, lng, "place")
+    return None
 
 
 def slug(s):
@@ -66,6 +113,8 @@ def main():
     ap.add_argument("--cache", default=os.path.join(ROOT, ".cache", "pricecatcher"))
     args = ap.parse_args()
     os.makedirs(args.cache, exist_ok=True)
+
+    postcodes, places, pc_names = load_postcodes(args.cache)
 
     with open(INGREDIENTS) as f:
         items = json.load(f)["items"]
@@ -88,6 +137,9 @@ def main():
                 "address": " ".join((r["address"] or "").split()),
                 "state": state, "district": district,
             }
+            g = geocode(premises[r["premise_code"]]["address"], state, postcodes, places)
+            if g:
+                premises[r["premise_code"]]["geo"] = [round(g[0], 4), round(g[1], 4), g[2]]
 
     # monthly price files: current + previous month (always re-download current)
     today = dt.date.today()
@@ -160,6 +212,7 @@ def main():
     for old in os.listdir(os.path.join(OUT, "d")):
         os.remove(os.path.join(OUT, "d", old))
 
+    geo_stats = {}
     all_pcs = list(shop_prices)
     national, national_tapau = area_stats(all_pcs, list(shop_tapau))
     index = {
@@ -182,6 +235,9 @@ def main():
             pcs = shops_by_area.get((s, d), [])
             dmed, dtap = area_stats(pcs, tapau_by_area.get((s, d), []))
             did = slug(f"{s}-{d}")
+            located = [premises[pc]["geo"] for pc in pcs if "geo" in premises[pc]]
+            centre = ([round(sum(g[0] for g in located) / len(located), 4),
+                       round(sum(g[1] for g in located) / len(located), 4)] if located else None)
             shops = []
             for pc in pcs:
                 if len(shop_prices[pc]) < MIN_ITEMS_PER_SHOP:
@@ -189,22 +245,29 @@ def main():
                 p = premises[pc]
                 shops.append({"id": pc, "name": p["name"], "type": p["type"],
                               "address": p["address"],
+                              "geo": p.get("geo") or (centre + ["district"] if centre else None),
                               "prices": dict(sorted(shop_prices[pc].items()))})
             shops.sort(key=lambda x: (-len(x["prices"]), x["name"]))
             if shops:
                 with open(os.path.join(OUT, "d", f"{did}.json"), "w") as f:
                     json.dump({"state": s, "district": d, "shops": shops}, f,
                               separators=(",", ":"), ensure_ascii=False)
-            districts[d] = {"id": did, "median": dmed, "tapau": dtap, "shops": len(shops)}
+            districts[d] = {"id": did, "median": dmed, "tapau": dtap, "shops": len(shops), "centre": centre}
+            for sh in shops:
+                g = sh["geo"]
+                geo_stats[g[2] if g else "none"] = geo_stats.get(g[2] if g else "none", 0) + 1
         index["states"][state] = {"median": med, "tapau": tap, "shops": len(s_pcs),
                                   "districts": districts}
+
+    with open(os.path.join(OUT, "postcodes.json"), "w") as f:
+        json.dump({k: [round(v[0], 4), round(v[1], 4), pc_names[k]] for k, v in sorted(postcodes.items())}, f, separators=(",", ":"))
 
     with open(os.path.join(OUT, "index.json"), "w") as f:
         json.dump(index, f, separators=(",", ":"), ensure_ascii=False)
 
     missing = [k for k, it in items.items() if it.get("codes") and k not in national]
     print(f"shops={len(all_pcs)} states={len(states)} latest={max_date} "
-          f"national_tapau={national_tapau} missing={missing}", file=sys.stderr)
+          f"missing={missing} geo={geo_stats}", file=sys.stderr)
 
 
 if __name__ == "__main__":

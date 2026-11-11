@@ -4,10 +4,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: one phone-width column, receipt card as the single rich moment, quiet tab bar at the bottom.
-   Direction — Product: plans a week of home dinners for a 2–4 person Malaysian household and prices the list at real local shops.
+/* Layout: one phone-width column, receipt card as the rich moment, quiet tab bar, full-screen cooking mode.
+   Direction — Product: plans a week of home dinners for a 2–4 person Malaysian household, prices the list at shops near you, then walks you through cooking.
    Character: thrifty, homely, exact. World: wet market stall and kitchen counter, banana leaf and receipt paper.
-   Moment: the weekly receipt with masak vs tapau. Signature: dotted price leaders, like a printed receipt. */
+   Moments: the weekly receipt; the cooking screen. Signature: dotted price leaders, like a printed receipt. */
 :root {
   --bg: #f3f4f0; --card: #ffffff; --raised: #eaece6; --line: rgba(26, 29, 25, 0.10);
   --fg: #1a1d19; --fg2: #4d544b; --muted: #656c62;
@@ -32,6 +32,7 @@
   --neg: #e8705f; --paper: #1d201c; --shadow: rgba(0, 0, 0, 0.4); color-scheme: dark;
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html, body { background: var(--bg); }
 body {
   color: var(--fg); font: 400 15px/22px var(--font);
@@ -43,13 +44,16 @@ body {
 body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
 button, input, select { font: inherit; color: inherit; }
 button { cursor: pointer; }
+button:disabled { cursor: default; opacity: 0.5; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
 .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.money-v { white-space: nowrap; }
 .app { max-width: 560px; margin: 0 auto; padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+.app.bare { padding-bottom: 32px; }
 
 /* top bar */
 .top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 56px; }
-.logo { font-weight: 600; font-size: 18px; letter-spacing: 0; display: flex; align-items: center; gap: 8px; }
+.logo { font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; }
 .logo svg { color: var(--accent); }
 .where { display: inline-flex; align-items: center; gap: 6px; min-width: 0; height: 32px; padding: 0 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--fg2); font-size: 13px; transition: background-color 150ms var(--ease); }
 .where span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -57,10 +61,19 @@ button { cursor: pointer; }
 
 h1 { font-size: 28px; line-height: 1.15; font-weight: 500; margin: 16px 0 4px; text-wrap: balance; }
 .sub { color: var(--fg2); font-size: 14px; margin: 0 0 20px; }
-.sub a, .link { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; background: none; border: 0; padding: 0; font-size: inherit; }
+.link { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; background: none; border: 0; padding: 0; font-size: inherit; }
 
-.note { display: flex; gap: 10px; align-items: flex-start; background: var(--accent-soft); color: var(--fg); border-radius: 10px; padding: 12px; font-size: 14px; margin-bottom: 16px; }
-.note svg { flex: none; color: var(--accent); margin-top: 2px; }
+/* flow tracker + next action */
+.flow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin: 4px 0 12px; }
+.flow div { display: grid; gap: 6px; font-size: 13px; color: var(--muted); }
+.flow i { display: block; height: 4px; border-radius: 2px; background: var(--raised); }
+.flow .done i, .flow .now i { background: var(--accent); }
+.flow .now { color: var(--fg); font-weight: 500; }
+.flow .done { color: var(--fg2); }
+.next { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 16px; margin-bottom: 24px; display: grid; gap: 12px; }
+.next .k { font-size: 13px; color: var(--muted); }
+.next .t { font-size: 18px; line-height: 24px; font-weight: 500; }
+.next .d { font-size: 14px; color: var(--fg2); }
 
 /* receipt */
 .receipt-wrap { filter: drop-shadow(0 1px 1px var(--shadow)) drop-shadow(0 6px 16px var(--shadow)); margin-bottom: 28px; }
@@ -70,7 +83,7 @@ h1 { font-size: 28px; line-height: 1.15; font-weight: 500; margin: 16px 0 4px; t
           mask: linear-gradient(#000 0 0) top / 100% calc(100% - 8px) no-repeat, conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / 16px 8px repeat-x;
 }
 .r-head { display: flex; justify-content: space-between; gap: 12px; font-family: var(--mono); font-size: 12px; line-height: 16px; color: var(--muted); margin-bottom: 16px; }
-.r-head span:last-child { text-align: right; }
+.r-head span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
 .lead-row { display: flex; align-items: baseline; gap: 8px; font-size: 14px; line-height: 24px; }
 .lead-row .l { color: var(--fg2); white-space: nowrap; }
 .lead-row .dots { flex: 1; min-width: 12px; border-bottom: 1.5px dotted var(--muted); opacity: 0.6; transform: translateY(-4px); }
@@ -78,30 +91,26 @@ h1 { font-size: 28px; line-height: 1.15; font-weight: 500; margin: 16px 0 4px; t
 .r-rule { border: 0; border-top: 1.5px dashed var(--line); margin: 12px 0; }
 .r-big { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
 .r-big .l { font-size: 14px; color: var(--fg2); }
-.r-big .v { font-family: var(--mono); font-size: 30px; line-height: 1; font-weight: 500; font-variant-numeric: tabular-nums; }
-.r-big .v small { font-size: 14px; color: var(--muted); font-weight: 400; }
-.compare { display: grid; grid-template-columns: 52px 1fr auto; align-items: center; gap: 8px 12px; margin-top: 20px; font-size: 13px; }
-.compare .track { height: 10px; border-radius: 5px; background: var(--raised); overflow: hidden; }
-.compare .bar { height: 100%; border-radius: 5px; background: var(--fg2); transition: transform 400ms var(--ease); transform-origin: left; }
-.compare .bar.masak { background: var(--accent); }
-.compare .v { font-family: var(--mono); font-variant-numeric: tabular-nums; color: var(--fg2); text-align: right; }
-.keep { margin-top: 16px; font-size: 15px; }
-.keep b { font-weight: 600; color: var(--accent); }
-.budget { margin-top: 4px; font-size: 13px; color: var(--muted); }
+.r-big .v { font-family: var(--mono); font-size: 30px; line-height: 1; font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.meter { margin-top: 20px; height: 10px; border-radius: 5px; background: var(--raised); overflow: hidden; }
+.meter div { height: 100%; border-radius: 5px; background: var(--accent); transform-origin: left; transition: transform 400ms var(--ease); }
+.meter.over div { background: var(--neg); }
+.budget { margin-top: 8px; font-size: 14px; color: var(--fg2); display: flex; justify-content: space-between; gap: 12px; }
 .budget.over { color: var(--neg); }
 
 /* days */
 .section-h { display: flex; justify-content: space-between; align-items: center; margin: 0 0 12px; }
 .section-h h2 { font-size: 17px; font-weight: 500; margin: 0; }
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 36px; padding: 0 14px; border-radius: 9px; border: 1px solid var(--line); background: var(--card); color: var(--fg); font-size: 14px; font-weight: 500; transition: background-color 150ms var(--ease), transform 120ms var(--ease); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 36px; padding: 0 14px; border-radius: 9px; border: 1px solid var(--line); background: var(--card); color: var(--fg); font-size: 14px; font-weight: 500; transition: background-color 150ms var(--ease), transform 120ms var(--ease); white-space: nowrap; }
 .btn:hover { background: var(--raised); }
 .btn:active { transform: scale(0.98); }
 .btn.primary { background: var(--accent); border-color: transparent; color: var(--accent-ink); }
-.btn.primary:hover { background: var(--accent); filter: brightness(1.06); }
+.btn.primary:hover { filter: brightness(1.06); }
 .btn.big { height: 48px; width: 100%; font-size: 15px; }
 .days { display: grid; gap: 8px; }
 .day { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px 12px 12px 16px; display: grid; grid-template-columns: 44px 1fr; gap: 12px; }
 .day.off { background: transparent; border-style: dashed; }
+.day.today { border-color: var(--accent); }
 .dlabel { font-size: 13px; line-height: 18px; color: var(--muted); padding-top: 4px; }
 .dlabel b { display: block; font-weight: 500; font-size: 15px; color: var(--fg); }
 .dishes { display: grid; gap: 4px; min-width: 0; }
@@ -109,30 +118,33 @@ h1 { font-size: 28px; line-height: 1.15; font-weight: 500; margin: 16px 0 4px; t
 .dish-main { min-width: 0; text-align: left; background: none; border: 0; padding: 4px 0; border-radius: 6px; }
 .dish-main .n { display: block; font-weight: 500; font-size: 15px; line-height: 20px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dish-main .e { display: block; font-size: 13px; line-height: 18px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.dish .c { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 13px; color: var(--fg2); }
+.dish .c { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 13px; color: var(--fg2); white-space: nowrap; }
 .icon-btn { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 8px; border: 0; background: transparent; color: var(--muted); transition: background-color 150ms var(--ease), color 150ms var(--ease); }
 .icon-btn:hover { background: var(--raised); color: var(--fg); }
-.day-foot { grid-column: 2; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--line); padding-top: 8px; margin-top: 4px; font-size: 13px; color: var(--muted); }
+.day-foot { grid-column: 2; display: flex; justify-content: space-between; align-items: center; gap: 8px; border-top: 1px solid var(--line); padding-top: 8px; margin-top: 4px; font-size: 13px; color: var(--muted); }
+.day-foot .acts { display: flex; gap: 16px; }
 .day-foot .link { color: var(--fg2); text-decoration: none; display: inline-flex; gap: 6px; align-items: center; }
 .day-foot .link:hover { color: var(--fg); }
+.day-foot .link.go { color: var(--accent); font-weight: 500; }
 .off-msg { display: flex; justify-content: space-between; align-items: center; gap: 12px; color: var(--muted); font-size: 14px; min-height: 44px; }
-.tag { display: inline-flex; align-items: center; height: 20px; padding: 0 6px; border-radius: 5px; background: var(--raised); color: var(--fg2); font-size: 12px; line-height: 16px; white-space: nowrap; }
+.tag { display: inline-flex; align-items: center; gap: 4px; height: 20px; padding: 0 6px; border-radius: 5px; background: var(--raised); color: var(--fg2); font-size: 12px; line-height: 16px; white-space: nowrap; }
+.tag.ok { background: var(--accent-soft); color: var(--accent); }
 .pedas { color: var(--neg); }
 
 /* shopping list */
 .group { margin-bottom: 24px; }
-.group h3 { font-size: 13px; font-weight: 500; color: var(--muted); margin: 0 0 8px; display: flex; justify-content: space-between; }
+.group h3 { font-size: 13px; font-weight: 500; color: var(--muted); margin: 0 0 8px; display: flex; justify-content: space-between; gap: 12px; }
 .list { background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
 .item { display: grid; grid-template-columns: 28px 1fr auto; gap: 10px; align-items: center; padding: 10px 14px; min-height: 52px; border-top: 1px solid var(--line); }
 .item:first-child { border-top: 0; }
 .item input { width: 20px; height: 20px; accent-color: var(--accent); margin: 0; }
 .item .n { font-size: 15px; line-height: 20px; }
 .item .q { font-size: 13px; color: var(--muted); line-height: 18px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-.item .p { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 14px; text-align: right; }
+.item .p { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 14px; text-align: right; white-space: nowrap; }
 .item.done .n, .item.done .p { color: var(--muted); text-decoration: line-through; }
-.src-shop { background: var(--accent-soft); color: var(--accent); }
-.totals { position: sticky; bottom: calc(68px + env(safe-area-inset-bottom, 0px)); background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 8px 24px var(--shadow); }
-.totals .v { font-family: var(--mono); font-size: 20px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.totals { position: sticky; bottom: calc(68px + env(safe-area-inset-bottom, 0px)); background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px 12px 12px 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; box-shadow: 0 8px 24px var(--shadow); }
+.totals .v { font-family: var(--mono); font-size: 20px; font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.totals .k { font-size: 12px; color: var(--muted); }
 
 /* recipes */
 .search { width: 100%; height: 44px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); padding: 0 14px 0 40px; font-size: 15px; }
@@ -141,15 +153,15 @@ h1 { font-size: 28px; line-height: 1.15; font-weight: 500; margin: 16px 0 4px; t
 .chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 16px; scrollbar-width: none; }
 .chip { flex: none; height: 32px; padding: 0 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--fg2); font-size: 14px; transition: background-color 150ms var(--ease); }
 .chip[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: transparent; }
-.rlist { display: grid; gap: 0; background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.rlist { display: grid; background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
 .rrow { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; padding: 12px 16px; border: 0; border-top: 1px solid var(--line); background: transparent; text-align: left; width: 100%; transition: background-color 150ms var(--ease); }
 .rrow:first-child { border-top: 0; }
 .rrow:hover { background: var(--raised); }
 .rrow .n { font-weight: 500; }
 .rrow .e { font-size: 13px; color: var(--muted); }
-.rrow .m { text-align: right; font-size: 13px; color: var(--fg2); line-height: 18px; }
+.rrow .m { text-align: right; font-size: 13px; color: var(--fg2); line-height: 18px; white-space: nowrap; }
 
-/* setup */
+/* forms */
 .field { margin-bottom: 20px; }
 .field > label, .field > .lbl { display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px; }
 .field .hint { font-size: 13px; color: var(--muted); margin-top: 6px; }
@@ -157,11 +169,27 @@ h1 { font-size: 28px; line-height: 1.15; font-weight: 500; margin: 16px 0 4px; t
 .seg button { min-width: 44px; height: 40px; padding: 0 12px; border-radius: 9px; border: 1px solid var(--line); background: var(--card); font-size: 15px; transition: background-color 150ms var(--ease); }
 .seg button[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: transparent; }
 .inp { width: 100%; height: 44px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); padding: 0 12px; font-size: 15px; }
+.pc-row { display: grid; grid-template-columns: 140px 1fr; gap: 12px; align-items: center; }
+.pc-row .inp { font-family: var(--mono); font-size: 18px; letter-spacing: 0.04em; }
+.pc-place { font-size: 14px; color: var(--fg2); }
+.pc-place.bad { color: var(--neg); }
 .money { position: relative; }
 .money span { position: absolute; left: 12px; top: 11px; color: var(--muted); font-family: var(--mono); }
 .money .inp { padding-left: 44px; font-family: var(--mono); }
-.two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.shops { display: grid; background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.shop { display: grid; grid-template-columns: 24px 1fr auto; gap: 10px; align-items: center; padding: 10px 14px; min-height: 56px; border-top: 1px solid var(--line); }
+.shop:first-child { border-top: 0; }
+.shop input { width: 18px; height: 18px; accent-color: var(--accent); margin: 0; }
+.shop .n { font-size: 15px; line-height: 20px; }
+.shop .q { font-size: 13px; color: var(--muted); line-height: 18px; }
+.shop .km { font-family: var(--mono); font-size: 13px; color: var(--fg2); text-align: right; white-space: nowrap; }
 .fine { font-size: 13px; color: var(--muted); line-height: 20px; margin: 24px 0 0; }
+.ob-step { font-size: 13px; color: var(--muted); margin-top: 8px; }
+.ob-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin: 8px 0 0; }
+.ob-bar i { height: 4px; border-radius: 2px; background: var(--raised); }
+.ob-bar i.on { background: var(--accent); }
+.ob-actions { display: grid; grid-template-columns: auto 1fr; gap: 12px; margin-top: 24px; }
+.ob-actions.solo { grid-template-columns: 1fr; }
 
 /* tabs */
 .tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; background: var(--card); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom, 0px); padding-left: max(8px, env(safe-area-inset-left, 0px)); padding-right: max(8px, env(safe-area-inset-right, 0px)); }
@@ -169,48 +197,94 @@ h1 { font-size: 28px; line-height: 1.15; font-weight: 500; margin: 16px 0 4px; t
 .tab { height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border: 0; background: none; color: var(--muted); font-size: 12px; line-height: 16px; transition: color 150ms var(--ease); }
 .tab[aria-current="page"] { color: var(--accent); }
 
-/* sheet */
+/* recipe sheet */
 .scrim { position: fixed; inset: 0; background: rgba(10, 12, 9, 0.4); z-index: 20; opacity: 0; transition: opacity 200ms var(--ease); }
 .scrim.open { opacity: 1; }
 .sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 21; max-height: 88vh; overflow-y: auto; background: var(--card); border-radius: 18px 18px 0 0; padding: 8px max(20px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) max(20px, env(safe-area-inset-left, 0px)); transform: translateY(16px); opacity: 0; transition: transform 300ms var(--ease), opacity 300ms var(--ease); }
 .sheet.open { transform: none; opacity: 1; }
-.sheet-in { max-width: 560px; margin: 0 auto; }
+.sheet-in { max-width: 560px; margin: 0 auto; position: relative; }
 .grab { width: 36px; height: 4px; border-radius: 2px; background: var(--line); margin: 4px auto 12px; }
-.sheet h2 { font-size: 24px; line-height: 1.2; font-weight: 500; margin: 0 0 4px; }
-.sheet .meta { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 20px; }
+.sheet h2 { font-size: 24px; line-height: 1.2; font-weight: 500; margin: 0 40px 4px 0; }
+.meta { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 20px; }
 .sheet h3 { font-size: 15px; font-weight: 500; margin: 20px 0 8px; }
 .ing { display: grid; grid-template-columns: 1fr auto; gap: 8px; padding: 8px 0; border-top: 1px solid var(--line); font-size: 14px; }
 .ing:first-of-type { border-top: 0; }
-.ing .q { font-family: var(--mono); font-variant-numeric: tabular-nums; color: var(--fg2); }
-.steps { margin: 0; padding-left: 20px; display: grid; gap: 10px; font-size: 15px; }
-.steps li::marker { font-family: var(--mono); color: var(--muted); }
-.close { position: absolute; right: max(12px, env(safe-area-inset-right, 0px)); top: 12px; }
+.ing .up { display: block; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.toast { position: fixed; left: 50%; bottom: calc(84px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 40; background: var(--fg); color: var(--bg); padding: 10px 14px; border-radius: 10px; font-size: 14px; max-width: calc(100% - 32px); }
+.ing .q { font-family: var(--mono); font-variant-numeric: tabular-nums; color: var(--fg2); white-space: nowrap; }
+.close { position: absolute; right: 0; top: 0; }
+
+/* cooking mode */
+.cook { position: fixed; inset: 0; z-index: 30; background: var(--card); display: grid; grid-template-rows: auto 1fr auto; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
+.cook-in { width: 100%; max-width: 560px; margin: 0 auto; }
+.cook-top { display: grid; grid-template-columns: 1fr 32px; gap: 12px; align-items: center; padding: 12px 0 8px; }
+.cook-top .n { font-size: 15px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cook-top .s { font-size: 13px; color: var(--muted); }
+.segs { display: flex; gap: 4px; padding-bottom: 8px; }
+.segs i { flex: 1; height: 4px; border-radius: 2px; background: var(--raised); }
+.segs i.on { background: var(--accent); }
+.cook-body { overflow-y: auto; padding: 16px 0 24px; }
+.step-no { font-family: var(--mono); font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+.step-t { font-size: 24px; line-height: 32px; font-weight: 500; margin: 0 0 24px; text-wrap: pretty; }
+.need { display: grid; gap: 8px; margin-bottom: 24px; }
+.need .lbl { font-size: 13px; color: var(--muted); }
+.need-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.need-chip { display: inline-flex; align-items: baseline; gap: 8px; padding: 8px 12px; border-radius: 10px; background: var(--raised); font-size: 15px; }
+.need-chip b { font-family: var(--mono); font-weight: 500; font-size: 14px; font-variant-numeric: tabular-nums; }
+.timer { border: 1px solid var(--line); border-radius: 16px; padding: 16px; display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; }
+.timer .clock { font-family: var(--mono); font-size: 40px; line-height: 1; font-weight: 500; font-variant-numeric: tabular-nums; }
+.timer .lbl { font-size: 13px; color: var(--muted); margin-top: 6px; }
+.timer.ring { border-color: var(--accent); background: var(--accent-soft); }
+.timer .acts { display: flex; gap: 8px; }
+.prep { display: grid; }
+.prep label { display: grid; grid-template-columns: 24px 1fr auto; gap: 10px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); font-size: 15px; }
+.prep label:first-child { border-top: 0; }
+.prep input { width: 18px; height: 18px; accent-color: var(--accent); margin: 0; }
+.prep .q { font-family: var(--mono); font-size: 14px; color: var(--fg2); white-space: nowrap; }
+.tip { display: flex; gap: 10px; background: var(--accent-soft); border-radius: 12px; padding: 12px; font-size: 14px; margin-bottom: 20px; }
+.tip svg { flex: none; color: var(--accent); margin-top: 2px; }
+.cook-foot { display: grid; grid-template-columns: 1fr 2fr; gap: 12px; padding: 12px 0 16px; border-top: 1px solid var(--line); }
+.cook-foot .btn { height: 52px; font-size: 16px; }
+.done-t { font-size: 28px; line-height: 1.2; font-weight: 500; margin: 24px 0 8px; }
 
 .enter { animation: rise 360ms var(--ease) both; }
 @keyframes rise { from { opacity: 0; transform: translateY(8px); } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
-@media (max-width: 380px) { .day { grid-template-columns: 1fr; } .day-foot { grid-column: 1; } .dlabel b { display: inline; margin-right: 6px; } }
+@media (max-width: 380px) { .day { grid-template-columns: 1fr; } .day-foot { grid-column: 1; } .dlabel b { display: inline; margin-right: 6px; } .pc-row { grid-template-columns: 1fr; } }
 </style>
 
-<div class="app">
+<div class="app" id="app">
   <header class="top">
     <div class="logo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11h18"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 4v3"/><path d="M8.5 5.5l1 2.2"/><path d="M15.5 5.5l-1 2.2"/></svg>MasakJe</div>
     <button class="where" id="where" type="button"></button>
   </header>
   <main id="view"></main>
 </div>
-<nav class="tabs" aria-label="Sections"><div class="tabs-in" id="tabs"></div></nav>
+<nav class="tabs" id="tabsNav" aria-label="Sections"><div class="tabs-in" id="tabs"></div></nav>
 <div id="sheetRoot"></div>
+<div id="cookRoot"></div>
 
 <script>
 const DATA = /*__DATA__*/null;
 (() => {
-  const ING = DATA.ingredients, RECIPES = DATA.recipes, PR = DATA.prices;
+  const ING = DATA.ingredients, RECIPES = DATA.recipes, PR = DATA.prices, PC = DATA.postcodes;
   const RX = Object.fromEntries(RECIPES.map(r => [r.id, r]));
   const KEYIDX = Object.fromEntries(PR.keys.map((k, i) => [k, i]));
   const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const DAYS_LONG = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
   const RICE_PER_PERSON = 80;
-  const STORE = "masakje.proto.v1";
+  const STORE = "masakje.proto.v3";
+  const ALLERGENS = [
+    ["shellfish", "Shellfish", ["prawn", "squid", "cockle", "dried_shrimp", "belacan", "oyster_sauce"]],
+    ["fish", "Fish", ["fish_kembung", "fish_selar", "fish_tenggiri", "fish_siakap", "fish_tilapia", "ikan_bilis", "salted_fish", "fish_sauce"]],
+    ["peanut", "Peanuts", ["peanuts"]],
+    ["egg", "Egg", ["egg"]],
+    ["soy", "Soy", ["tofu", "tempe", "kicap_manis", "soy_light", "soy_dark", "oyster_sauce"]],
+    ["wheat", "Wheat / gluten", ["flour", "yellow_mee", "soy_light", "soy_dark", "kicap_manis", "oyster_sauce"]],
+  ];
+  const VEG = ["kangkung", "bayam", "sawi", "kailan", "pak_choy", "cabbage", "chinese_cabbage", "taugeh", "long_bean", "french_bean", "okra", "brinjal", "carrot", "potato", "broccoli", "cauliflower", "capsicum", "cucumber", "tomato"];
+  const RADII = [3, 5, 10, 20];          // km rings used for "near you" prices
+  const MIN_SHOPS = 3;                    // shops needed in a ring to trust its median
 
   // ---------- icons (lucide, 1.5 stroke) ----------
   const P = {
@@ -223,47 +297,95 @@ const DATA = /*__DATA__*/null;
     search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
     x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
     utensils: '<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>',
-    store: '<path d="M2 7l2-4h16l2 4"/><path d="M4 7v13h16V7"/><path d="M2 7h20"/><path d="M9 20v-6h6v6"/>',
     info: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
     clock: '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+    play: '<polygon points="6 3 20 12 6 21 6 3"/>',
+    pause: '<rect x="14" y="4" width="4" height="16" rx="1"/><rect x="6" y="4" width="4" height="16" rx="1"/>',
+    reset: '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>',
+    check: '<path d="M20 6 9 17l-5-5"/>',
+    flame: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
   };
   const ic = (n, s = 16) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n]}</svg>`;
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  const rm = v => "RM\u00a0" + (Math.round(v * 100) / 100).toFixed(2);
-  const rm0 = v => "RM\u00a0" + Math.round(v);
+  const rm = v => "RM " + (Math.round(v * 100) / 100).toFixed(2);
+  const rm0 = v => "RM " + Math.round(v);
+  const title = s => s.toLowerCase().replace(/\b([a-z])/g, c => c.toUpperCase()).replace(/\b(Usj|Ss|Pj|Kl|Sdn|Bhd|Ttdi)\b/g, m => m.toUpperCase());
 
   // ---------- state ----------
-  const DEFAULTS = { people: 3, nights: [true, true, true, true, true, true, false], budget: 150, tapau: 9,
-    state: "Selangor", district: "Petaling", shop: -1, avoid: { beef: false, mutton: false, seafood: false, pedas: false } };
-  let S = { settings: JSON.parse(JSON.stringify(DEFAULTS)), plan: null, bought: {}, pantryNeed: {}, tab: "week", isExample: true, filter: "all", q: "" };
-  try { const raw = localStorage.getItem(STORE); if (raw) Object.assign(S, JSON.parse(raw), { tab: "week" }); } catch (e) {}
-  const save = () => { try { localStorage.setItem(STORE, JSON.stringify({ settings: S.settings, plan: S.plan, bought: S.bought, pantryNeed: S.pantryNeed, isExample: S.isExample })); } catch (e) {} };
+  const DEFAULTS = { postcode: "47400", shop: -1, people: 3, nights: [true, true, true, true, true, true, false], budget: 150,
+    avoid: { beef: false, mutton: false, pedas: false }, allergy: {}, dislike: {} };
+  const clone = o => JSON.parse(JSON.stringify(o));
+  let S = { settings: clone(DEFAULTS), plan: null, bought: {}, pantryNeed: {}, flow: { locked: false, shopped: false, cooked: {} },
+    onboarded: false, ob: 0, tab: "week", filter: "all", q: "" };
+  try { const raw = localStorage.getItem(STORE); if (raw) Object.assign(S, JSON.parse(raw), { tab: "week", ob: 0 }); } catch (e) {}
+  const save = () => { try { localStorage.setItem(STORE, JSON.stringify({ settings: S.settings, plan: S.plan, bought: S.bought, pantryNeed: S.pantryNeed, flow: S.flow, onboarded: S.onboarded })); } catch (e) {} };
+
+  // ---------- location ----------
+  function lookupPostcode(pc) {
+    if (!/^\d{5}$/.test(pc)) return null;
+    if (PC[pc]) return { lat: PC[pc][0], lng: PC[pc][1], place: PC[pc][2], exact: true };
+    const near = Object.keys(PC).filter(k => k.slice(0, 3) === pc.slice(0, 3));
+    if (!near.length) return null;
+    const k = near.reduce((a, b) => Math.abs(+b - +pc) < Math.abs(+a - +pc) ? b : a);
+    return { lat: PC[k][0], lng: PC[k][1], place: PC[k][2], exact: false };
+  }
+  function km(a, b, c, d) {
+    const R = 6371, t = Math.PI / 180, dLat = (c - a) * t, dLng = (d - b) * t;
+    const h = Math.sin(dLat / 2) ** 2 + Math.cos(a * t) * Math.cos(c * t) * Math.sin(dLng / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(h));
+  }
+  let CTX = null;  // nearby shops + ring medians for the current postcode
+  function ctx() {
+    const pc = S.settings.postcode;
+    if (CTX && CTX.pc === pc) return CTX;
+    const loc = lookupPostcode(pc);
+    if (!loc) return (CTX = { pc, loc: null, near: [], med: {}, stateIdx: -1 });
+    const near = PR.shops.map((s, i) => ({ i, s, d: km(loc.lat, loc.lng, s[2], s[3]) })).filter(x => x.d <= RADII[RADII.length - 1]).sort((a, b) => a.d - b.d);
+    const med = {};  // key -> {v, r, n}
+    for (const k of PR.keys) {
+      const ki = KEYIDX[k];
+      for (const r of RADII) {
+        const vals = near.filter(x => x.d <= r && x.s[7][ki] > 0).map(x => x.s[7][ki]).sort((a, b) => a - b);
+        if (vals.length >= MIN_SHOPS) { const m = vals.length >> 1; med[k] = { v: vals.length % 2 ? vals[m] : (vals[m - 1] + vals[m]) / 2, r, n: vals.length }; break; }
+      }
+    }
+    const stateIdx = near.length ? near[0].s[5] : -1;
+    return (CTX = { pc, loc, near, med, stateIdx });
+  }
+  const shopName = s => title(s[0]);
+  const precisionNote = s => (s[4] === "postcode" || s[4] === "near-postcode") ? "" : "approx. location";
 
   // ---------- prices ----------
-  function area() {
-    const st = PR.states[S.settings.state]; const d = st && st.d[S.settings.district];
-    return { st, d, shop: d && S.settings.shop >= 0 ? d.shops[S.settings.shop] : null };
-  }
   function price(key) {
-    const it = ING[key]; const i = KEYIDX[key]; const a = area();
-    const pick = (arr, src) => (arr && i !== undefined && arr[i] != null) ? { per: arr[i], src } : null;
-    const hit = (a.shop && pick(a.shop[2], "Shop")) || (a.d && pick(a.d.m, "District")) || (a.st && pick(a.st.m, "State")) || pick(PR.national, "Malaysia") || { per: it.fallback, src: "Estimate" };
-    return { unit: hit.per / it.size, src: hit.src };
+    const it = ING[key], ki = KEYIDX[key], c = ctx();
+    let per = null, src = "Estimate";
+    if (ki !== undefined) {
+      const shop = S.settings.shop >= 0 ? PR.shops[S.settings.shop] : null;
+      if (shop && shop[7][ki] > 0) { per = shop[7][ki]; src = "This shop"; }
+      else if (c.med[key]) { per = c.med[key].v; src = `Within ${c.med[key].r} km`; }
+      else if (c.stateIdx >= 0 && PR.stateMedian[c.stateIdx][ki] > 0) { per = PR.stateMedian[c.stateIdx][ki]; src = "State"; }
+      else if (PR.national[ki] > 0) { per = PR.national[ki]; src = "Malaysia"; }
+    }
+    if (per == null) per = it.fallback;
+    return { unit: per / it.size, src };
+  }
+  function unitPrice(key) {
+    const it = ING[key], p = price(key), per = p.unit * it.size;
+    let u;
+    if (it.unit === "pc") u = it.size === 1 ? "each" : `${it.size} ${key === "egg" ? "eggs" : "pcs"}`;
+    else if (it.size === 1000) u = it.unit === "g" ? "kg" : "L";
+    else u = `${it.size} ${it.unit}`;
+    return `${rm(per)}/${u}`;
   }
   function priceLabel() {
-    const a = area();
-    if (a.shop) return a.shop[0];
-    return `${S.settings.district} average`;
+    if (S.settings.shop >= 0) return shopName(PR.shops[S.settings.shop]);
+    const c = ctx(); return c.loc ? `shops near ${S.settings.postcode}` : "Malaysia average";
   }
 
   // ---------- costing ----------
   const scale = () => S.settings.people / 4;
-  function dishCost(r) { return r.ing.reduce((s, [k, q]) => s + q * scale() * price(k).unit, 0); }
-  function dayItems(day) {
-    if (day.off) return [];
-    if (day.onepot) return [RX[day.onepot]];
-    return [RX[day.lauk], RX[day.sayur]].filter(Boolean);
-  }
+  const dishCost = r => r.ing.reduce((s, [k, q]) => s + q * scale() * price(k).unit, 0);
+  function dayItems(day) { if (!day || day.off) return []; if (day.onepot) return [RX[day.onepot]]; return [RX[day.lauk], RX[day.sayur]].filter(Boolean); }
   function dayCost(day) {
     if (day.off) return 0;
     let c = dayItems(day).reduce((s, r) => s + dishCost(r), 0);
@@ -283,30 +405,22 @@ const DATA = /*__DATA__*/null;
     const agg = aggregate(plan); let fresh = 0, pantryUse = 0, pantryBuy = 0; const rows = [];
     for (const [k, q] of Object.entries(agg)) {
       const it = ING[k], p = price(k);
-      if (it.pantry) {
-        pantryUse += q * p.unit;
-        const packs = Math.max(1, Math.ceil(q / it.pack - 1e-9)), cost = packs * it.pack * p.unit;
-        if (S.pantryNeed[k]) pantryBuy += cost;
-        rows.push({ k, it, q, buy: packs * it.pack, cost, src: p.src, pantry: true });
-      } else {
-        const packs = Math.ceil(q / it.pack - 1e-9), cost = packs * it.pack * p.unit;
-        fresh += cost; rows.push({ k, it, q, buy: packs * it.pack, cost, src: p.src, pantry: false });
-      }
+      const packs = Math.max(1, Math.ceil(q / it.pack - 1e-9)), cost = packs * it.pack * p.unit;
+      if (it.pantry) { pantryUse += q * p.unit; if (S.pantryNeed[k]) pantryBuy += cost; }
+      else fresh += cost;
+      rows.push({ k, it, q, buy: packs * it.pack, cost, src: p.src, pantry: !!it.pantry });
     }
-    const nights = plan.days.filter(d => !d.off).length;
-    const plates = nights * S.settings.people;
-    return { rows, fresh, pantryUse, pantryBuy, toBuy: fresh + pantryBuy, plates, nights,
-      perPlate: plates ? (fresh + pantryUse) / plates : 0, tapau: plates * S.settings.tapau };
+    const nights = plan.days.filter(d => !d.off).length, plates = nights * S.settings.people;
+    return { rows, fresh, pantryUse, pantryBuy, toBuy: fresh + pantryBuy, plates, nights, perPlate: plates ? (fresh + pantryUse) / plates : 0 };
   }
 
   // ---------- planner ----------
   function allowed(r) {
-    const a = S.settings.avoid;
-    if (a.beef && r.protein === "beef") return false;
-    if (a.mutton && r.protein === "mutton") return false;
-    if (a.seafood && (r.protein === "seafood")) return false;
-    if (a.pedas && r.spicy >= 2) return false;
-    return true;
+    const s = S.settings, a = s.avoid;
+    if ((a.beef && r.protein === "beef") || (a.mutton && r.protein === "mutton") || (a.pedas && r.spicy >= 2)) return false;
+    const banned = new Set(Object.keys(s.dislike).filter(k => s.dislike[k]));
+    for (const [id, , keys] of ALLERGENS) if (s.allergy[id]) keys.forEach(k => banned.add(k));
+    return !r.ing.some(([k]) => banned.has(k));
   }
   const pool = kind => RECIPES.filter(r => r.kind === kind && allowed(r));
   const rand = arr => arr[Math.floor(Math.random() * arr.length)];
@@ -321,6 +435,7 @@ const DATA = /*__DATA__*/null;
       }
       let c = lauk.filter(x => !used.has(x.id) && x.protein !== prev && !((x.protein === "beef" || x.protein === "mutton") && red >= 2));
       if (!c.length) c = lauk.filter(x => !used.has(x.id));
+      if (!c.length || !sayur.length) { const o = rand(one.filter(x => !used.has(x.id))); if (o) { used.add(o.id); days.push({ onepot: o.id }); } else days.push({ off: true }); continue; }
       const l = rand(c); used.add(l.id); prev = l.protein; if (l.protein === "beef" || l.protein === "mutton") red++;
       const s = rand(sayur.filter(x => !used.has(x.id))) || rand(sayur); used.add(s.id);
       days.push({ lauk: l.id, sayur: s.id });
@@ -338,74 +453,90 @@ const DATA = /*__DATA__*/null;
     for (let i = 0; i < 250; i++) { const p = randomPlan(), s = score(p); if (s < bs) { bs = s; best = p; } }
     return best;
   }
+  function newWeek() { S.plan = makePlan(); S.bought = {}; S.pantryNeed = {}; S.flow = { locked: false, shopped: false, cooked: {} }; save(); }
+  function inPlan() { return new Set(S.plan.days.flatMap(d => [d.lauk, d.sayur, d.onepot]).filter(Boolean)); }
   function swap(di, slot) {
-    const day = S.plan.days[di]; const cur = day[slot]; const kind = slot === "onepot" ? "onepot" : slot;
-    const inPlan = new Set(S.plan.days.flatMap(d => [d.lauk, d.sayur, d.onepot]).filter(Boolean));
-    const cands = pool(kind).filter(r => !inPlan.has(r.id));
-    if (!cands.length) return;
-    const order = cands.sort(() => Math.random() - 0.5);
-    let pick = order[0];
-    for (const r of order) { const t = totals({ days: S.plan.days.map((d, i) => i === di ? { ...d, [slot]: r.id } : d) }); if (t.toBuy <= S.settings.budget) { pick = r; break; } }
+    const day = S.plan.days[di]; const used = inPlan();
+    const cands = pool(slot).filter(r => !used.has(r.id)).sort(() => Math.random() - 0.5);
+    if (!cands.length) return toast("No other dishes match your preferences");
+    let pick = cands[0];
+    for (const r of cands) { const t = totals({ days: S.plan.days.map((d, i) => i === di ? { ...d, [slot]: r.id } : d) }); if (t.toBuy <= S.settings.budget) { pick = r; break; } }
     day[slot] = pick.id; save(); render();
   }
   function toggleOff(di) {
-    const day = S.plan.days[di];
-    if (day.off) {
-      const inPlan = new Set(S.plan.days.flatMap(d => [d.lauk, d.sayur, d.onepot]).filter(Boolean));
-      S.plan.days[di] = { lauk: (rand(pool("lauk").filter(r => !inPlan.has(r.id))) || rand(pool("lauk"))).id, sayur: (rand(pool("sayur").filter(r => !inPlan.has(r.id))) || rand(pool("sayur"))).id };
+    if (S.plan.days[di].off) {
+      const used = inPlan();
+      S.plan.days[di] = { lauk: (rand(pool("lauk").filter(r => !used.has(r.id))) || rand(pool("lauk"))).id, sayur: (rand(pool("sayur").filter(r => !used.has(r.id))) || rand(pool("sayur"))).id };
     } else S.plan.days[di] = { off: true };
     save(); render();
   }
 
-  // ---------- formatting ----------
+  // ---------- dates & formatting ----------
+  function weekStart() { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - (d.getDay() + 6) % 7); return d; }
+  const dateOf = i => { const d = weekStart(); d.setDate(d.getDate() + i); return d; };
+  const fmtDate = d => d.toLocaleDateString("en-MY", { day: "numeric", month: "short" });
+  const todayIdx = () => (new Date().getDay() + 6) % 7;
   function qty(q, unit, key) {
     if (unit === "pc") {
       const n = key === "egg" ? Math.ceil(q - 1e-9) : Math.max(1, Math.round(q));
-      const word = { egg: "eggs", lemongrass: "stalks", curry_leaves: "sprigs", lime: "pcs", tofu: "pcs", tempe: "packs" }[key] || "pcs";
+      const word = { egg: n === 1 ? "egg" : "eggs", lemongrass: n === 1 ? "stalk" : "stalks", curry_leaves: n === 1 ? "sprig" : "sprigs", tempe: n === 1 ? "pack" : "packs" }[key] || "pcs";
       return `${n} ${word}`;
     }
     const base = unit === "g" ? ["g", "kg"] : ["ml", "L"];
-    if (q >= 1000) return `${(Math.round(q / 100) / 10).toString()} ${base[1]}`;
+    if (q >= 1000) return `${Math.round(q / 100) / 10} ${base[1]}`;
     const r = q >= 50 ? Math.round(q / 10) * 10 : Math.max(1, Math.round(q / 5) * 5);
     return `${r} ${base[0]}`;
   }
-  function weekStart() {
-    const d = new Date(); const dow = (d.getDay() + 6) % 7; d.setDate(d.getDate() - dow); return d;
+  const fmtClock = s => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+
+  // ---------- flow ----------
+  function nextCookDay() {
+    const t = todayIdx();
+    for (let i = t; i < 7; i++) if (!S.plan.days[i].off && !S.flow.cooked[i]) return i;
+    return -1;
   }
-  const dateOf = i => { const d = weekStart(); d.setDate(d.getDate() + i); return d; };
-  const fmtDate = d => d.toLocaleDateString("en-MY", { day: "numeric", month: "short" });
+  function flowStage() { if (!S.flow.locked) return 0; if (!S.flow.shopped) return 1; return 2; }
 
   // ---------- views ----------
   function viewWeek() {
-    const t = totals(S.plan), b = S.settings.budget, diff = b - t.toBuy;
-    const max = Math.max(t.toBuy + t.pantryUse, t.tapau, 1);
-    const masakW = (t.toBuy + t.pantryUse) / max, tapauW = t.tapau / max;
-    const keep = t.tapau - (t.fresh + t.pantryUse);
-    const example = S.isExample ? `<div class="note">${ic("info")}<div>This is an example week for ${S.settings.people} people in ${esc(S.settings.district)}. <button class="link" data-go="setup">Set your household and area</button></div></div>` : "";
+    const t = totals(S.plan), b = S.settings.budget, diff = b - t.toBuy, stage = flowStage();
+    const steps = ["Plan", "Shop", "Cook"].map((l, i) => `<div class="${i < stage ? "done" : i === stage ? "now" : ""}"><i></i>${i + 1}. ${l}</div>`).join("");
+    let next;
+    if (stage === 0) next = `<div class="next"><div><div class="k">Step 1 of 3</div><div class="t">Check this week's dinners</div><div class="d">Swap anything your family won't eat, or skip nights you eat out. Then lock the plan to get your shopping list.</div></div><button class="btn primary big" id="lock">Lock plan and make my list</button></div>`;
+    else if (stage === 1) next = `<div class="next"><div><div class="k">Step 2 of 3</div><div class="t">Go shopping</div><div class="d">${t.rows.filter(r => !r.pantry).length} items, about <span class="num money-v">${rm(t.toBuy)}</span> at ${esc(priceLabel())}. Tick items off as you buy them.</div></div><button class="btn primary big" data-go="shop">Open shopping list</button></div>`;
+    else {
+      const di = nextCookDay();
+      if (di < 0) next = `<div class="next"><div><div class="k">All done</div><div class="t">Every dinner this week is cooked</div><div class="d">Plan next week when you're ready.</div></div><button class="btn primary big" id="newweek">Plan next week</button></div>`;
+      else {
+        const items = dayItems(S.plan.days[di]); const mins = Math.max(...items.map(r => r.mins));
+        const when = di === todayIdx() ? "Tonight" : DAYS_LONG[di];
+        next = `<div class="next"><div><div class="k">Step 3 of 3 · ${when}</div><div class="t">${items.map(r => esc(r.name)).join(" + ")}</div><div class="d">About ${mins} min${S.plan.days[di].onepot ? "" : ", with rice"}. MasakJe walks you through each step.</div></div><button class="btn primary big" data-cookday="${di}">${ic("flame")}Start cooking</button></div>`;
+      }
+    }
+    const pct = Math.min(1, t.toBuy / b);
     const days = S.plan.days.map((d, i) => {
       const dl = `<div class="dlabel"><b>${DAYS[i]}</b>${dateOf(i).getDate()}</div>`;
       if (d.off) return `<div class="day off">${dl}<div class="off-msg"><span>Not cooking</span><button class="btn" data-off="${i}">Plan a dinner</button></div></div>`;
       const row = (r, slot) => `<div class="dish"><button class="dish-main" data-recipe="${r.id}"><span class="n">${esc(r.name)}${r.spicy >= 2 ? ' <span class="pedas" title="Pedas">•</span>' : ""}</span><span class="e">${esc(r.en)}</span></button><span class="c">${rm(dishCost(r))}</span><button class="icon-btn" aria-label="Swap ${esc(r.name)}" data-swap="${i}:${slot}">${ic("swap")}</button></div>`;
       const body = d.onepot ? row(RX[d.onepot], "onepot") : row(RX[d.lauk], "lauk") + row(RX[d.sayur], "sayur");
-      return `<div class="day">${dl}<div class="dishes">${body}</div><div class="day-foot"><span>${d.onepot ? "One-pot" : "With rice"} · <span class="num">${rm(dayCost(d) / S.settings.people)}</span>/plate</span><button class="link" data-off="${i}">${ic("utensils", 14)}Skip</button></div></div>`;
+      const cooked = S.flow.cooked[i];
+      const isNext = stage === 2 && i === nextCookDay();
+      return `<div class="day ${isNext ? "today" : ""}">${dl}<div class="dishes">${body}</div><div class="day-foot"><span>${d.onepot ? "One-pot" : "With rice"}</span><span class="acts">${cooked ? `<span class="tag ok">${ic("check", 12)}Cooked</span>` : `<button class="link go" data-cookday="${i}">${ic("flame", 14)}Cook</button><button class="link" data-off="${i}">Skip</button>`}</span></div></div>`;
     }).join("");
     return `<div class="enter">
       <h1>Week of ${fmtDate(weekStart())}</h1>
       <p class="sub">${t.nights} dinners for ${S.settings.people}, priced at ${esc(priceLabel())}</p>
-      ${example}
+      <div class="flow" aria-label="Progress">${steps}</div>
+      ${next}
       <div class="receipt-wrap"><div class="receipt">
-        <div class="r-head"><span>MASAKJE · ${esc(S.settings.district.toUpperCase())}</span><span>${t.plates} plates</span></div>
+        <div class="r-head"><span>MASAKJE · ${esc(S.settings.postcode)} ${esc((ctx().loc || { place: "" }).place.toUpperCase())}</span><span>${t.plates} plates</span></div>
         <div class="lead-row"><span class="l">Groceries to buy</span><span class="dots"></span><span class="v">${rm(t.fresh)}</span></div>
         ${t.pantryBuy ? `<div class="lead-row"><span class="l">Pantry restock</span><span class="dots"></span><span class="v">${rm(t.pantryBuy)}</span></div>` : ""}
         <div class="lead-row"><span class="l">Pantry used, already at home</span><span class="dots"></span><span class="v">${rm(t.pantryUse)}</span></div>
         <hr class="r-rule">
-        <div class="r-big"><span class="l">Cost a plate</span><span class="v">${rm(t.perPlate)}</span></div>
-        <div class="compare" role="img" aria-label="Cooking ${rm(t.fresh + t.pantryUse)} versus tapau ${rm(t.tapau)}">
-          <span>Masak</span><div class="track"><div class="bar masak" style="transform:scaleX(${masakW.toFixed(3)})"></div></div><span class="v">${rm0(t.fresh + t.pantryUse)}</span>
-          <span>Tapau</span><div class="track"><div class="bar" style="transform:scaleX(${tapauW.toFixed(3)})"></div></div><span class="v">${rm0(t.tapau)}</span>
-        </div>
-        <div class="keep">${keep > 0 ? `You keep <b class="num">${rm0(keep)}</b> vs buying ${t.plates} plates at ${rm(S.settings.tapau)}` : `Tapau is cheaper this week at ${rm(S.settings.tapau)} a plate`}</div>
-        <div class="budget ${diff < 0 ? "over" : ""}">${diff >= 0 ? `${rm(diff)} under your ${rm0(b)} budget` : `${rm(-diff)} over your ${rm0(b)} budget`}</div>
+        <div class="r-big"><span class="l">To spend this week</span><span class="v">${rm(t.toBuy)}</span></div>
+        <div class="meter ${diff < 0 ? "over" : ""}" role="img" aria-label="${rm(t.toBuy)} of ${rm0(b)} budget"><div style="transform:scaleX(${pct.toFixed(3)})"></div></div>
+        <div class="budget ${diff < 0 ? "over" : ""}"><span>${diff >= 0 ? `<span class="num money-v">${rm(diff)}</span> left` : `<span class="num money-v">${rm(-diff)}</span> over budget`}</span><span>Budget <span class="num money-v">${rm0(b)}</span></span></div>
       </div></div>
       <div class="section-h"><h2>Dinners</h2><button class="btn" id="regen">${ic("swap")}New plan</button></div>
       <div class="days">${days}</div>
@@ -418,96 +549,227 @@ const DATA = /*__DATA__*/null;
     const groups = {};
     for (const r of fresh) (groups[r.it.aisle] = groups[r.it.aisle] || []).push(r);
     const order = ["Meat & poultry", "Fish & seafood", "Eggs & tofu", "Vegetables", "Onion, garlic & chili", "Noodles", "Dry goods", "Pantry"];
-    const srcTag = s => `<span class="tag ${s === "Shop" ? "src-shop" : ""}">${s}</span>`;
+    const srcTag = s => `<span class="tag ${s === "This shop" ? "ok" : ""}">${s}</span>`;
     const row = r => {
       const done = !!S.bought[r.k];
-      return `<label class="item ${done ? "done" : ""}"><input type="checkbox" id="b-${r.k}" data-bought="${r.k}" ${done ? "checked" : ""}><div><div class="n">${esc(r.it.name)}</div><div class="q"><span class="num">${qty(r.buy, r.it.unit, r.k)}</span>${r.buy - r.q > r.it.pack * 0.25 && r.it.unit !== "pc" ? `<span>· need ${qty(r.q, r.it.unit, r.k)}</span>` : ""}${srcTag(r.src)}</div></div><span class="p">${rm(r.cost)}</span></label>`;
+      return `<label class="item ${done ? "done" : ""}"><input type="checkbox" id="b-${r.k}" data-bought="${r.k}" ${done ? "checked" : ""}><div><div class="n">${esc(r.it.name)}</div><div class="q"><span class="num">${qty(r.buy, r.it.unit, r.k)}</span><span>· ${unitPrice(r.k)}</span>${srcTag(r.src)}</div>${r.buy - r.q > r.it.pack * 0.25 && r.it.unit !== "pc" ? `<div class="q">Recipes use ${qty(r.q, r.it.unit, r.k)}, rest keeps for next week</div>` : ""}</div><span class="p">${rm(r.cost)}</span></label>`;
     };
+    const left = fresh.filter(r => !S.bought[r.k]).length;
     const sec = order.filter(a => groups[a]).map(a => `<div class="group"><h3><span>${a}</span><span class="num">${rm(groups[a].reduce((s, r) => s + r.cost, 0))}</span></h3><div class="list">${groups[a].sort((x, y) => y.cost - x.cost).map(row).join("")}</div></div>`).join("");
-    const prow = r => `<label class="item"><input type="checkbox" id="p-${r.k}" data-need="${r.k}" ${S.pantryNeed[r.k] ? "checked" : ""}><div><div class="n">${esc(r.it.name)}</div><div class="q"><span>uses ${qty(r.q, r.it.unit, r.k)}</span>${srcTag(r.src)}</div></div><span class="p">${S.pantryNeed[r.k] ? rm(r.cost) : '<span style="color:var(--muted)">have</span>'}</span></label>`;
+    const prow = r => `<label class="item"><input type="checkbox" id="p-${r.k}" data-need="${r.k}" ${S.pantryNeed[r.k] ? "checked" : ""}><div><div class="n">${esc(r.it.name)}</div><div class="q"><span>uses ${qty(r.q, r.it.unit, r.k)}</span><span>· ${unitPrice(r.k)}</span>${srcTag(r.src)}</div></div><span class="p">${S.pantryNeed[r.k] ? rm(r.cost) : '<span style="color:var(--muted)">have</span>'}</span></label>`;
+    const lockNote = !S.flow.locked ? `<div class="tip">${ic("info")}<div>This list follows your current plan. <button class="link" id="lock">Lock the plan</button> so it stops changing.</div></div>` : "";
     return `<div class="enter">
       <h1>Shopping list</h1>
       <p class="sub">${fresh.length} items, rounded up to what shops sell. Prices from ${esc(priceLabel())}</p>
-      ${sec}
+      ${lockNote}
       <div class="group"><h3><span>Pantry check · tick what you need to buy</span></h3><div class="list">${pantry.sort((a, b) => a.it.name.localeCompare(b.it.name)).map(prow).join("")}</div></div>
-      <div class="totals"><span>To spend</span><span class="v">${rm(t.toBuy)}</span></div>
-      <p class="fine">Shop = this shop's latest PriceCatcher price. District, State and Malaysia = median across shops there. Estimate = not tracked by PriceCatcher, typical price used. Prices are estimates, not quotes.</p>
+      ${sec}
+      <div class="totals"><div><div class="k">${left ? `${left} left to buy` : "All bought"}</div><div class="v">${rm(t.toBuy)}</div></div><button class="btn primary" id="shopped" ${S.flow.shopped ? "disabled" : ""}>${S.flow.shopped ? "Shopping done" : "Done shopping"}</button></div>
+      <p class="fine">Each price is the shop's unit price (per kg, per 10 eggs, per bottle) times what you actually buy. This shop = its latest PriceCatcher price. Within N km = median of at least 3 shops that close to your postcode. State and Malaysia = wider medians. Estimate = PriceCatcher does not track it. Prices are estimates, not quotes.</p>
     </div>`;
   }
 
   function viewRecipes() {
     const F = [["all", "All"], ["chicken", "Ayam"], ["beef", "Daging"], ["fish", "Ikan"], ["seafood", "Udang & sotong"], ["egg", "Telur & tauhu"], ["sayur", "Sayur"], ["onepot", "One-pot"]];
     const q = S.q.trim().toLowerCase();
-    const list = RECIPES.filter(r => {
+    const list = RECIPES.filter(allowed).filter(r => {
       const f = S.filter;
       const okF = f === "all" || (f === "sayur" ? r.kind === "sayur" : f === "onepot" ? r.kind === "onepot" : f === "beef" ? (r.protein === "beef" || r.protein === "mutton") && r.kind !== "sayur" : f === "egg" ? (["egg", "tofu", "veg"].includes(r.protein) && r.kind === "lauk") : r.protein === f && r.kind !== "sayur");
       return okF && (!q || (r.name + " " + r.en).toLowerCase().includes(q));
     });
     return `<div class="enter">
       <h1>Recipes</h1>
-      <p class="sub">${RECIPES.length} everyday dishes, costed for ${S.settings.people} people</p>
+      <p class="sub">${RECIPES.length} everyday dishes${RECIPES.filter(allowed).length < RECIPES.length ? `, ${RECIPES.length - RECIPES.filter(allowed).length} hidden by your preferences` : ""}</p>
       <div class="search-wrap">${ic("search")}<input class="search" id="q" type="search" placeholder="Search" value="${esc(S.q)}" aria-label="Search recipes"></div>
       <div class="chips" role="group" aria-label="Filter">${F.map(([k, l]) => `<button class="chip" data-filter="${k}" aria-pressed="${S.filter === k}">${l}</button>`).join("")}</div>
-      <div class="rlist">${list.map(r => `<button class="rrow" data-recipe="${r.id}"><div><div class="n">${esc(r.name)}${r.spicy >= 2 ? ' <span class="pedas">•</span>' : ""}</div><div class="e">${esc(r.en)}</div></div><div class="m"><div class="num">${rm(dishCost(r) / S.settings.people)}</div><div>${r.mins} min</div></div></button>`).join("") || `<div style="padding:16px;color:var(--muted)">No dishes match</div>`}</div>
+      <div class="rlist">${list.map(r => `<button class="rrow" data-recipe="${r.id}"><div><div class="n">${esc(r.name)}${r.spicy >= 2 ? ' <span class="pedas">•</span>' : ""}</div><div class="e">${esc(r.en)}</div></div><div class="m"><div>${r.mins} min</div></div></button>`).join("") || `<div style="padding:16px;color:var(--muted)">No dishes match</div>`}</div>
+    </div>`;
+  }
+
+  // location block, shared by onboarding and setup
+  function locationBlock() {
+    const s = S.settings, c = ctx(), loc = c.loc;
+    const place = !/^\d{5}$/.test(s.postcode) ? `<span class="pc-place">Enter a 5-digit postcode</span>` : loc ? `<span class="pc-place">${esc(loc.place)}${loc.exact ? "" : " area"}</span>` : `<span class="pc-place bad">Postcode not found</span>`;
+    const near = c.near.slice(0, 8);
+    const ring = c.near.filter(x => x.d <= 5).length;
+    const list = loc ? `<div class="shops" role="radiogroup" aria-label="Where you shop">
+        <label class="shop"><input type="radio" name="shop" value="-1" ${s.shop < 0 ? "checked" : ""}><div><div class="n">Any shop near me</div><div class="q">Typical price across ${ring >= MIN_SHOPS ? `${ring} shops within 5 km` : "the nearest shops"}</div></div><span class="km"></span></label>
+        ${near.map(x => `<label class="shop"><input type="radio" name="shop" value="${x.i}" ${s.shop === x.i ? "checked" : ""}><div><div class="n">${esc(shopName(x.s))}</div><div class="q">${esc(x.s[1])}${precisionNote(x.s) ? " · " + precisionNote(x.s) : ""}</div></div><span class="km">${x.d < 1 ? "<1" : (precisionNote(x.s) ? "~" : "") + (x.d < 10 ? x.d.toFixed(1) : Math.round(x.d))} km</span></label>`).join("")}
+      </div>${near.length ? "" : `<div class="hint">No PriceCatcher shops within 20 km. State prices will be used.</div>`}` : "";
+    return `<div class="field"><label for="postcode">Your postcode</label><div class="pc-row"><input class="inp" id="postcode" inputmode="numeric" maxlength="5" autocomplete="postal-code" value="${esc(s.postcode)}">${place}</div></div>
+      ${loc ? `<div class="field"><span class="lbl">Where you usually shop</span>${list}<div class="hint">Shops that report prices to KPDN PriceCatcher, nearest first</div></div>` : ""}`;
+  }
+  function householdBlock() {
+    const s = S.settings;
+    return `<div class="field"><span class="lbl">People eating dinner</span><div class="seg" role="group">${[1, 2, 3, 4, 5, 6].map(n => `<button data-people="${n}" aria-pressed="${s.people === n}">${n}</button>`).join("")}</div></div>
+      <div class="field"><span class="lbl">Nights you cook</span><div class="seg" role="group">${DAYS.map((d, i) => `<button data-night="${i}" aria-pressed="${s.nights[i]}">${d}</button>`).join("")}</div></div>`;
+  }
+  function budgetBlock() {
+    const s = S.settings;
+    return `<div class="field"><label for="budget">Weekly grocery budget</label><div class="money"><span>RM</span><input class="inp" id="budget" type="number" inputmode="decimal" min="20" step="10" value="${s.budget}"></div><div class="hint">MasakJe keeps the plan under this</div></div>`;
+  }
+  function prefsBlock() {
+    const s = S.settings;
+    const av = [["beef", "Beef"], ["mutton", "Mutton"], ["pedas", "Very spicy"]];
+    const left = RECIPES.filter(allowed).length;
+    return `<div class="field"><span class="lbl">Allergies</span><div class="seg" role="group">${ALLERGENS.map(([k, l]) => `<button data-allergy="${k}" aria-pressed="${!!s.allergy[k]}">${l}</button>`).join("")}</div><div class="hint">Removes every dish with that ingredient, including sauces (oyster sauce and belacan count as shellfish, kicap as soy and wheat). Always check product labels.</div></div>
+      <div class="field"><span class="lbl">Vegetables you don't eat</span><div class="seg" role="group">${VEG.map(k => `<button data-dislike="${k}" aria-pressed="${!!s.dislike[k]}">${esc(ING[k].name.replace(/ \(.*\)/, ""))}</button>`).join("")}</div></div>
+      <div class="field"><span class="lbl">Also leave out</span><div class="seg" role="group">${av.map(([k, l]) => `<button data-avoid="${k}" aria-pressed="${!!s.avoid[k]}">${l}</button>`).join("")}</div><div class="hint">All dishes are halal</div></div>
+      <p class="sub" style="margin:0"><span class="num">${left}</span> of ${RECIPES.length} dishes match${left < 15 ? ". That's few, so expect repeats" : ""}</p>`;
+  }
+
+  function viewOnboarding() {
+    const i = S.ob;
+    const heads = [["Where do you shop?", "We price your list with real unit prices from shops near you"], ["Who's eating?", "Portions and nights to plan for"], ["Food preferences", "Allergies and things your family won't eat"], ["Your budget", "We'll plan dinners that fit it"]];
+    const body = [locationBlock, householdBlock, prefsBlock, budgetBlock][i]();
+    const canNext = i !== 0 || !!ctx().loc;
+    return `<div class="enter">
+      <div class="ob-bar">${[0, 1, 2, 3].map(k => `<i class="${k <= i ? "on" : ""}"></i>`).join("")}</div>
+      <div class="ob-step">Step ${i + 1} of 4</div>
+      <h1>${heads[i][0]}</h1><p class="sub">${heads[i][1]}</p>
+      ${body}
+      <div class="ob-actions ${i === 0 ? "solo" : ""}">${i > 0 ? `<button class="btn big" id="obBack" style="width:auto;padding:0 20px">Back</button>` : ""}<button class="btn primary big" id="obNext" ${canNext ? "" : "disabled"}>${i < 3 ? "Next" : "Plan my week"}</button></div>
+      ${i === 0 ? `<p class="fine">Prices: ${esc(PR.source)}, ${PR.shops.length.toLocaleString()} shops, latest ${PR.date}. Shop locations come from their address postcode or town (GeoNames, CC BY 4.0), so distances are approximate.</p>` : ""}
     </div>`;
   }
 
   function viewSetup() {
-    const s = S.settings; const states = Object.keys(PR.states).sort();
-    const st = PR.states[s.state] || { d: {} }; const dists = Object.keys(st.d).sort();
-    const shops = (st.d[s.district] || { shops: [] }).shops;
-    const av = [["beef", "Beef"], ["mutton", "Mutton"], ["seafood", "Prawns & squid"], ["pedas", "Very spicy"]];
     return `<div class="enter">
-      <h1>Your household</h1>
-      <p class="sub">Used to size portions and pick prices near you</p>
-      <div class="field"><span class="lbl">People eating dinner</span><div class="seg" role="group">${[1, 2, 3, 4, 5, 6].map(n => `<button data-people="${n}" aria-pressed="${s.people === n}">${n}</button>`).join("")}</div></div>
-      <div class="field"><span class="lbl">Nights you cook</span><div class="seg" role="group">${DAYS.map((d, i) => `<button data-night="${i}" aria-pressed="${s.nights[i]}">${d}</button>`).join("")}</div></div>
-      <div class="two">
-        <div class="field"><label for="budget">Weekly grocery budget</label><div class="money"><span>RM</span><input class="inp" id="budget" type="number" inputmode="decimal" min="20" step="10" value="${s.budget}"></div></div>
-        <div class="field"><label for="tapau">Tapau price a plate</label><div class="money"><span>RM</span><input class="inp" id="tapau" type="number" inputmode="decimal" min="3" step="0.5" value="${s.tapau}"></div></div>
-      </div>
-      <div class="field"><label for="state">State</label><select class="inp" id="state">${states.map(x => `<option ${x === s.state ? "selected" : ""}>${esc(x)}</option>`).join("")}</select></div>
-      <div class="field"><label for="district">District</label><select class="inp" id="district">${dists.map(x => `<option ${x === s.district ? "selected" : ""}>${esc(x)}</option>`).join("")}</select></div>
-      <div class="field"><label for="shop">Where you shop</label><select class="inp" id="shop"><option value="-1">District average</option>${shops.map((sh, i) => `<option value="${i}" ${i === s.shop ? "selected" : ""}>${esc(sh[0])} · ${esc(sh[1])}</option>`).join("")}</select><div class="hint">Showing the ${shops.length} shops with the most items priced in ${esc(s.district)}</div></div>
-      <div class="field"><span class="lbl">Leave out</span><div class="seg" role="group">${av.map(([k, l]) => `<button data-avoid="${k}" aria-pressed="${!!s.avoid[k]}">${l}</button>`).join("")}</div><div class="hint">All dishes are halal</div></div>
-      <button class="btn primary big" id="plan">Plan my week</button>
-      <p class="fine">Prices: ${esc(PR.source)}, ${PR.shops.toLocaleString()} shops, latest ${PR.date}. Cooked-food prices are no longer collected by PriceCatcher, so the tapau price is your own figure. Recipes are drafts and still need checking by a home cook.</p>
+      <h1>Settings</h1>
+      <p class="sub">Changes apply when you replan</p>
+      ${locationBlock()}${householdBlock()}<h2 style="font-size:17px;font-weight:500;margin:28px 0 12px">Food preferences</h2>${prefsBlock()}<div style="height:20px"></div>${budgetBlock()}
+      <button class="btn primary big" id="replan">Save and plan a new week</button>
+      <p class="fine">Prices: ${esc(PR.source)}, ${PR.shops.length.toLocaleString()} shops, latest ${PR.date}. Shop locations: GeoNames postcodes (CC BY 4.0). Recipes are drafts and still need checking by a home cook.</p>
     </div>`;
   }
 
+  // ---------- recipe sheet ----------
   function openRecipe(id) {
     const r = RX[id]; if (!r) return;
     const n = S.settings.people;
-    const ing = r.ing.map(([k, q]) => { const it = ING[k]; return `<div class="ing"><span>${esc(it.name)}</span><span class="q">${qty(q * scale(), it.unit, k)}</span></div>`; }).join("");
+    const ing = r.ing.map(([k, q]) => `<div class="ing"><span>${esc(ING[k].name)}<span class="up">${unitPrice(k)}</span></span><span class="q">${qty(q * scale(), ING[k].unit, k)}</span></div>`).join("");
     const root = document.getElementById("sheetRoot");
     root.innerHTML = `<div class="scrim" id="scrim"></div><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sh-t"><div class="sheet-in">
       <div class="grab"></div><button class="icon-btn close" id="shClose" aria-label="Close">${ic("x", 18)}</button>
       <h2 id="sh-t">${esc(r.name)}</h2><div style="color:var(--fg2)">${esc(r.en)}</div>
-      <div class="meta"><span class="tag">${ic("clock", 12)}&nbsp;${r.mins} min</span><span class="tag">${esc(r.cuisine)}</span><span class="tag">${r.kind === "lauk" ? "Lauk" : r.kind === "sayur" ? "Sayur" : "One-pot"}</span>${r.spicy >= 2 ? '<span class="tag pedas">Pedas</span>' : r.spicy ? '<span class="tag">Mild heat</span>' : ""}<span class="tag num">${rm(dishCost(r) / n)} a plate</span></div>
+      <div class="meta"><span class="tag">${ic("clock", 12)}${r.mins} min</span><span class="tag">${r.guide.length} steps</span><span class="tag">${esc(r.cuisine)}</span>${r.spicy >= 2 ? '<span class="tag pedas">Pedas</span>' : r.spicy ? '<span class="tag">Mild heat</span>' : ""}<span class="tag num">${rm(dishCost(r))} for ${n}</span></div>
+      <button class="btn primary big" data-cookone="${r.id}">${ic("flame")}Start cooking</button>
       <h3>Ingredients for ${n}</h3>${ing}
-      <h3>Method</h3><ol class="steps">${r.steps.map(s => `<li>${esc(s)}</li>`).join("")}</ol>
       <p class="fine">Draft recipe, not yet tested by a home cook</p>
     </div></div>`;
     requestAnimationFrame(() => { document.getElementById("scrim").classList.add("open"); root.querySelector(".sheet").classList.add("open"); });
-    const close = () => { root.innerHTML = ""; };
-    document.getElementById("scrim").onclick = close; document.getElementById("shClose").onclick = close;
+    document.getElementById("scrim").onclick = closeSheet; document.getElementById("shClose").onclick = closeSheet;
     document.getElementById("shClose").focus();
-    root.onkeydown = e => { if (e.key === "Escape") close(); };
+  }
+  const closeSheet = () => { document.getElementById("sheetRoot").innerHTML = ""; };
+
+  // ---------- cooking mode ----------
+  let C = null; // {queue:[ids], qi, step (-1 = get ready), day, timers:{}, ticking}
+  let wakeLock = null;
+  function startCooking(queue, day) {
+    closeSheet();
+    C = { queue, qi: 0, step: -1, day, timers: {}, ticking: null, prepped: {} };
+    try { navigator.wakeLock && navigator.wakeLock.request("screen").then(l => { wakeLock = l; }).catch(() => {}); } catch (e) {}
+    renderCook();
+  }
+  function stopCooking() {
+    if (C && C.ticking) clearInterval(C.ticking);
+    C = null; document.getElementById("cookRoot").innerHTML = "";
+    try { wakeLock && wakeLock.release(); } catch (e) {} wakeLock = null;
+    document.body.style.overflow = "";
+  }
+  function timerKey() { return `${C.qi}:${C.step}`; }
+  function tick() {
+    let any = false;
+    for (const [k, t] of Object.entries(C.timers)) {
+      if (!t.running) continue;
+      t.left = Math.max(0, Math.round((t.end - Date.now()) / 1000)); any = true;
+      if (t.left === 0) { t.running = false; t.rang = true; try { navigator.vibrate && navigator.vibrate([300, 150, 300]); } catch (e) {} }
+    }
+    const el = document.getElementById("clock"), t = C.timers[timerKey()];
+    if (el && t) { el.textContent = fmtClock(t.left); }
+    if (!any) { clearInterval(C.ticking); C.ticking = null; }
+    if (t && t.rang && !document.querySelector(".timer.ring")) renderCook();
+  }
+  function renderCook() {
+    const root = document.getElementById("cookRoot");
+    if (!C) return;
+    document.body.style.overflow = "hidden";
+    const r = RX[C.queue[C.qi]], n = S.settings.people, total = r.guide.length;
+    const multi = C.queue.length > 1 ? ` · dish ${C.qi + 1} of ${C.queue.length}` : "";
+    const segs = `<div class="segs">${[-1, ...r.guide.map((_, i) => i)].map(i => `<i class="${i <= C.step ? "on" : ""}"></i>`).join("")}</div>`;
+    let body, foot;
+    if (C.step === -1) {
+      const rice = C.qi === 0 && C.day != null && !S.plan.days[C.day].onepot
+        ? `<div class="tip">${ic("info")}<div>Start the rice first: <b class="num">${qty(RICE_PER_PERSON * n, "g", "rice")}</b> rice for ${n}. It will be ready when the lauk is.</div></div>` : "";
+      body = `<div class="step-no">Get ready</div><h2 class="step-t">Gather these for ${n} ${n === 1 ? "person" : "people"}</h2>${rice}
+        <div class="prep">${r.ing.map(([k, q]) => `<label><input type="checkbox" data-prep="${k}" ${C.prepped[k] ? "checked" : ""}><span>${esc(ING[k].name)}</span><span class="q">${qty(q * scale(), ING[k].unit, k)}</span></label>`).join("")}</div>`;
+      foot = `<button class="btn" id="ckBack">${C.qi > 0 ? "Back" : "Close"}</button><button class="btn primary" id="ckNext">Start step 1</button>`;
+    } else if (C.step < total) {
+      const st = r.guide[C.step];
+      const need = st.ing.length ? `<div class="need"><span class="lbl">You need</span><div class="need-list">${st.ing.map(k => { const q = r.ing.find(x => x[0] === k)[1]; return `<span class="need-chip">${esc(ING[k].name)} <b>${qty(q * scale(), ING[k].unit, k)}</b></span>`; }).join("")}</div></div>` : "";
+      let timer = "";
+      if (st.sec) {
+        const t = C.timers[timerKey()] || { left: st.sec, running: false };
+        timer = `<div class="timer ${t.rang ? "ring" : ""}"><div><div class="clock" id="clock">${fmtClock(t.left)}</div><div class="lbl">${t.rang ? "Time's up" : t.running ? "Timer running" : "Timer"}</div></div><div class="acts">${t.running ? `<button class="btn" id="tPause" aria-label="Pause timer">${ic("pause")}</button>` : `<button class="btn primary" id="tStart">${ic("play")}${t.left === st.sec ? "Start" : "Resume"}</button>`}${t.left !== st.sec ? `<button class="btn" id="tReset" aria-label="Reset timer">${ic("reset")}</button>` : ""}</div></div>`;
+      }
+      body = `<div class="step-no">Step ${C.step + 1} of ${total}</div><h2 class="step-t">${esc(st.t)}</h2>${need}${timer}`;
+      foot = `<button class="btn" id="ckBack">Back</button><button class="btn primary" id="ckNext">${C.step + 1 < total ? "Next" : "Finish"}</button>`;
+    } else {
+      const more = C.qi + 1 < C.queue.length;
+      body = `<div class="step-no">${ic("check")}</div><div class="done-t">${esc(r.name)} is ready</div><p class="sub">${more ? `Next: ${esc(RX[C.queue[C.qi + 1]].name)}` : C.day != null ? "Dinner is done. Selamat makan." : "Selamat makan."}</p>`;
+      foot = `<button class="btn" id="ckBack">Back</button><button class="btn primary" id="ckNext">${more ? `Cook ${esc(RX[C.queue[C.qi + 1]].name)}` : "Finish"}</button>`;
+    }
+    root.innerHTML = `<div class="cook" role="dialog" aria-modal="true" aria-label="Cooking ${esc(r.name)}">
+      <div class="cook-in"><div class="cook-top"><div><div class="n">${esc(r.name)}</div><div class="s">${r.mins} min${multi}</div></div><button class="icon-btn" id="ckClose" aria-label="Close cooking mode">${ic("x", 18)}</button></div>${segs}</div>
+      <div class="cook-body"><div class="cook-in enter">${body}</div></div>
+      <div class="cook-in"><div class="cook-foot">${foot}</div></div>
+    </div>`;
+    const $ = id => document.getElementById(id);
+    $("ckClose").onclick = stopCooking;
+    $("ckBack").onclick = () => {
+      if (C.step >= 0) C.step--;
+      else if (C.qi > 0) { C.qi--; C.step = RX[C.queue[C.qi]].guide.length; }
+      else return stopCooking();
+      renderCook();
+    };
+    $("ckNext").onclick = () => {
+      if (C.step < total) { C.step++; return renderCook(); }
+      if (C.qi + 1 < C.queue.length) { C.qi++; C.step = -1; return renderCook(); }
+      if (C.day != null) { S.flow.cooked[C.day] = true; save(); }
+      stopCooking(); render();
+    };
+    const t = C.timers[timerKey()], st = r.guide[C.step];
+    if ($("tStart")) $("tStart").onclick = () => { const cur = C.timers[timerKey()] || { left: st.sec }; C.timers[timerKey()] = { left: cur.left, end: Date.now() + cur.left * 1000, running: true }; if (!C.ticking) C.ticking = setInterval(tick, 250); renderCook(); };
+    if ($("tPause")) $("tPause").onclick = () => { t.running = false; renderCook(); };
+    if ($("tReset")) $("tReset").onclick = () => { delete C.timers[timerKey()]; renderCook(); };
+    root.querySelectorAll("[data-prep]").forEach(el => el.onchange = () => { C.prepped[el.dataset.prep] = el.checked; });
+    $("ckNext").focus();
+  }
+
+  function toast(msg) {
+    const el = document.createElement("div"); el.className = "toast"; el.setAttribute("role", "status"); el.textContent = msg;
+    document.body.appendChild(el); setTimeout(() => el.remove(), 2600);
   }
 
   // ---------- render ----------
-  const TABS = [["week", "Week", "week"], ["shop", "Shop", "list"], ["recipes", "Recipes", "book"], ["setup", "Setup", "sliders"]];
+  const TABS = [["week", "Week", "week"], ["shop", "Shop", "list"], ["recipes", "Recipes", "book"], ["setup", "Settings", "sliders"]];
   function render() {
-    if (!S.plan || S.plan.days.length !== 7) S.plan = makePlan();
     const v = document.getElementById("view");
+    const ob = !S.onboarded;
+    document.getElementById("app").classList.toggle("bare", ob);
+    document.getElementById("tabsNav").hidden = ob;
+    document.getElementById("where").hidden = ob;
+    if (ob) { v.innerHTML = viewOnboarding(); return; }
+    if (!S.plan || S.plan.days.length !== 7) newWeek();
     v.innerHTML = S.tab === "week" ? viewWeek() : S.tab === "shop" ? viewShop() : S.tab === "recipes" ? viewRecipes() : viewSetup();
     document.getElementById("tabs").innerHTML = TABS.map(([k, l, i]) => `<button class="tab" data-tab="${k}" ${S.tab === k ? 'aria-current="page"' : ""}>${ic(i, 20)}<span>${l}</span></button>`).join("");
-    document.getElementById("where").innerHTML = `${ic("pin", 14)}<span>${esc(S.settings.district)} · ${S.settings.people} ${S.settings.people === 1 ? "person" : "people"}</span>`;
+    document.getElementById("where").innerHTML = `${ic("pin", 14)}<span>${esc(S.settings.postcode)} · ${S.settings.people} ${S.settings.people === 1 ? "person" : "people"}</span>`;
   }
   function go(tab) { S.tab = tab; render(); window.scrollTo({ top: 0 }); }
 
   document.addEventListener("click", e => {
-    const el = e.target.closest("[data-tab],[data-go],[data-swap],[data-off],[data-recipe],[data-filter],[data-people],[data-night],[data-avoid],#regen,#plan,#where");
+    const el = e.target.closest("[data-tab],[data-go],[data-swap],[data-off],[data-recipe],[data-filter],[data-people],[data-night],[data-avoid],[data-allergy],[data-dislike],[data-cookday],[data-cookone],#regen,#replan,#where,#lock,#shopped,#newweek,#obNext,#obBack");
     if (!el) return;
     const s = S.settings;
     if (el.dataset.tab) return go(el.dataset.tab);
@@ -516,27 +778,40 @@ const DATA = /*__DATA__*/null;
     if (el.dataset.swap) { const [i, slot] = el.dataset.swap.split(":"); return swap(+i, slot); }
     if (el.dataset.off !== undefined) return toggleOff(+el.dataset.off);
     if (el.dataset.recipe) return openRecipe(el.dataset.recipe);
+    if (el.dataset.cookday !== undefined) { const di = +el.dataset.cookday; return startCooking(dayItems(S.plan.days[di]).map(r => r.id), di); }
+    if (el.dataset.cookone) return startCooking([el.dataset.cookone], null);
     if (el.dataset.filter) { S.filter = el.dataset.filter; return render(); }
     if (el.dataset.people) { s.people = +el.dataset.people; return render(); }
     if (el.dataset.night) { s.nights[+el.dataset.night] = !s.nights[+el.dataset.night]; return render(); }
     if (el.dataset.avoid) { s.avoid[el.dataset.avoid] = !s.avoid[el.dataset.avoid]; return render(); }
-    if (el.id === "regen") { S.plan = makePlan(); save(); return render(); }
-    if (el.id === "plan") { S.isExample = false; S.plan = makePlan(); S.bought = {}; save(); return go("week"); }
+    if (el.dataset.allergy) { s.allergy[el.dataset.allergy] = !s.allergy[el.dataset.allergy]; return render(); }
+    if (el.dataset.dislike) { s.dislike[el.dataset.dislike] = !s.dislike[el.dataset.dislike]; return render(); }
+    if (el.id === "regen") { S.plan = makePlan(); S.flow.locked = false; S.flow.shopped = false; save(); return render(); }
+    if (el.id === "lock") { S.flow.locked = true; save(); return go("shop"); }
+    if (el.id === "shopped") { S.flow.locked = true; S.flow.shopped = true; save(); return go("week"); }
+    if (el.id === "newweek" || el.id === "replan") { newWeek(); return go("week"); }
+    if (el.id === "obBack") { S.ob = Math.max(0, S.ob - 1); render(); return window.scrollTo({ top: 0 }); }
+    if (el.id === "obNext") {
+      if (S.ob < 3) { S.ob++; render(); return window.scrollTo({ top: 0 }); }
+      S.onboarded = true; newWeek(); return go("week");
+    }
   });
   document.addEventListener("change", e => {
     const t = e.target, s = S.settings;
     if (t.dataset.bought) { S.bought[t.dataset.bought] = t.checked; save(); return render(); }
     if (t.dataset.need) { S.pantryNeed[t.dataset.need] = t.checked; save(); return render(); }
-    if (t.id === "budget") s.budget = Math.max(20, +t.value || DEFAULTS.budget);
-    if (t.id === "tapau") s.tapau = Math.max(1, +t.value || DEFAULTS.tapau);
-    if (t.id === "state") { s.state = t.value; s.district = Object.keys(PR.states[s.state].d).sort()[0]; s.shop = -1; return render(); }
-    if (t.id === "district") { s.district = t.value; s.shop = -1; return render(); }
-    if (t.id === "shop") { s.shop = +t.value; }
+    if (t.name === "shop") { s.shop = +t.value; save(); return render(); }
+    if (t.id === "budget") { s.budget = Math.max(20, +t.value || DEFAULTS.budget); save(); }
   });
   document.addEventListener("input", e => {
-    if (e.target.id === "q") { S.q = e.target.value; const pos = e.target.selectionStart; render(); const q = document.getElementById("q"); q.focus(); q.setSelectionRange(pos, pos); }
+    const t = e.target;
+    if (t.id === "q") { S.q = t.value; const pos = t.selectionStart; render(); const q = document.getElementById("q"); q.focus(); q.setSelectionRange(pos, pos); }
+    if (t.id === "postcode") {
+      const v = t.value.replace(/\D/g, "").slice(0, 5);
+      if (v !== S.settings.postcode) { S.settings.postcode = v; S.settings.shop = -1; save(); render(); const p = document.getElementById("postcode"); p.focus(); p.setSelectionRange(v.length, v.length); }
+    }
   });
-  if (!PR.states[S.settings.state] || !PR.states[S.settings.state].d[S.settings.district]) S.settings = JSON.parse(JSON.stringify(DEFAULTS));
+  document.addEventListener("keydown", e => { if (e.key === "Escape") { if (C) stopCooking(); else closeSheet(); } });
   render();
 })();
 </script>
