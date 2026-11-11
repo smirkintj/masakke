@@ -128,6 +128,25 @@ h1 { font-size: 30px; line-height: 1.15; font-weight: 500; margin: 12px 0 4px; t
 .day-foot .link { color: var(--fg2); text-decoration: none; display: inline-flex; gap: 6px; align-items: center; min-height: 32px; }
 .day-foot .link:hover { color: var(--fg); }
 .day-foot .link.go { color: var(--accent); font-weight: 600; }
+.verdict { background: var(--surface); border-radius: 16px; padding: 14px; margin: 4px 0 16px; display: grid; gap: 8px; }
+.vh { font-size: 15px; font-weight: 500; }
+.vtags { display: flex; gap: 6px; flex-wrap: wrap; }
+.toggle.three { grid-template-columns: repeat(3, 1fr); display: grid; }
+.toggle.three button { min-width: 0; }
+.toggle.three button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); box-shadow: none; }
+.rate { border: 1px solid var(--line); border-radius: 20px; padding: 16px; display: grid; gap: 12px; margin-bottom: 12px; }
+.rate .rh { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.rate .rh b { font-weight: 500; font-size: 16px; }
+.rate .rh span { font-size: 13px; color: var(--muted); }
+.rbtns { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.rbtns button { height: 44px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--fg); font-size: 15px; font-weight: 500; }
+.rbtns button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.rnote { font-size: 13px; color: var(--fg2); }
+.rnote.good { color: var(--pos); }
+.offline { display: flex; gap: 10px; align-items: flex-start; background: var(--fg); color: var(--bg); border-radius: 14px; padding: 12px 14px; font-size: 14px; line-height: 20px; margin: 8px 0 4px; }
+.offline svg { flex: none; margin-top: 1px; }
+.offline b { font-weight: 500; }
+.pending { color: var(--accent); }
 .warnbox { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; border: 1px solid rgba(220, 38, 38, 0.25); background: rgba(220, 38, 38, 0.05); border-radius: 16px; padding: 14px 14px 14px 16px; font-size: 14px; color: var(--fg2); }
 .warnbox b { display: block; font-weight: 500; color: var(--neg); font-size: 15px; margin-bottom: 2px; }
 .offrow { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 14px; background: var(--surface); font-size: 14px; color: var(--muted); }
@@ -400,10 +419,10 @@ const DATA = /*__DATA__*/null;
   const DEFAULTS = { postcode: "47400", shop: -1, people: 3, nights: [true, true, true, true, true, true, false], budget: 150,
     avoid: { beef: false, mutton: false, pedas: false }, allergy: {}, dislike: {} };
   const clone = o => JSON.parse(JSON.stringify(o));
-  let S = { settings: clone(DEFAULTS), plan: null, bought: {}, pantryNeed: {}, flow: { locked: false, shopped: false, cooked: {} }, kitchen: {},
+  let S = { settings: clone(DEFAULTS), plan: null, bought: {}, pantryNeed: {}, flow: { locked: false, shopped: false, cooked: {} }, kitchen: {}, ratings: {},
     onboarded: false, ob: -1, guideSeen: false, tab: "week", filter: "all", q: "" };
   try { const raw = localStorage.getItem(STORE); if (raw) Object.assign(S, JSON.parse(raw), { tab: "week", ob: -1 }); } catch (e) {}
-  const save = () => { if (typeof schedulePush === "function") schedulePush(); try { localStorage.setItem(STORE, JSON.stringify({ settings: S.settings, plan: S.plan, bought: S.bought, pantryNeed: S.pantryNeed, flow: S.flow, kitchen: S.kitchen, onboarded: S.onboarded, guideSeen: S.guideSeen })); } catch (e) {} };
+  const save = () => { if (typeof schedulePush === "function") schedulePush(); try { localStorage.setItem(STORE, JSON.stringify({ settings: S.settings, plan: S.plan, bought: S.bought, pantryNeed: S.pantryNeed, flow: S.flow, kitchen: S.kitchen, ratings: S.ratings, onboarded: S.onboarded, guideSeen: S.guideSeen })); } catch (e) {} };
 
   // ---------- location ----------
   function lookupPostcode(pc) {
@@ -611,6 +630,32 @@ const DATA = /*__DATA__*/null;
     return !r.ing.some(([k]) => banned.has(k));
   }
   const pool = kind => RECIPES.filter(r => r.kind === kind && allowed(r));
+  // ---------- ratings: each person rates for themselves; nothing is ever hidden ----------
+  // stored as ratings["<recipe>~<member>"] = { v: 1 liked | 0 ok | -1 not again, name, at }
+  const meKey = () => (CLOUD && AUTH ? AUTH.member.id : "me");
+  const ratingsOf = id => Object.entries(S.ratings || {}).filter(([k]) => k.split("~")[0] === id).map(([k, r]) => ({ me: k.split("~")[1] === meKey(), ...r }));
+  const myRating = id => { const r = (S.ratings || {})[`${id}~${meKey()}`]; return r ? r.v : undefined; };
+  function rate(id, v) { S.ratings = S.ratings || {}; S.ratings[`${id}~${meKey()}`] = { v, name: (CLOUD && myName()) || "You", at: Date.now() }; save(); }
+  function joinNames(a) { return a.length <= 1 ? a.join("") : a.slice(0, -1).join(", ") + " and " + a[a.length - 1]; }
+  function verdicts(id) {   // [{text, good}] e.g. "Aisyah and you like it", "Hafiz doesn't like it"
+    const rs = ratingsOf(id), nm = r => r.me ? "you" : r.name, cap = t => t.charAt(0).toUpperCase() + t.slice(1);
+    const likes = rs.filter(r => r.v === 1).map(nm), nots = rs.filter(r => r.v === -1).map(nm), out = [];
+    if (likes.length) out.push({ good: true, text: cap(`${joinNames(likes)} ${likes.length === 1 && likes[0] !== "you" ? "likes" : "like"} it`) });
+    if (nots.length) out.push({ good: false, text: cap(`${joinNames(nots)} ${nots.length === 1 && nots[0] !== "you" ? "doesn't" : "don't"} like it`) });
+    return out;
+  }
+  const verdictTags = id => verdicts(id).map(v => `<span class="tag ${v.good ? "ok" : ""}">${esc(v.text)}</span>`).join(" ");
+  function weightOf(r) {   // liked dishes come up more often, disliked ones less, never zero
+    const rs = ratingsOf(r.id);
+    return (1 + 1.5 * rs.filter(x => x.v === 1).length) / (1 + 3 * rs.filter(x => x.v === -1).length);
+  }
+  function pickW(arr) {
+    if (!arr || !arr.length) return undefined;
+    const w = arr.map(weightOf), tot = w.reduce((a, b) => a + b, 0);
+    let x = Math.random() * tot;
+    for (let i = 0; i < arr.length; i++) { x -= w[i]; if (x <= 0) return arr[i]; }
+    return arr[arr.length - 1];
+  }
   const rand = arr => arr[Math.floor(Math.random() * arr.length)];
   // Weekly protein mix: a typical Malaysian family week is mostly chicken and fish,
   // red meat about once, and egg/tofu/dhal as an occasional light night, not the default.
@@ -635,15 +680,15 @@ const DATA = /*__DATA__*/null;
       const want = slots[si++] || "chicken";
       const fits = arr => arr.filter(x => !used.has(x.id) && GROUP(x) === want);
       if (onepots < 1 && Math.random() < 0.18) {
-        const r = rand(fits(one));
+        const r = pickW(fits(one));
         if (r) { used.add(r.id); onepots++; days.push({ onepot: r.id }); continue; }
       }
       let c = fits(lauk);
       if (!c.length) c = lauk.filter(x => !used.has(x.id) && GROUP(x) !== "light");  // group excluded by preferences
       if (!c.length) c = lauk.filter(x => !used.has(x.id));
       if (!c.length || !sayur.length) { const o = rand(one.filter(x => !used.has(x.id))); if (o) { used.add(o.id); days.push({ onepot: o.id }); } else days.push({ off: true }); continue; }
-      const l = rand(c); used.add(l.id);
-      const s = rand(sayur.filter(x => !used.has(x.id))) || rand(sayur); used.add(s.id);
+      const l = pickW(c); used.add(l.id);
+      const s = pickW(sayur.filter(x => !used.has(x.id))) || rand(sayur); used.add(s.id);
       days.push({ lauk: l.id, sayur: s.id });
     }
     return { days };
@@ -746,6 +791,7 @@ const DATA = /*__DATA__*/null;
     }).join("");
     const pct = Math.min(1, t.toBuy / b);
     return `<div class="enter">
+      ${offlineBanner()}
       <h1>${new Date().toLocaleDateString("en-MY", { weekday: "long", day: "numeric", month: "short" })}</h1>
       <p class="sub">Dinner for ${S.settings.people} · prices from ${esc(priceLabel())}</p>
       ${S.guideSeen ? "" : `<div class="guide"><div class="gh"><b>How your week works</b><button class="link" id="guideOk">Got it</button></div>
@@ -843,7 +889,7 @@ const DATA = /*__DATA__*/null;
       <div class="search-wrap">${ic("search")}<input class="search" id="pkq" type="search" placeholder="Search dishes" value="${esc(P0.q)}" aria-label="Search dishes"></div>
       ${F.length ? `<div class="chips" role="group">${F.map(([k, l]) => `<button class="chip" data-pkf="${k}" aria-pressed="${P0.f === k}">${l}</button>`).join("")}</div>` : ""}
       <button class="btn big" id="pkRandom" style="margin-bottom:12px">${ic("swap")}Surprise me</button>
-      <div class="rlist" style="grid-template-columns:1fr">${rows.map(({ r, delta, fr }) => `<button class="rrow" data-pkid="${r.id}"><div><div class="n">${esc(r.name)}${r.spicy >= 2 ? ' <span class="pedas">•</span>' : ""}</div><div class="e">${esc(r.en)} · ${r.mins} min · ${r.macro[0]} kcal</div>${fr ? `<div style="margin-top:4px"><span class="tag ok">${ic("fridge", 12)}Uses ${fr} from your fridge</span></div>` : ""}</div><div class="m"><div style="font-weight:600;color:${Math.abs(delta) < 0.005 ? "var(--fg2)" : delta < 0 ? "var(--pos)" : "var(--fg)"}">${Math.abs(delta) < 0.005 ? "Same price" : (delta < 0 ? "−" : "+") + rm(Math.abs(delta))}</div></div></button>`).join("") || `<div class="sub" style="padding:12px 0">No other dishes match</div>`}</div>
+      <div class="rlist" style="grid-template-columns:1fr">${rows.map(({ r, delta, fr }) => `<button class="rrow" data-pkid="${r.id}"><div><div class="n">${esc(r.name)}${r.spicy >= 2 ? ' <span class="pedas">•</span>' : ""}</div><div class="e">${esc(r.en)} · ${r.mins} min · ${r.macro[0]} kcal</div>${fr || verdicts(r.id).length ? `<div class="vtags" style="margin-top:6px">${fr ? `<span class="tag ok">${ic("fridge", 12)}Uses ${fr} from your fridge</span> ` : ""}${verdictTags(r.id)}</div>` : ""}</div><div class="m"><div style="font-weight:600;color:${Math.abs(delta) < 0.005 ? "var(--fg2)" : delta < 0 ? "var(--pos)" : "var(--fg)"}">${Math.abs(delta) < 0.005 ? "Same price" : (delta < 0 ? "−" : "+") + rm(Math.abs(delta))}</div></div></button>`).join("") || `<div class="sub" style="padding:12px 0">No other dishes match</div>`}</div>
     </div></div>`;
     const y = root.querySelector(".sheet") ? root.querySelector(".sheet").scrollTop : 0;
     root.innerHTML = html; root.querySelector(".sheet").scrollTop = y;
@@ -871,7 +917,7 @@ const DATA = /*__DATA__*/null;
     const jgLine = r => r.src === "Jaya Grocer" ? `<div class="q"><a href="${esc(JG.items[r.k].url)}" target="_blank" rel="noopener" style="color:var(--fg2)">${esc(JG.items[r.k].title)} · RM ${JG.items[r.k].price.toFixed(2)}</a></div>` : "";
     const row = r => {
       const done = !!S.bought[r.k];
-      return `<label class="item ${done ? "done" : ""}"><input type="checkbox" id="b-${r.k}" data-bought="${r.k}" ${done ? "checked" : ""}><div><div class="n">${esc(r.it.name)}</div><div class="q"><b style="font-weight:600;color:var(--fg2)">${r.src === "Jaya Grocer" ? `${r.packs} × ${r.it.unit === "pc" && JG.items[r.k].size % 1 ? "pack" : qty(JG.items[r.k].size, r.it.unit, r.k)}` : qty(r.buy, r.it.unit, r.k)}</b><span>· ${unitPrice(r.k)}</span>${srcTag(r.src)}</div>${jgLine(r)}${S.bought[r.k] && S.bought[r.k].by ? `<div class="q">Ticked by ${esc(S.bought[r.k].by === myName() ? "you" : S.bought[r.k].by)}</div>` : ""}${r.have ? `<div class="q">${qty(r.have, r.it.unit, r.k)} already in your ${S.kitchen[r.k] ? S.kitchen[r.k].where : "kitchen"}</div>` : ""}${r.buy - r.need > r.it.pack * 0.25 && r.it.unit !== "pc" ? `<div class="q">Recipes use ${qty(r.need, r.it.unit, r.k)}, the rest goes to your fridge</div>` : ""}</div><span class="p">${rm(r.cost)}</span></label>`;
+      return `<label class="item ${done ? "done" : ""}"><input type="checkbox" id="b-${r.k}" data-bought="${r.k}" ${done ? "checked" : ""}><div><div class="n">${esc(r.it.name)}</div><div class="q"><b style="font-weight:600;color:var(--fg2)">${r.src === "Jaya Grocer" ? `${r.packs} × ${r.it.unit === "pc" && JG.items[r.k].size % 1 ? "pack" : qty(JG.items[r.k].size, r.it.unit, r.k)}` : qty(r.buy, r.it.unit, r.k)}</b><span>· ${unitPrice(r.k)}</span>${srcTag(r.src)}</div>${jgLine(r)}${isPending("bought." + r.k) ? `<div class="q pending">${ic("clock", 12)}Waiting to sync</div>` : S.bought[r.k] && S.bought[r.k].by ? `<div class="q">Ticked by ${esc(S.bought[r.k].by === myName() ? "you" : S.bought[r.k].by)}</div>` : ""}${r.have ? `<div class="q">${qty(r.have, r.it.unit, r.k)} already in your ${S.kitchen[r.k] ? S.kitchen[r.k].where : "kitchen"}</div>` : ""}${r.buy - r.need > r.it.pack * 0.25 && r.it.unit !== "pc" ? `<div class="q">Recipes use ${qty(r.need, r.it.unit, r.k)}, the rest goes to your fridge</div>` : ""}</div><span class="p">${rm(r.cost)}</span></label>`;
     };
     const sec = order.filter(a => groups[a]).map(a => {
       const g = groups[a].sort((x, y) => (!!S.bought[x.k] - !!S.bought[y.k]) || y.cost - x.cost);
@@ -884,6 +930,7 @@ const DATA = /*__DATA__*/null;
     const lockNote = "";
     const pct = all.length ? got / all.length : 0;
     return `<div class="enter">
+      ${offlineBanner()}
       <h1>Shopping list</h1>
       <p class="sub">Rounded up to what shops sell. Prices from ${esc(priceLabel())}</p>
       ${shopLine()}
@@ -925,11 +972,11 @@ const DATA = /*__DATA__*/null;
   }
 
   function viewRecipes() {
-    const F = [["all", "All"], ["chicken", "Ayam"], ["beef", "Daging"], ["fish", "Ikan"], ["seafood", "Udang & sotong"], ["egg", "Telur & tauhu"], ["sayur", "Sayur"], ["onepot", "One-pot"]];
+    const F = [["all", "All"], ["liked", "Liked"], ["chicken", "Ayam"], ["beef", "Daging"], ["fish", "Ikan"], ["seafood", "Udang & sotong"], ["egg", "Telur & tauhu"], ["sayur", "Sayur"], ["onepot", "One-pot"]];
     const q = S.q.trim().toLowerCase();
     const list = RECIPES.filter(allowed).filter(r => {
       const f = S.filter;
-      const okF = f === "all" || (f === "sayur" ? r.kind === "sayur" : f === "onepot" ? r.kind === "onepot" : f === "beef" ? (r.protein === "beef" || r.protein === "mutton") && r.kind !== "sayur" : f === "egg" ? (["egg", "tofu", "veg"].includes(r.protein) && r.kind === "lauk") : r.protein === f && r.kind !== "sayur");
+      const okF = f === "all" || (f === "liked" ? ratingsOf(r.id).some(x => x.v === 1) : f === "sayur" ? r.kind === "sayur" : f === "onepot" ? r.kind === "onepot" : f === "beef" ? (r.protein === "beef" || r.protein === "mutton") && r.kind !== "sayur" : f === "egg" ? (["egg", "tofu", "veg"].includes(r.protein) && r.kind === "lauk") : r.protein === f && r.kind !== "sayur");
       return okF && (!q || (r.name + " " + r.en).toLowerCase().includes(q));
     });
     return `<div class="enter">
@@ -937,7 +984,10 @@ const DATA = /*__DATA__*/null;
       <p class="sub">${RECIPES.length} everyday dishes${RECIPES.filter(allowed).length < RECIPES.length ? `, ${RECIPES.length - RECIPES.filter(allowed).length} hidden by your preferences` : ""}</p>
       <div class="search-wrap">${ic("search")}<input class="search" id="q" type="search" placeholder="Search" value="${esc(S.q)}" aria-label="Search recipes"></div>
       <div class="chips" role="group" aria-label="Filter">${F.map(([k, l]) => `<button class="chip" data-filter="${k}" aria-pressed="${S.filter === k}">${l}</button>`).join("")}</div>
-      <div class="rlist">${list.map(r => `<button class="rrow" data-recipe="${r.id}"><div><div class="n">${esc(r.name)}${r.spicy >= 2 ? ' <span class="pedas">•</span>' : ""}</div><div class="e">${esc(r.en)}</div></div><div class="m"><div>${r.mins} min</div><div style="color:var(--muted)">${r.macro[0]} kcal</div></div></button>`).join("") || `<div style="padding:16px;color:var(--muted)">No dishes match</div>`}</div>
+      ${(() => { const fav = S.filter === "all" && !q ? list.filter(r => ratingsOf(r.id).some(x => x.v === 1)) : [];
+        const row = r => `<button class="rrow" data-recipe="${r.id}"><div><div class="n">${esc(r.name)}${r.spicy >= 2 ? ' <span class="pedas">•</span>' : ""}</div><div class="e">${esc(r.en)}</div>${verdicts(r.id).length ? `<div class="vtags" style="margin-top:6px">${verdictTags(r.id)}</div>` : ""}</div><div class="m"><div>${r.mins} min</div><div style="color:var(--muted)">${r.macro[0]} kcal</div></div></button>`;
+        return fav.length ? `<div class="group"><h3><span>Family favourites</span><span>${fav.length}</span></h3><div class="rlist">${fav.map(row).join("")}</div></div><h3 style="font-size:14px;font-weight:600;color:var(--fg2);margin:0 0 8px">All dishes</h3>` : ""; })()}
+      <div class="rlist">${list.map(r => `<button class="rrow" data-recipe="${r.id}"><div><div class="n">${esc(r.name)}${r.spicy >= 2 ? ' <span class="pedas">•</span>' : ""}</div><div class="e">${esc(r.en)}</div>${verdicts(r.id).length ? `<div class="vtags" style="margin-top:6px">${verdictTags(r.id)}</div>` : ""}</div><div class="m"><div>${r.mins} min</div><div style="color:var(--muted)">${r.macro[0]} kcal</div></div></button>`).join("") || `<div style="padding:16px;color:var(--muted)">No dishes match</div>`}</div>
     </div>`;
   }
 
@@ -1096,6 +1146,12 @@ const DATA = /*__DATA__*/null;
       <div class="meta"><span class="tag">${ic("clock", 12)}${r.mins} min</span><span class="tag">${r.guide.length} steps</span><span class="tag">${esc(r.cuisine)}</span>${r.spicy >= 2 ? '<span class="tag pedas">Pedas</span>' : r.spicy ? '<span class="tag">Mild heat</span>' : ""}<span class="tag num">${rm(dishCost(r))} for ${n}</span></div>
       ${macroBox(r)}
       <button class="btn primary big" data-cookone="${r.id}">${ic("flame")}Start cooking</button>
+      <div class="verdict">
+        <div class="vh">What your family thinks</div>
+        <div class="vtags">${verdictTags(r.id) || `<span class="k">No one has rated it yet</span>`}</div>
+        <div class="k" style="margin-top:6px">Your verdict</div>
+        <div class="toggle three" role="group" aria-label="Your verdict on ${esc(r.name)}">${[[1, "Liked"], [0, "OK"], [-1, "Not again"]].map(([v, l]) => `<button data-rate="${r.id}:${v}" data-rsheet="1" aria-pressed="${myRating(r.id) === v}">${l}</button>`).join("")}</div>
+      </div>
       <h3>Ingredients for ${n}</h3>${ing}
       <p class="fine">Draft recipe, not yet tested by a home cook</p>
     </div></div>`;
@@ -1245,7 +1301,13 @@ const DATA = /*__DATA__*/null;
       foot = `<button class="btn" id="ckBack">Back</button><button class="btn primary" id="ckNext">${C.step + 1 < total ? "Next" : "Finish"}</button>`;
     } else {
       const took = C.started ? Math.max(1, Math.round((Date.now() - C.started) / 60000)) : 0;
-      body = `<div class="done-mark">${ic("check", 40)}</div><div class="done-t">${C.ids.length > 1 ? "Dinner is ready" : `${esc(RX[C.ids[0]].name)} is ready`}</div><p class="sub">${C.started ? `Cooked in ${took} min. ` : ""}Selamat makan.</p>`;
+      if (!C.toRate) C.toRate = C.ids.filter(id => myRating(id) === undefined);
+      const rateRows = C.toRate.map(id => { const mine = myRating(id), r = RX[id];
+        return `<div class="rate"><div class="rh"><b>${esc(r.name)}</b><span>${r.kind === "sayur" ? "Sayur" : r.kind === "onepot" ? "One-pot" : "Lauk"}</span></div>
+          <div class="rbtns">${[[1, "Liked"], [0, "OK"], [-1, "Not again"]].map(([v, l]) => `<button data-rate="${id}:${v}" aria-pressed="${mine === v}">${l}</button>`).join("")}</div>
+          ${mine === 1 ? `<div class="rnote good">Saved. It'll come up more often</div>` : mine === -1 ? `<div class="rnote">Saved. It'll come up less, and your family will see you don't like it</div>` : mine === 0 ? `<div class="rnote">Saved</div>` : ""}</div>`; }).join("");
+      body = `<div class="done-mark">${ic("check", 40)}</div><div class="done-t">${C.ids.length > 1 ? "Dinner is ready" : `${esc(RX[C.ids[0]].name)} is ready`}</div><p class="sub">${C.started ? `Cooked in ${took} min. ` : ""}Selamat makan.</p>
+        ${rateRows ? `<div class="vh" style="margin:20px 0 10px">How did you find it?</div>${rateRows}` : ""}`;
       foot = `<button class="btn" id="ckBack">Back</button><button class="btn primary" id="ckNext">${C.day != null ? "Mark as cooked" : "Close"}</button>`;
     }
     root.innerHTML = `<div class="cook" role="dialog" aria-modal="true" aria-label="Cooking ${esc(names)}">
@@ -1271,6 +1333,7 @@ const DATA = /*__DATA__*/null;
     if ($("tReset")) $("tReset").onclick = () => { delete C.timers[C.step]; renderCook(true); };
     if ($("tAck")) $("tAck").onclick = () => { t.acked = true; SFX.alarm(false); renderCook(true); };
     root.querySelectorAll("[data-jump]").forEach(b => b.onclick = () => { const i = +b.dataset.jump, tt = C.timers[i]; if (tt.rang) { tt.acked = true; SFX.alarm(false); } C.dir = i > C.step ? 1 : -1; C.step = i; renderCook(); });
+    root.querySelectorAll("[data-rate]").forEach(b => b.onclick = () => { const [id, v] = b.dataset.rate.split(":"); rate(id, +v); SFX.tick(); renderCook(true); });
     root.querySelectorAll("[data-prep]").forEach(el => el.onchange = () => {
       captureTweens(); C.prepped[el.dataset.prep] = el.checked; el.checked ? SFX.tick() : SFX.untick();
       const y = root.querySelector(".cook-body").scrollTop; renderCook(true); root.querySelector(".cook-body").scrollTop = y;
@@ -1292,7 +1355,7 @@ const DATA = /*__DATA__*/null;
   let AUTH = null; try { AUTH = JSON.parse(localStorage.getItem(AUTH_KEY) || "null"); } catch (e) {}
   let HH = AUTH ? AUTH.household : null, MEMBERS = [], VER = 0, SYNCED = null, pushT = null, pulling = false, deferRender = false;
   const A = { mode: "start", err: "", busy: false };   // auth screen state
-  const SHARED_WHOLE = ["settings", "plan", "flow", "onboarded"], SHARED_MAPS = ["bought", "pantryNeed", "kitchen"];
+  const SHARED_WHOLE = ["settings", "plan", "flow", "onboarded"], SHARED_MAPS = ["bought", "pantryNeed", "kitchen", "ratings"];
   const myName = () => (AUTH && AUTH.member && AUTH.member.name) || "";
   function snapshot() {
     const f = {};
@@ -1306,7 +1369,21 @@ const DATA = /*__DATA__*/null;
     if (!r.ok) throw Object.assign(new Error(j.error || `Error ${r.status}`), { status: r.status });
     return j;
   }
-  function setOnline(ok) { const el = document.getElementById("syncdot"); if (el) { el.hidden = ok; } }
+  let OFFLINE = false;
+  const SYNC_KEY = "masakje.sync.v1";
+  function saveSync() { try { localStorage.setItem(SYNC_KEY, JSON.stringify({ hh: HH && HH.id, ver: VER, synced: SYNCED })); } catch (e) {} }
+  function loadSync() { try { const d = JSON.parse(localStorage.getItem(SYNC_KEY) || "null"); if (d && HH && d.hh === HH.id && d.synced) { SYNCED = d.synced; VER = d.ver || 0; } } catch (e) {} }
+  const pendingFields = () => { if (!SYNCED) return []; const now = snapshot(); return Object.keys(now).filter(f => SYNCED[f] !== now[f]).concat(Object.keys(SYNCED).filter(f => !(f in now))); };
+  const isPending = f => CLOUD && OFFLINE && SYNCED && pendingFields().includes(f);
+  function offlineBanner() {
+    if (!CLOUD || !AUTH || !OFFLINE) return "";
+    const n = pendingFields().filter(f => f.startsWith("bought.")).length;
+    return `<div class="offline" role="status"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 2l20 20"/><path d="M8.5 16.5a5 5 0 0 1 7 0"/><path d="M2 8.8a15 15 0 0 1 4.2-2.7"/><path d="M10.7 5.1A15 15 0 0 1 22 8.8"/><path d="M5 12.9a10 10 0 0 1 5.2-2.7"/><path d="M19 12.9a10 10 0 0 0-2.4-1.7"/><path d="M12 20h.01"/></svg><div><b>No signal.</b> Keep ticking. ${n ? `Your ${n} ${n === 1 ? "tick is" : "ticks are"}` : "Your changes are"} saved on this phone and sync when you're back online</div></div>`;
+  }
+  function setOnline(ok, synced) {
+    if (ok && OFFLINE) { OFFLINE = false; toast(synced ? `Back online · ${synced} ${synced === 1 ? "change" : "changes"} synced` : "Back online"); safeRender(); }
+    else if (!ok && !OFFLINE) { OFFLINE = true; safeRender(); }
+  }
   function handleErr(e) {
     if (e.status === 401) { signOut(true); return; }
     setOnline(false);
@@ -1322,7 +1399,7 @@ const DATA = /*__DATA__*/null;
       const r = await api("state", { method: "POST", body: JSON.stringify({ set, del }) });
       for (const f of Object.keys(set)) SYNCED[f] = now[f];
       del.forEach(f => delete SYNCED[f]);
-      VER = r.ver; setOnline(true);
+      VER = r.ver; saveSync(); setOnline(true, Object.keys(set).length + del.length);
     } catch (e) { handleErr(e); }
   }
   async function pull(force) {
@@ -1337,13 +1414,20 @@ const DATA = /*__DATA__*/null;
       AUTH.household = HH; try { localStorage.setItem(AUTH_KEY, JSON.stringify(AUTH)); } catch (e) {}
       const before = JSON.stringify(snapshot());
       const fields = r.fields || {};
-      SHARED_WHOLE.forEach(k => { if (fields[k] !== undefined) S[k] = JSON.parse(fields[k]); });
-      SHARED_MAPS.forEach(m => { const o = {}; Object.entries(fields).forEach(([f, v]) => { if (f.startsWith(m + ".")) o[f.slice(m.length + 1)] = JSON.parse(v); }); S[m] = o; });
+      // changes we haven't managed to send yet stay as they are; everything else follows the server
+      const local = snapshot(), dirty = new Set(SYNCED ? pendingFields() : []);
+      SHARED_WHOLE.forEach(k => { if (!dirty.has(k) && fields[k] !== undefined) S[k] = JSON.parse(fields[k]); });
+      SHARED_MAPS.forEach(m => {
+        const o = {};
+        Object.entries(fields).forEach(([f, v]) => { if (f.startsWith(m + ".") && !dirty.has(f)) o[f.slice(m.length + 1)] = JSON.parse(v); });
+        dirty.forEach(f => { if (f.startsWith(m + ".") && f in local) o[f.slice(m.length + 1)] = JSON.parse(local[f]); });
+        S[m] = o;
+      });
       if (!S.flow) S.flow = { shopped: false, cooked: {} };
       if (!S.settings) S.settings = clone(DEFAULTS);
-      SYNCED = { ...fields };
+      SYNCED = { ...fields }; saveSync();
       if (!fields.onboarded && S.onboarded) { SYNCED = {}; }        // first device to finish setup: push everything
-      try { localStorage.setItem(STORE, JSON.stringify({ settings: S.settings, plan: S.plan, bought: S.bought, pantryNeed: S.pantryNeed, flow: S.flow, kitchen: S.kitchen, onboarded: S.onboarded, guideSeen: S.guideSeen })); } catch (e) {}
+      try { localStorage.setItem(STORE, JSON.stringify({ settings: S.settings, plan: S.plan, bought: S.bought, pantryNeed: S.pantryNeed, flow: S.flow, kitchen: S.kitchen, ratings: S.ratings, onboarded: S.onboarded, guideSeen: S.guideSeen })); } catch (e) {}
       if (before !== JSON.stringify(snapshot()) || force) { CTX = null; safeRender(); }
       else updateMembersLine();
       if (!Object.keys(SYNCED).length) schedulePush();
@@ -1359,6 +1443,10 @@ const DATA = /*__DATA__*/null;
   function membersHtml() { return MEMBERS.map(m => `<span class="tag">${esc(m.name)}${AUTH && m.id === AUTH.member.id ? " (you)" : ""}</span>`).join(" "); }
   function startSync() {
     if (!CLOUD || !AUTH) return;
+    loadSync();
+    if (navigator.onLine === false) OFFLINE = true;
+    window.addEventListener("online", () => pull(false));
+    window.addEventListener("offline", () => setOnline(false));
     pull(true);
     setInterval(() => { if (document.visibilityState === "visible") pull(false); }, 12000);
     document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") pull(false); });
@@ -1372,7 +1460,7 @@ const DATA = /*__DATA__*/null;
       HH = r.household;
       try { localStorage.setItem(AUTH_KEY, JSON.stringify(AUTH)); } catch (e) {}
       // a new device starts from the household's state, not whatever this browser had before
-      S.onboarded = false; S.plan = null; S.bought = {}; S.pantryNeed = {}; S.kitchen = {}; S.flow = { shopped: false, cooked: {} };
+      S.onboarded = false; S.plan = null; S.bought = {}; S.pantryNeed = {}; S.kitchen = {}; S.ratings = {}; S.flow = { shopped: false, cooked: {} };
       A.busy = false; A.mode = path === "household" ? "created" : "start";
       SYNCED = null; await pull(true); startSyncOnce();
       if (path === "join") { S.ob = S.onboarded ? S.ob : 0; render(); }
@@ -1385,7 +1473,7 @@ const DATA = /*__DATA__*/null;
     if (!expired) { try { await api("leave", { method: "POST" }); } catch (e) {} }
     AUTH = null; HH = null; SYNCED = null; MEMBERS = [];
     try { localStorage.removeItem(AUTH_KEY); localStorage.removeItem(STORE); } catch (e) {}
-    S.onboarded = false; S.plan = null; S.bought = {}; S.pantryNeed = {}; S.kitchen = {}; A.mode = "start"; A.err = expired ? "You were signed out. Log in again with your household PIN" : "";
+    S.onboarded = false; S.plan = null; S.bought = {}; S.pantryNeed = {}; S.kitchen = {}; S.ratings = {}; A.mode = "start"; A.err = expired ? "You were signed out. Log in again with your household PIN" : "";
     render();
   }
   function viewAuth() {
@@ -1456,7 +1544,7 @@ const DATA = /*__DATA__*/null;
   function go(tab) { S.tab = tab; render(); window.scrollTo({ top: 0 }); }
 
   document.addEventListener("click", e => {
-    const el = e.target.closest("[data-tab],[data-go],[data-swap],[data-off],[data-recipe],[data-filter],[data-people],[data-night],[data-avoid],[data-allergy],[data-dislike],[data-pick],[data-sound],[data-clear],[data-pneed],[data-applysave],[data-tonight],[data-pickday],[data-cookday],[data-cookone],#regen,#replan,#where,#lock,#shopped,#newweek,#obNext,#obBack,#guideOk,#logo,#savehood,[data-hide],[data-amode],#doCreate,#doJoin,#copyPin,#afterCreated,#leave,#leaveYes,#moreshops,#addshop,#saveshop,#replanK,[data-kadd],[data-kdel],[data-kmove],[data-ksoon]");
+    const el = e.target.closest("[data-tab],[data-go],[data-swap],[data-off],[data-recipe],[data-filter],[data-people],[data-night],[data-avoid],[data-allergy],[data-dislike],[data-pick],[data-sound],[data-clear],[data-pneed],[data-applysave],[data-rate],[data-tonight],[data-pickday],[data-cookday],[data-cookone],#regen,#replan,#where,#lock,#shopped,#newweek,#obNext,#obBack,#guideOk,#logo,#savehood,[data-hide],[data-amode],#doCreate,#doJoin,#copyPin,#afterCreated,#leave,#leaveYes,#moreshops,#addshop,#saveshop,#replanK,[data-kadd],[data-kdel],[data-kmove],[data-ksoon]");
     if (!el) return;
     const s = S.settings;
     if (el.dataset.tab) return go(el.dataset.tab);
@@ -1469,6 +1557,7 @@ const DATA = /*__DATA__*/null;
     if (el.dataset.pickday !== undefined) { const di = +el.dataset.pickday; closeSheet(); return openPicker(di, S.plan.days[di].onepot ? "onepot" : "lauk"); }
     if (el.dataset.pneed) { const [k, v] = el.dataset.pneed.split(":"); captureTweens(); if (v === "1") S.pantryNeed[k] = true; else delete S.pantryNeed[k]; v === "1" ? SFX.tick() : SFX.untick(); save(); return render(); }
     if (el.dataset.clear) { const k = el.dataset.clear; s[k] = k === "avoid" ? { chicken: false, beef: false, mutton: false, pedas: false } : {}; save(); return render(); }
+    if (el.dataset.rate && el.dataset.rsheet) { const [id, v] = el.dataset.rate.split(":"); rate(id, +v); SFX.tick(); const y = document.querySelector(".sheet") ? document.querySelector(".sheet").scrollTop : 0; openRecipe(id); const sh = document.querySelector(".sheet"); if (sh) { sh.classList.add("open"); sh.scrollTop = y; } return; }
     if (el.dataset.applysave) { const [i, slot, id] = el.dataset.applysave.split(":"); captureTweens(); S.plan.days[+i][slot] = id; save(); render(); toast(`Changed to ${RX[id].name}`); return; }
     if (el.dataset.pick) { const [i, slot] = el.dataset.pick.split(":"); return openPicker(+i, slot); }
     if (el.dataset.sound !== undefined) { S.settings.sound = S.settings.sound === false; save(); if (S.settings.sound !== false) SFX.tick(); return render(); }
@@ -1546,5 +1635,6 @@ const DATA = /*__DATA__*/null;
   document.addEventListener("keydown", e => { if (e.key === "Escape") { if (C) stopCooking(); else closeSheet(); } });
   render();
   if (CLOUD && AUTH) startSyncOnce();
+  if (CLOUD && "serviceWorker" in navigator) { try { navigator.serviceWorker.register("/sw.js").catch(() => {}); } catch (e) {} }
 })();
 </script>

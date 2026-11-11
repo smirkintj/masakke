@@ -2,11 +2,11 @@
 // POST /api/state { set: {field: value}, del: [field] } -> update shared fields
 //
 // Shared state is a Redis hash. Whole objects use plain names (settings, plan, flow, onboarded);
-// per-item maps use one field per item (bought.kangkung, kitchen.chicken), so two people ticking
+// per-item maps use one field per item (bought.kangkung, kitchen.chicken, ratings.<dish>~<member>), so two people ticking
 // different items at the same time never overwrite each other.
 import { redis, send, readBody, auth, hashToObj, guard } from "./_lib.js";
 
-const FIELD = /^(settings|plan|flow|onboarded|(bought|pantryNeed|kitchen)\.[A-Za-z0-9_-]{1,60})$/;
+const FIELD = /^(settings|plan|flow|onboarded|(bought|pantryNeed|kitchen)\.[A-Za-z0-9_-]{1,60}|ratings\.[A-Za-z0-9_-]{1,60}~[A-Za-z0-9_-]{1,60})$/;
 
 export default async function handler(req, res) {
   if (!guard(res)) return;
