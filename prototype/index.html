@@ -551,6 +551,7 @@ const DATA = {"ingredients":{"chicken":{"name":"Chicken (whole, cleaned)","unit"
   function allowed(r) {
     const s = S.settings, a = s.avoid;
     if ((a.beef && r.protein === "beef") || (a.mutton && r.protein === "mutton") || (a.pedas && r.spicy >= 2)) return false;
+    if (a.chicken && r.ing.some(([k]) => k.startsWith("chicken"))) return false;
     const banned = new Set(Object.keys(s.dislike).filter(k => s.dislike[k]));
     for (const [id, , keys] of ALLERGENS) if (s.allergy[id]) keys.forEach(k => banned.add(k));
     return !r.ing.some(([k]) => banned.has(k));
@@ -849,7 +850,7 @@ const DATA = {"ingredients":{"chicken":{"name":"Chicken (whole, cleaned)","unit"
   }
   function prefsBlock() {
     const s = S.settings;
-    const av = [["beef", "Beef"], ["mutton", "Mutton"], ["pedas", "Very spicy"]];
+    const av = [["chicken", "Chicken"], ["beef", "Beef"], ["mutton", "Mutton"], ["pedas", "Very spicy"]];
     const left = RECIPES.filter(allowed).length;
     return `<div class="field"><div class="lblrow"><span class="lbl">Allergies</span>${Object.values(s.allergy).some(Boolean) ? `<button class="link" data-clear="allergy">Clear</button>` : ""}</div><div class="seg" role="group">${ALLERGENS.map(([k, l]) => `<button data-allergy="${k}" aria-pressed="${!!s.allergy[k]}">${l}</button>`).join("")}</div><div class="hint">Removes every dish with that ingredient, including sauces (oyster sauce and belacan count as shellfish, kicap as soy and wheat). Always check product labels.</div></div>
       <div class="field"><div class="lblrow"><span class="lbl">Vegetables you don't eat</span>${Object.values(s.dislike).some(Boolean) ? `<button class="link" data-clear="dislike">Clear</button>` : ""}</div><div class="seg" role="group">${VEG.map(k => `<button data-dislike="${k}" aria-pressed="${!!s.dislike[k]}">${esc(ING[k].name.replace(/ \(.*\)/, ""))}</button>`).join("")}</div></div>
@@ -1120,7 +1121,7 @@ const DATA = {"ingredients":{"chicken":{"name":"Chicken (whole, cleaned)","unit"
     if (el.dataset.swap) { const [i, slot] = el.dataset.swap.split(":"); return swap(+i, slot); }
     if (el.dataset.off !== undefined) return toggleOff(+el.dataset.off);
     if (el.dataset.recipe) return openRecipe(el.dataset.recipe);
-    if (el.dataset.clear) { const k = el.dataset.clear; s[k] = k === "avoid" ? { beef: false, mutton: false, pedas: false } : {}; save(); return render(); }
+    if (el.dataset.clear) { const k = el.dataset.clear; s[k] = k === "avoid" ? { chicken: false, beef: false, mutton: false, pedas: false } : {}; save(); return render(); }
     if (el.dataset.pick) { const [i, slot] = el.dataset.pick.split(":"); return openPicker(+i, slot); }
     if (el.dataset.sound !== undefined) { S.settings.sound = S.settings.sound === false; save(); if (S.settings.sound !== false) SFX.tick(); return render(); }
     if (el.dataset.cookday !== undefined) { const di = +el.dataset.cookday; return startCooking(dayItems(S.plan.days[di]).map(r => r.id), di); }
