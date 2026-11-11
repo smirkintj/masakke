@@ -58,7 +58,7 @@ button:disabled { cursor: default; opacity: 0.5; }
 .where span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .where:hover { background: var(--raised); }
 
-h1 { font-size: 30px; line-height: 1.15; font-weight: 600; margin: 12px 0 4px; text-wrap: balance; }
+h1 { font-size: 30px; line-height: 1.15; font-weight: 500; margin: 12px 0 4px; text-wrap: balance; }
 .sub { color: var(--fg2); font-size: 15px; margin: 0 0 20px; }
 .link { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; background: none; border: 0; padding: 0; font-size: inherit; font-weight: 500; }
 
@@ -73,15 +73,15 @@ h1 { font-size: 30px; line-height: 1.15; font-weight: 600; margin: 12px 0 4px; t
 .flow .done i, .flow .now i { background: var(--accent-bright); }
 .flow .now { color: var(--accent); }
 .flow .done { color: var(--fg2); }
-.next { background: var(--accent-soft); border-radius: 24px; padding: 20px; display: grid; gap: 16px; }
-.next .k { font-size: 13px; font-weight: 600; color: var(--accent); letter-spacing: 0.02em; }
-.next .t { font-size: 22px; line-height: 28px; font-weight: 600; margin-top: 4px; }
+.next { background: var(--accent-soft); border-radius: 20px; padding: 20px; display: grid; gap: 16px; }
+.next .k { font-size: 14px; font-weight: 500; color: var(--accent); }
+.next .t { font-size: 22px; line-height: 28px; font-weight: 500; margin-top: 4px; }
 .next .d { font-size: 15px; color: var(--fg2); margin-top: 6px; }
 
 /* summary */
-.summary { background: var(--card); border: 1px solid var(--line); border-radius: 24px; padding: 20px; }
+.summary { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 20px; }
 .summary .k { font-size: 14px; color: var(--fg2); }
-.summary .big { font-size: 36px; line-height: 1.1; font-weight: 600; margin: 4px 0 16px; white-space: nowrap; }
+.summary .big { font-size: 36px; line-height: 1.1; font-weight: 500; margin: 4px 0 16px; white-space: nowrap; }
 .meter { height: 8px; border-radius: 4px; background: var(--raised); overflow: hidden; }
 .meter div { height: 100%; border-radius: 4px; background: var(--accent-bright); transform-origin: left; transition: transform 400ms var(--ease); }
 .meter.over div { background: var(--neg); }
@@ -93,13 +93,13 @@ h1 { font-size: 30px; line-height: 1.15; font-weight: 600; margin: 12px 0 4px; t
 
 /* days */
 .section-h { display: flex; justify-content: space-between; align-items: center; margin: 0 0 12px; gap: 12px; }
-.section-h h2 { font-size: 20px; font-weight: 600; margin: 0; }
+.section-h h2 { font-size: 20px; font-weight: 500; margin: 0; }
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 16px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--fg); font-size: 15px; font-weight: 500; transition: background-color 150ms var(--ease), transform 120ms var(--ease); white-space: nowrap; }
 .btn:hover { background: var(--surface); }
 .btn:active { transform: scale(0.98); }
-.btn.primary { background: var(--accent); border-color: transparent; color: var(--accent-ink); font-weight: 600; }
+.btn.primary { background: var(--accent); border-color: transparent; color: var(--accent-ink); }
 .btn.primary:hover { filter: brightness(1.07); }
-.btn.big { height: 52px; width: 100%; font-size: 16px; border-radius: 14px; }
+.btn.big { height: 52px; width: 100%; font-size: 16px; }
 .days { display: grid; gap: 12px; }
 .day { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 14px 14px 12px 16px; display: grid; gap: 4px; }
 .day.off { background: var(--surface); border-color: transparent; }
@@ -110,8 +110,10 @@ h1 { font-size: 30px; line-height: 1.15; font-weight: 600; margin: 12px 0 4px; t
 .dishes { display: grid; gap: 2px; min-width: 0; }
 .dish { display: grid; grid-template-columns: 1fr auto 40px; align-items: center; gap: 8px; min-height: 52px; }
 .dish-main { min-width: 0; text-align: left; background: none; border: 0; padding: 4px 0; border-radius: 8px; }
-.dish-main .n { display: block; font-weight: 600; font-size: 16px; line-height: 22px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dish-main .n { display: block; font-weight: 500; font-size: 16px; line-height: 22px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dish-main .e { display: block; font-size: 14px; line-height: 20px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dish.pickable { grid-template-columns: minmax(0, 1fr) auto; }
+.next .dish-main .n, .next .dish-main .e { white-space: normal; }
 .dish .c { font-size: 14px; color: var(--fg2); white-space: nowrap; }
 .icon-btn { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 12px; border: 0; background: transparent; color: var(--muted); transition: background-color 150ms var(--ease), color 150ms var(--ease); }
 .icon-btn:hover { background: var(--surface); color: var(--fg); }
@@ -143,7 +145,7 @@ h1 { font-size: 30px; line-height: 1.15; font-weight: 600; margin: 12px 0 4px; t
 .totals .k { font-size: 13px; color: var(--muted); }
 
 /* recipes */
-.search { width: 100%; height: 48px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); padding: 0 14px 0 42px; font-size: 16px; }
+.search { width: 100%; height: 48px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); padding: 0 14px 0 42px; font-size: 16px; }
 .search-wrap { position: relative; margin-bottom: 12px; }
 .search-wrap svg { position: absolute; left: 14px; top: 16px; color: var(--muted); }
 .chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 16px; scrollbar-width: none; }
@@ -152,7 +154,7 @@ h1 { font-size: 30px; line-height: 1.15; font-weight: 600; margin: 12px 0 4px; t
 .rlist { display: grid; gap: 8px; }
 .rrow { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; padding: 14px 16px; border: 1px solid var(--line); border-radius: 18px; background: var(--card); text-align: left; width: 100%; transition: background-color 150ms var(--ease); }
 .rrow:hover { background: var(--surface); }
-.rrow .n { font-weight: 600; }
+.rrow .n { font-weight: 500; }
 .rrow .e { font-size: 14px; color: var(--muted); }
 .rrow .m { text-align: right; font-size: 14px; color: var(--fg2); white-space: nowrap; }
 
@@ -163,7 +165,7 @@ h1 { font-size: 30px; line-height: 1.15; font-weight: 600; margin: 12px 0 4px; t
 .seg { display: flex; gap: 8px; flex-wrap: wrap; }
 .seg button { min-width: 48px; height: 44px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); font-size: 15px; font-weight: 500; transition: background-color 150ms var(--ease); }
 .seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
-.inp { width: 100%; height: 48px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); padding: 0 14px; font-size: 16px; }
+.inp { width: 100%; height: 48px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); padding: 0 14px; font-size: 16px; }
 .pc-row { display: grid; grid-template-columns: 140px 1fr; gap: 12px; align-items: center; }
 .pc-row .inp { font-size: 20px; font-weight: 600; letter-spacing: 0.04em; }
 .pc-place { font-size: 15px; color: var(--fg2); }
@@ -177,11 +179,16 @@ h1 { font-size: 30px; line-height: 1.15; font-weight: 600; margin: 12px 0 4px; t
 .shop input { width: 20px; height: 20px; accent-color: var(--accent); margin: 0; }
 .shop .n { font-size: 15px; line-height: 21px; font-weight: 500; }
 .shop .q { font-size: 13px; color: var(--muted); line-height: 18px; }
+.shop .hrs { margin-top: 2px; }
+.shop .hrs.open { color: var(--pos); }
 .shop .km { font-size: 14px; color: var(--fg2); text-align: right; white-space: nowrap; }
 .shop-more { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px; }
 .addshop { margin-top: 12px; background: var(--surface); border-radius: 20px; padding: 16px; display: grid; gap: 12px; }
 .addshop .row { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
 .addshop .chainmsg { font-size: 14px; color: var(--fg2); }
+.lblrow { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 10px; }
+.lblrow .lbl { font-size: 15px; font-weight: 500; }
+.lblrow .link { font-size: 14px; text-decoration: none; }
 .fine { font-size: 13px; color: var(--muted); line-height: 20px; margin: 24px 0 0; }
 .ob-step { font-size: 13px; color: var(--muted); margin-top: 8px; font-weight: 500; }
 .ob-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 8px 0 0; }
@@ -203,15 +210,19 @@ h1 { font-size: 30px; line-height: 1.15; font-weight: 600; margin: 12px 0 4px; t
 .sheet.open { transform: none; opacity: 1; }
 .sheet-in { max-width: 600px; margin: 0 auto; position: relative; }
 .grab { width: 40px; height: 5px; border-radius: 3px; background: var(--raised); margin: 4px auto 16px; }
-.sheet h2 { font-size: 26px; line-height: 1.2; font-weight: 600; margin: 0 48px 4px 0; }
+.sheet h2 { font-size: 26px; line-height: 1.2; font-weight: 500; margin: 0 48px 4px 0; }
 .meta { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0 20px; }
 .sheet h3 { font-size: 17px; font-weight: 600; margin: 24px 0 8px; }
+.macros { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 4px; }
+.macros div { background: var(--surface); border-radius: 12px; padding: 10px 8px; text-align: center; display: grid; gap: 2px; }
+.macros b { font-size: 17px; font-weight: 500; }
+.macros span { font-size: 12px; color: var(--muted); }
 .ing { display: grid; grid-template-columns: 1fr auto; gap: 8px; padding: 10px 0; border-top: 1px solid var(--line); font-size: 15px; }
 .ing:first-of-type { border-top: 0; }
 .ing .up { display: block; font-size: 13px; color: var(--muted); }
 .ing .q { font-weight: 500; color: var(--fg); white-space: nowrap; }
 .close { position: absolute; right: -8px; top: -4px; }
-.toast { position: fixed; left: 50%; bottom: calc(88px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 40; background: var(--fg); color: var(--bg); padding: 12px 16px; border-radius: 14px; font-size: 14px; max-width: calc(100% - 32px); }
+.toast { position: fixed; left: 0; right: 0; margin-inline: auto; width: max-content; bottom: calc(88px + env(safe-area-inset-bottom, 0px)); z-index: 40; background: var(--fg); color: var(--bg); padding: 12px 16px; border-radius: 14px; font-size: 14px; max-width: calc(100% - 32px); }
 
 /* cooking mode */
 .cook { position: fixed; inset: 0; z-index: 30; background: var(--bg); display: grid; grid-template-rows: auto 1fr auto; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
@@ -224,18 +235,18 @@ h1 { font-size: 30px; line-height: 1.15; font-weight: 600; margin: 12px 0 4px; t
 .segs i.on { background: var(--accent-bright); }
 .cook-body { overflow-y: auto; padding: 20px 0 24px; }
 .step-no { font-size: 14px; font-weight: 600; color: var(--accent); margin-bottom: 12px; }
-.step-t { font-size: 26px; line-height: 34px; font-weight: 600; margin: 0 0 28px; text-wrap: pretty; }
+.step-t { font-size: 26px; line-height: 34px; font-weight: 500; margin: 0 0 28px; text-wrap: pretty; }
 .need { display: grid; gap: 10px; margin-bottom: 24px; }
 .need .lbl { font-size: 14px; font-weight: 600; color: var(--fg2); }
 .need-list { display: flex; flex-wrap: wrap; gap: 8px; }
 .need-chip { display: inline-flex; align-items: baseline; gap: 8px; padding: 10px 14px; border-radius: 14px; background: var(--accent-soft); font-size: 16px; }
 .need-chip b { font-weight: 600; }
-.timer { background: var(--surface); border-radius: 24px; padding: 20px; display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; }
-.timer .clock { font-size: 48px; line-height: 1; font-weight: 600; }
+.timer { background: var(--surface); border-radius: 20px; padding: 20px; display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; }
+.timer .clock { font-size: 48px; line-height: 1; font-weight: 500; }
 .timer .lbl { font-size: 14px; color: var(--muted); margin-top: 8px; }
 .timer.ring { background: var(--accent-soft); box-shadow: inset 0 0 0 2px var(--accent-line); }
 .timer .acts { display: flex; gap: 8px; }
-.timer .btn { height: 48px; border-radius: 14px; }
+.timer .btn { height: 48px; }
 .prep { display: grid; }
 .prep label { display: grid; grid-template-columns: 24px 1fr auto; gap: 12px; align-items: center; padding: 12px 0; border-top: 1px solid var(--line); font-size: 16px; }
 .prep label:first-child { border-top: 0; }
@@ -244,10 +255,19 @@ h1 { font-size: 30px; line-height: 1.15; font-weight: 600; margin: 12px 0 4px; t
 .tip { display: flex; gap: 10px; background: var(--accent-soft); border-radius: 16px; padding: 14px; font-size: 15px; margin-bottom: 20px; }
 .tip svg { flex: none; color: var(--accent); margin-top: 3px; }
 .cook-foot { display: grid; grid-template-columns: 1fr 2fr; gap: 12px; padding: 12px 0 16px; }
-.cook-foot .btn { height: 56px; font-size: 17px; border-radius: 16px; }
-.done-t { font-size: 30px; line-height: 1.2; font-weight: 600; margin: 24px 0 8px; }
+.cook-foot .btn { height: 56px; font-size: 17px; }
+.done-t { font-size: 30px; line-height: 1.2; font-weight: 500; margin: 24px 0 8px; }
 
-.enter { animation: rise 360ms var(--ease) both; }
+.no-gsap .enter { animation: rise 360ms var(--ease) both; }
+.tstrip { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; }
+.tchip { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px; border-radius: 18px; border: 0; background: var(--surface); color: var(--fg2); font-size: 13px; font-weight: 500; }
+.tchip b { font-weight: 600; color: var(--fg); margin-left: 2px; }
+.tchip.ring { background: var(--accent); color: var(--accent-ink); }
+.tchip.ring b { color: var(--accent-ink); }
+.dtag { display: inline-flex; align-items: center; height: 26px; padding: 0 10px; border-radius: 13px; font-size: 13px; font-weight: 600; margin-bottom: 12px; background: var(--surface); color: var(--fg2); }
+.dtag.lauk, .dtag.onepot { background: var(--accent-soft); color: var(--accent); }
+.dtag.sayur { background: rgba(21, 128, 61, 0.10); color: var(--pos); }
+.done-mark { width: 80px; height: 80px; border-radius: 40px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); margin-top: 24px; }
 @keyframes rise { from { opacity: 0; transform: translateY(8px); } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 @media (max-width: 360px) {
@@ -278,6 +298,7 @@ h1 { font-size: 30px; line-height: 1.15; font-weight: 600; margin: 12px 0 4px; t
 <div id="sheetRoot"></div>
 <div id="cookRoot"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script>
 const DATA = /*__DATA__*/null;
 (() => {
@@ -320,6 +341,8 @@ const DATA = /*__DATA__*/null;
     cart: '<circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>',
     fridge: '<path d="M5 6a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6Z"/><path d="M5 10h14"/><path d="M15 7v6"/>',
     trash: '<path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+    sound: '<path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/><path d="M16 9a5 5 0 0 1 0 6"/><path d="M19.364 18.364a9 9 0 0 0 0-12.728"/>',
+    mute: '<path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/>',
     plus: '<path d="M5 12h14"/><path d="M12 5v14"/>',
     flame: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
   };
@@ -374,10 +397,45 @@ const DATA = /*__DATA__*/null;
   const CHAINS = PR.chains.map(([name, pat, idx, n]) => ({ name, re: new RegExp(pat, "i"), idx, n }));
   const chainOf = name => CHAINS.find(c => c.re.test(name || "")) || null;
   const JG = PR.jg && PR.jg.items ? PR.jg : null;
+  const OSM = DATA.osm || [];
+  // OpenStreetMap opening_hours, common forms: "24/7", "Mo-Fr 09:00-21:00; Sa,Su 10:00-22:00", "Mo-Su 07:00-01:00"
+  const DN = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+  function parseHours(h) {
+    if (!h) return null;
+    if (/^\s*24\/7\s*$/.test(h)) return { always: true };
+    const week = Array.from({ length: 7 }, () => null);
+    for (const part of h.split(";")) {
+      const m = part.trim().match(/^((?:(?:Mo|Tu|We|Th|Fr|Sa|Su)(?:-(?:Mo|Tu|We|Th|Fr|Sa|Su))?,?)+)?\s*(off|closed|(?:\d{1,2}:\d{2}-\d{1,2}:\d{2},?\s*)+)$/i);
+      if (!m) { if (/PH|SH|\[|"/.test(part)) continue; return null; }
+      const days = new Set();
+      if (!m[1]) DN.forEach((_, i) => days.add(i));
+      else for (const seg of m[1].split(",").filter(Boolean)) {
+        const [a, b] = seg.split("-"); const ia = DN.indexOf(a), ib = b ? DN.indexOf(b) : ia;
+        for (let i = ia; ; i = (i + 1) % 7) { days.add(i); if (i === ib) break; }
+      }
+      const spans = /off|closed/i.test(m[2]) ? [] : m[2].split(",").map(x => x.trim()).filter(Boolean).map(x => { const [f, t] = x.split("-"); const mm = v => { const [hh, mi] = v.split(":"); return +hh * 60 + +mi; }; let e = mm(t); const st = mm(f); if (e <= st) e += 1440; return [st, e]; });
+      days.forEach(d => { week[d] = spans; });
+    }
+    return { week };
+  }
+  const fmtT = m => { m %= 1440; const h = Math.floor(m / 60), mi = m % 60, ap = h >= 12 ? "pm" : "am", h12 = h % 12 || 12; return `${h12}${mi ? ":" + String(mi).padStart(2, "0") : ""}${ap}`; };
+  function openStatus(h) {
+    const P = parseHours(h);
+    if (!h) return { text: "Hours not listed", cls: "" };
+    if (!P) return { text: h, cls: "" };
+    if (P.always) return { text: "Open 24 hours", cls: "open" };
+    const now = new Date(), d = (now.getDay() + 6) % 7, t = now.getHours() * 60 + now.getMinutes();
+    const yest = P.week[(d + 6) % 7] || [];
+    for (const [a, b] of yest) if (b > 1440 && t < b - 1440) return { text: `Open · closes ${fmtT(b)}`, cls: "open" };
+    for (const [a, b] of P.week[d] || []) if (t >= a && t < b) return { text: `Open · closes ${fmtT(b)}`, cls: "open" };
+    for (const [a] of P.week[d] || []) if (a > t) return { text: `Closed · opens ${fmtT(a)}`, cls: "closed" };
+    for (let i = 1; i <= 7; i++) { const sp = P.week[(d + i) % 7]; if (sp && sp.length) return { text: `Closed · opens ${i === 1 ? "tomorrow" : DAYS[(d + i) % 7]} ${fmtT(sp[0][0])}`, cls: "closed" }; }
+    return { text: "Closed", cls: "closed" };
+  }
   const jgDate = JG ? new Date(JG.fetchedAt).toLocaleDateString("en-MY", { day: "numeric", month: "short" }) : "";
   function isJG() {
     const s = S.settings;
-    const name = s.shop >= 0 ? PR.shops[s.shop][0] : s.shop === -2 && s.custom ? s.custom.name : "";
+    const name = s.shop >= 0 ? PR.shops[s.shop][0] : s.shop === -2 && s.custom ? s.custom.name : s.shop === -3 && OSM[s.osm] ? OSM[s.osm][0] : "";
     const c = chainOf(name); return !!(JG && c && c.name === "Jaya Grocer");
   }
   const pctLabel = idx => { const p = Math.round((idx - 1) * 100); return p === 0 ? "about the same as" : p > 0 ? `${p}% above` : `${-p}% below`; };
@@ -388,8 +446,9 @@ const DATA = /*__DATA__*/null;
     const it = ING[key], ki = KEYIDX[key], c = ctx();
     let per = null, src = "Estimate";
     if (ki !== undefined) {
-      const shop = S.settings.shop >= 0 ? PR.shops[S.settings.shop] : null;
-      const custom = S.settings.shop === -2 && S.settings.custom ? chainOf(S.settings.custom.name) : null;
+      const o = S.settings.shop === -3 ? OSM[S.settings.osm] : null;
+      const shop = S.settings.shop >= 0 ? PR.shops[S.settings.shop] : o && o[6] >= 0 ? PR.shops[o[6]] : null;
+      const custom = S.settings.shop === -2 && S.settings.custom ? chainOf(S.settings.custom.name) : o ? chainOf(o[0]) : null;
       if (shop && shop[7][ki] > 0) { per = shop[7][ki]; src = "This shop"; }
       else if (isJG() && JG.items[key]) { per = JG.items[key].per; src = "Jaya Grocer"; }
       else if (c.med[key]) { per = c.med[key].v * (custom ? custom.idx : 1); src = custom ? `${custom.name} est.` : `Within ${c.med[key].r} km`; }
@@ -411,6 +470,7 @@ const DATA = /*__DATA__*/null;
   function priceLabel() {
     if (S.settings.shop >= 0) return shopName(PR.shops[S.settings.shop]);
     if (S.settings.shop === -2 && S.settings.custom) return S.settings.custom.name;
+    if (S.settings.shop === -3 && OSM[S.settings.osm]) return `${OSM[S.settings.osm][0]}, ${OSM[S.settings.osm][5]}`;
     const c = ctx(); return c.loc ? `shops near ${S.settings.postcode}` : "Malaysia average";
   }
 
@@ -571,54 +631,85 @@ const DATA = /*__DATA__*/null;
 
   // ---------- views ----------
   function viewWeek() {
-    const t = totals(S.plan), b = S.settings.budget, diff = b - t.toBuy, stage = flowStage();
-    const steps = ["Plan", "Shop", "Cook"].map((l, i) => `<div class="${i < stage ? "done" : i === stage ? "now" : ""}"><i></i>${i + 1}. ${l}</div>`).join("");
-    const fresh = t.rows.filter(r => !r.pantry), bought = fresh.filter(r => S.bought[r.k]).length;
-    const di = nextCookDay();
-    let next;
-    if (stage === 0) next = `<div class="next"><div><div class="k">STEP 1 OF 3</div><div class="t">Check this week's dinners</div><div class="d">Swap anything your family won't eat, or skip nights you eat out. Then lock the plan to get your shopping list.</div></div><button class="btn primary big" id="lock">Lock plan and make my list</button></div>`;
-    else if (di < 0) next = `<div class="next"><div><div class="k">ALL DONE</div><div class="t">Every dinner this week is cooked</div><div class="d">Plan next week when you're ready.</div></div><button class="btn primary big" id="newweek">Plan next week</button></div>`;
+    const t = totals(S.plan), b = S.settings.budget, diff = b - t.toBuy;
+    const fresh = t.rows.filter(r => !r.pantry && r.buy), needP = t.rows.filter(r => r.pantry && S.pantryNeed[r.k]);
+    const all = [...fresh, ...needP], left = all.filter(r => !S.bought[r.k]).length;
+    const ti = todayIdx(), di = nextCookDay();
+    const dishRow = (r, i, slot) => `<div class="dish pickable"><button class="dish-main" data-recipe="${r.id}"><span class="n">${esc(r.name)}${r.spicy >= 2 ? ' <span class="pedas" title="Pedas">•</span>' : ""}</span><span class="e">${esc(r.en)} · ${r.mins} min</span></button><button class="btn" style="height:36px;padding:0 12px" data-pick="${i}:${slot}">Change</button></div>`;
+    const dishesOf = (d, i) => d.onepot ? dishRow(RX[d.onepot], i, "onepot") : dishRow(RX[d.lauk], i, "lauk") + dishRow(RX[d.sayur], i, "sayur");
+    let hero;
+    if (di < 0) hero = `<div class="next"><div><div class="k">This week</div><div class="t">Every dinner is cooked</div><div class="d">Plan next week when you're ready</div></div><button class="btn primary big" id="newweek">Plan next week</button></div>`;
     else {
-      const items = dayItems(S.plan.days[di]); const mins = Math.max(...items.map(r => r.mins));
-      const when = di === todayIdx() ? "TONIGHT" : DAYS_LONG[di].toUpperCase();
-      const shopLine = stage === 1 ? `<div class="d">Shopping list: <b>${bought} of ${fresh.length}</b> bought</div>` : "";
-      next = `<div class="next"><div><div class="k">${when}</div><div class="t">${items.map(r => esc(r.name)).join(" + ")}</div><div class="d">About ${mins} min${S.plan.days[di].onepot ? "" : ", with rice"}</div>${shopLine}</div>
-        <div style="display:grid;gap:8px">
-          ${stage === 1 ? `<button class="btn primary big" data-go="shop">${ic("cart")}I'm at the shop</button><button class="btn big" data-cookday="${di}">${ic("flame")}I'm cooking now</button>`
-                        : `<button class="btn primary big" data-cookday="${di}">${ic("flame")}I'm cooking now</button><button class="btn big" data-go="shop">${ic("cart")}Shopping list</button>`}
-        </div></div>`;
+      const d = S.plan.days[di], items = dayItems(d), mins = items.reduce((a, r) => a + r.mins, 0);
+      const when = di === ti ? "Tonight" : DAYS_LONG[di];
+      hero = `<div class="next"><div class="k">${when}${di !== ti && !S.plan.days[ti].off ? "" : ""}</div>
+        <div class="dishes" style="margin-top:-4px">${dishesOf(d, di)}</div>
+        <div class="d" style="margin-top:-4px">${d.onepot ? "One-pot dinner" : "With rice"} · about ${Math.max(...items.map(r => r.mins)) + (d.onepot ? 0 : 10)} min · about ${items.reduce((a, r) => a + r.macro[0], 0) + (d.onepot ? 0 : riceMacro()[0])} kcal and ${items.reduce((a, r) => a + r.macro[1], 0) + (d.onepot ? 0 : riceMacro()[1])} g protein a person</div>
+        <button class="btn primary big" data-cookday="${di}">${ic("flame")}Start cooking</button></div>`;
     }
-    const pct = Math.min(1, t.toBuy / b);
-    const summary = `<div class="summary">
-        <div class="k">To spend this week</div>
-        <div class="big">${rm(t.toBuy)}</div>
-        <div class="meter ${diff < 0 ? "over" : ""}" role="img" aria-label="${rm(t.toBuy)} of ${rm0(b)} budget"><div style="transform:scaleX(${pct.toFixed(3)})"></div></div>
-        <div class="budget ${diff < 0 ? "over" : ""}"><span>${diff >= 0 ? `<b class="money-v">${rm(diff)}</b> left` : `<b class="money-v">${rm(-diff)}</b> over budget`}</span><span>of <span class="money-v">${rm0(b)}</span> budget</span></div>
-        <div class="srows">
-          <div><span>Groceries</span><b>${rm(t.fresh)}</b></div>
-          ${t.pantryBuy ? `<div><span>Pantry restock</span><b>${rm(t.pantryBuy)}</b></div>` : ""}
-          <div><span>Pantry you already have</span><b>${rm(t.pantryUse)}</b></div>
-          ${t.fromKitchen > 0.01 ? `<div><span>Used from fridge/freezer</span><b>${rm(t.fromKitchen)}</b></div>` : ""}
-          <div><span>Priced at</span><b style="text-align:right">${esc(priceLabel())}</b></div>
-        </div></div>`;
+    const shopCard = S.flow.shopped ? `<div class="summary" style="display:flex;justify-content:space-between;align-items:center;gap:12px"><div><div class="k">Groceries for the week</div><div style="font-size:18px;font-weight:500;margin-top:2px">${ic("check", 16)} Shopping done</div></div><button class="btn" data-go="shop">View list</button></div>`
+      : all.length ? `<div class="summary" style="display:grid;gap:12px">
+        <div style="display:flex;justify-content:space-between;gap:12px;align-items:baseline"><div><div class="k">Groceries for the week</div><div style="font-size:20px;font-weight:500;margin-top:2px">${left ? `${left} of ${all.length} left to buy` : "All bought"}</div></div><div style="text-align:right"><div class="money-v" style="font-weight:500" data-tw="wktotal" data-v="${t.toBuy.toFixed(2)}">${rm(t.toBuy)}</div><div class="k ${diff < 0 ? "pedas" : ""}" style="font-size:13px">${diff >= 0 ? `${rm(diff)} under budget` : `${rm(-diff)} over budget`}</div></div></div>
+        <div class="meter" role="progressbar" aria-valuemin="0" aria-valuemax="${all.length}" aria-valuenow="${all.length - left}" aria-label="Groceries bought"><div data-tw="grocbar" data-s="${((all.length - left) / all.length).toFixed(3)}" style="transform:scaleX(${((all.length - left) / all.length).toFixed(3)})"></div></div>
+        ${left ? `<button class="btn big" data-go="shop">${ic("cart")}${left === all.length ? "Start shopping" : "Continue shopping"}</button>` : ""}
+      </div>` : "";
     const days = S.plan.days.map((d, i) => {
-      const head = (extra = "") => `<div class="dhead"><div class="dlabel">${DAYS_LONG[i]}<span>${fmtDate(dateOf(i))}</span></div>${extra}</div>`;
-      if (d.off) return `<div class="day off">${head()}<div class="off-msg"><span>Not cooking</span><button class="btn" data-off="${i}">Plan a dinner</button></div></div>`;
-      const row = (r, slot) => `<div class="dish"><button class="dish-main" data-recipe="${r.id}"><span class="n">${esc(r.name)}${r.spicy >= 2 ? ' <span class="pedas" title="Pedas">•</span>' : ""}</span><span class="e">${esc(r.en)}</span></button><span class="c">${rm(dishCost(r))}</span><button class="icon-btn" aria-label="Swap ${esc(r.name)}" data-swap="${i}:${slot}">${ic("swap", 18)}</button></div>`;
-      const body = d.onepot ? row(RX[d.onepot], "onepot") : row(RX[d.lauk], "lauk") + row(RX[d.sayur], "sayur");
-      const cooked = S.flow.cooked[i];
-      const isNext = stage > 0 && i === di;
-      const tag = cooked ? `<span class="tag ok">${ic("check", 12)}Cooked</span>` : isNext ? `<span class="tag ok">Next up</span>` : "";
-      return `<div class="day ${isNext ? "today" : ""}">${head(tag)}<div class="dishes">${body}</div><div class="day-foot"><span>${d.onepot ? "One-pot" : "With rice"}</span><span class="acts">${cooked ? "" : `<button class="link go" data-cookday="${i}">${ic("flame", 15)}Cook</button><button class="link" data-off="${i}">Skip</button>`}</span></div></div>`;
+      if (i === di) return "";
+      const head = `<div class="dhead"><div class="dlabel">${i === ti ? "Today" : DAYS_LONG[i]}<span>${fmtDate(dateOf(i))}</span></div>${S.flow.cooked[i] ? `<span class="tag">${ic("check", 12)}Cooked</span>` : ""}</div>`;
+      if (d.off) return `<div class="day off">${head}<div class="off-msg"><span>Not cooking</span><button class="btn" data-off="${i}">Plan a dinner</button></div></div>`;
+      return `<div class="day ${S.flow.cooked[i] ? "off" : ""}">${head}<div class="dishes">${dishesOf(d, i)}</div><div class="day-foot"><span>${d.onepot ? "One-pot" : "With rice"}</span><span class="acts">${S.flow.cooked[i] ? "" : `<button class="link go" data-cookday="${i}">${ic("flame", 15)}Cook</button><button class="link" data-off="${i}">Skip</button>`}</span></div></div>`;
     }).join("");
+    const pct = Math.min(1, t.toBuy / b);
     return `<div class="enter">
-      <h1>Week of ${fmtDate(weekStart())}</h1>
-      <p class="sub">${t.nights} dinners for ${S.settings.people}</p>
+      <h1>${new Date().toLocaleDateString("en-MY", { weekday: "long", day: "numeric", month: "short" })}</h1>
+      <p class="sub">Dinner for ${S.settings.people} · prices from ${esc(priceLabel())}</p>
       <div class="week-grid">
-        <aside class="side"><div class="flow" aria-label="Progress">${steps}</div>${next}${summary}</aside>
-        <section class="week-main"><div class="section-h"><h2>Dinners</h2><button class="btn" id="regen">${ic("swap")}New plan</button></div><div class="days">${days}</div></section>
+        <aside class="side">${hero}${shopCard}
+        </aside>
+        <section class="week-main"><div class="section-h"><h2>Rest of the week</h2><button class="btn" id="regen">${ic("swap")}New plan</button></div><div class="days">${days}</div></section>
       </div>
     </div>`;
+  }
+
+  // ---------- dish picker (replaces random swap) ----------
+  function openPicker(di, slot) {
+    const cur = RX[S.plan.days[di][slot]];
+    const grp = slot === "sayur" ? "all" : cur.protein === "mutton" ? "beef" : ["tofu", "veg"].includes(cur.protein) ? "egg" : cur.protein;
+    S.pick = { di, slot, f: grp, q: "" }; renderPicker();
+  }
+  function renderPicker() {
+    const P0 = S.pick; if (!P0) return;
+    const day = S.plan.days[P0.di], cur = RX[day[P0.slot]], used = inPlan();
+    const base = totals(S.plan).toBuy;
+    const fridge = new Set(Object.keys(S.kitchen).filter(k => !ING[k].pantry));
+    let list = pool(P0.slot).filter(r => r.id !== cur.id && !used.has(r.id));
+    if (P0.slot !== "sayur" && P0.f !== "all") list = list.filter(r => P0.f === "beef" ? (r.protein === "beef" || r.protein === "mutton") : P0.f === "egg" ? ["egg", "tofu", "veg"].includes(r.protein) : r.protein === P0.f);
+    if (P0.q) list = list.filter(r => (r.name + " " + r.en).toLowerCase().includes(P0.q.toLowerCase()));
+    const rows = list.map(r => {
+      const delta = totals({ days: S.plan.days.map((d, i) => i === P0.di ? { ...d, [P0.slot]: r.id } : d) }).toBuy - base;
+      const fr = r.ing.filter(([k]) => fridge.has(k)).length;
+      return { r, delta, fr };
+    }).sort((a, b) => (b.fr - a.fr) || (a.delta - b.delta));
+    const F = P0.slot === "sayur" ? [] : [["all", "All"], ["chicken", "Ayam"], ["fish", "Ikan"], ["seafood", "Udang & sotong"], ["beef", "Daging"], ["egg", "Telur & tauhu"]];
+    const root = document.getElementById("sheetRoot");
+    const html = `<div class="scrim open" id="scrim"></div><div class="sheet open" role="dialog" aria-modal="true" aria-labelledby="pk-t"><div class="sheet-in">
+      <div class="grab"></div><button class="icon-btn close" id="shClose" aria-label="Close">${ic("x", 18)}</button>
+      <h2 id="pk-t">Change ${P0.slot === "sayur" ? "sayur" : P0.slot === "onepot" ? "one-pot" : "lauk"}</h2>
+      <p class="sub" style="margin:4px 0 12px">${DAYS_LONG[P0.di]} · now ${esc(cur.name)}. Price change is for the whole week's shopping.</p>
+      <div class="search-wrap">${ic("search")}<input class="search" id="pkq" type="search" placeholder="Search dishes" value="${esc(P0.q)}" aria-label="Search dishes"></div>
+      ${F.length ? `<div class="chips" role="group">${F.map(([k, l]) => `<button class="chip" data-pkf="${k}" aria-pressed="${P0.f === k}">${l}</button>`).join("")}</div>` : ""}
+      <button class="btn big" id="pkRandom" style="margin-bottom:12px">${ic("swap")}Surprise me</button>
+      <div class="rlist" style="grid-template-columns:1fr">${rows.map(({ r, delta, fr }) => `<button class="rrow" data-pkid="${r.id}"><div><div class="n">${esc(r.name)}${r.spicy >= 2 ? ' <span class="pedas">•</span>' : ""}</div><div class="e">${esc(r.en)} · ${r.mins} min · ${r.macro[0]} kcal</div>${fr ? `<div style="margin-top:4px"><span class="tag ok">${ic("fridge", 12)}Uses ${fr} from your fridge</span></div>` : ""}</div><div class="m"><div style="font-weight:600;color:${Math.abs(delta) < 0.005 ? "var(--fg2)" : delta < 0 ? "var(--pos)" : "var(--fg)"}">${Math.abs(delta) < 0.005 ? "Same price" : (delta < 0 ? "−" : "+") + rm(Math.abs(delta))}</div></div></button>`).join("") || `<div class="sub" style="padding:12px 0">No other dishes match</div>`}</div>
+    </div></div>`;
+    const y = root.querySelector(".sheet") ? root.querySelector(".sheet").scrollTop : 0;
+    root.innerHTML = html; root.querySelector(".sheet").scrollTop = y;
+    const close = () => { S.pick = null; root.innerHTML = ""; };
+    document.getElementById("scrim").onclick = close; document.getElementById("shClose").onclick = close;
+    root.querySelectorAll("[data-pkf]").forEach(b => b.onclick = () => { S.pick.f = b.dataset.pkf; renderPicker(); });
+    root.querySelectorAll("[data-pkid]").forEach(b => b.onclick = () => { day[P0.slot] = b.dataset.pkid; save(); close(); render(); toast(`Changed to ${RX[b.dataset.pkid].name}`); });
+    document.getElementById("pkRandom").onclick = () => { close(); swap(P0.di, P0.slot); };
+    const q = document.getElementById("pkq");
+    q.oninput = () => { S.pick.q = q.value; const pos = q.selectionStart; renderPicker(); const n = document.getElementById("pkq"); n.focus(); n.setSelectionRange(pos, pos); };
   }
 
   function viewShop() {
@@ -644,7 +735,7 @@ const DATA = /*__DATA__*/null;
       return `<div class="group"><h3><span>${a}</span><span>${gd}/${g.length}</span></h3><div class="list">${g.map(row).join("")}</div></div>`;
     }).join("");
     const prow = r => `<label class="item"><input type="checkbox" id="p-${r.k}" data-need="${r.k}" ${S.pantryNeed[r.k] ? "checked" : ""}><div><div class="n">${esc(r.it.name)}</div><div class="q"><span>uses ${qty(r.q, r.it.unit, r.k)}</span><span>· ${unitPrice(r.k)}</span></div></div><span class="p">${S.pantryNeed[r.k] ? "Need" : '<span style="color:var(--muted)">Have</span>'}</span></label>`;
-    const lockNote = !S.flow.locked ? `<div class="tip">${ic("info")}<div>This list follows your current plan. <button class="link" id="lock">Lock the plan</button> so it stops changing.</div></div>` : "";
+    const lockNote = "";
     const pct = all.length ? got / all.length : 0;
     return `<div class="enter">
       <h1>Shopping list</h1>
@@ -652,12 +743,12 @@ const DATA = /*__DATA__*/null;
       ${lockNote}
       <div class="summary" style="margin-bottom:24px">
         <div style="display:flex;justify-content:space-between;gap:12px;align-items:baseline"><div class="k"><b style="color:var(--fg);font-size:18px">${got} of ${all.length}</b> items bought</div><div class="k">${rm(spent)} of ${rm(t.toBuy)}</div></div>
-        <div class="meter" style="margin-top:12px" role="progressbar" aria-valuemin="0" aria-valuemax="${all.length}" aria-valuenow="${got}" aria-label="Items bought"><div style="transform:scaleX(${pct.toFixed(3)})"></div></div>
+        <div class="meter" style="margin-top:12px" role="progressbar" aria-valuemin="0" aria-valuemax="${all.length}" aria-valuenow="${got}" aria-label="Items bought"><div data-tw="shopbar" data-s="${pct.toFixed(3)}" style="transform:scaleX(${pct.toFixed(3)})"></div></div>
       </div>
-      <details class="group" ${S.flow.locked ? "" : "open"}><summary style="cursor:pointer;font-size:14px;font-weight:600;color:var(--fg2);margin-bottom:8px">Before you go: pantry check (${needP.length} to buy)</summary><div class="list">${pantry.sort((a, b) => a.it.name.localeCompare(b.it.name)).map(prow).join("")}</div></details>
+      <details class="group" ${S.flow.shopped ? "" : "open"}><summary style="cursor:pointer;font-size:14px;font-weight:600;color:var(--fg2);margin-bottom:8px">Before you go: pantry check (${needP.length} to buy)</summary><div class="list">${pantry.sort((a, b) => a.it.name.localeCompare(b.it.name)).map(prow).join("")}</div></details>
       ${covered.length ? `<div class="tip">${ic("fridge")}<div><b>Already at home, not on the list:</b> ${covered.map(r => esc(r.it.name)).join(", ")}</div></div>` : ""}
       <div class="groups">${sec}</div>
-      <div class="totals"><div><div class="k">${all.length - got ? `${all.length - got} left to buy` : "Everything bought"}</div><div class="v">${rm(t.toBuy)}</div></div><button class="btn primary" id="shopped" ${S.flow.shopped ? "disabled" : ""}>${S.flow.shopped ? "Shopping done" : "Done shopping"}</button></div>
+      <div class="totals"><div><div class="k">${all.length - got ? `${all.length - got} left to buy` : "Everything bought"}</div><div class="v">${rm(t.toBuy)}</div></div><button class="btn primary" id="shopped" ${S.flow.shopped ? "disabled" : ""}>${S.flow.shopped ? "Shopping done" : "Finish shopping"}</button></div>
       <p class="fine">Each price is the shop's unit price (per kg, per 10 eggs, per bottle) times what you actually buy. This shop = its latest PriceCatcher price. Within N km = typical price of at least 3 shops that close to your postcode. Chain estimate = nearby price adjusted by that chain's price level. Jaya Grocer = its online-store price (Online Store KL, may differ in-store), checked weekly, for personal use. Estimate = PriceCatcher does not track it.</p>
     </div>`;
   }
@@ -699,37 +790,50 @@ const DATA = /*__DATA__*/null;
       <p class="sub">${RECIPES.length} everyday dishes${RECIPES.filter(allowed).length < RECIPES.length ? `, ${RECIPES.length - RECIPES.filter(allowed).length} hidden by your preferences` : ""}</p>
       <div class="search-wrap">${ic("search")}<input class="search" id="q" type="search" placeholder="Search" value="${esc(S.q)}" aria-label="Search recipes"></div>
       <div class="chips" role="group" aria-label="Filter">${F.map(([k, l]) => `<button class="chip" data-filter="${k}" aria-pressed="${S.filter === k}">${l}</button>`).join("")}</div>
-      <div class="rlist">${list.map(r => `<button class="rrow" data-recipe="${r.id}"><div><div class="n">${esc(r.name)}${r.spicy >= 2 ? ' <span class="pedas">•</span>' : ""}</div><div class="e">${esc(r.en)}</div></div><div class="m"><div>${r.mins} min</div></div></button>`).join("") || `<div style="padding:16px;color:var(--muted)">No dishes match</div>`}</div>
+      <div class="rlist">${list.map(r => `<button class="rrow" data-recipe="${r.id}"><div><div class="n">${esc(r.name)}${r.spicy >= 2 ? ' <span class="pedas">•</span>' : ""}</div><div class="e">${esc(r.en)}</div></div><div class="m"><div>${r.mins} min</div><div style="color:var(--muted)">${r.macro[0]} kcal</div></div></button>`).join("") || `<div style="padding:16px;color:var(--muted)">No dishes match</div>`}</div>
     </div>`;
   }
 
   // location block, shared by onboarding and setup
+  function priceKind(name, pcIdx) {
+    const c = chainOf(name);
+    if (pcIdx >= 0) return { t: "Real prices", ok: true };
+    if (c && JG && c.name === "Jaya Grocer") return { t: "Jaya Grocer online prices", ok: true };
+    if (c) return { t: `${c.name} estimate`, ok: false };
+    return { t: "Nearby prices", ok: false };
+  }
   function locationBlock() {
     const s = S.settings, c = ctx(), loc = c.loc;
     const place = !/^\d{5}$/.test(s.postcode) ? `<span class="pc-place">Enter a 5-digit postcode</span>` : loc ? `<span class="pc-place">${esc(loc.place)}${loc.exact ? "" : " area"}</span>` : `<span class="pc-place bad">Postcode not found</span>`;
     if (!loc) return `<div class="field"><label for="postcode">Your postcode</label><div class="pc-row"><input class="inp" id="postcode" inputmode="numeric" maxlength="5" autocomplete="postal-code" value="${esc(s.postcode)}">${place}</div></div>`;
     const q = (S.shopQ || "").trim().toLowerCase();
-    const pool = q ? PR.shops.map((sh, i) => ({ i, s: sh, d: km(loc.lat, loc.lng, sh[2], sh[3]) })).filter(x => x.s[0].toLowerCase().includes(q)).sort((a, b) => a.d - b.d).slice(0, 10)
-                   : c.near.slice(0, S.nearN || 8);
-    const kmTxt = x => x.d < 1 ? "<1 km" : `${precisionNote(x.s) ? "~" : ""}${x.d < 10 ? x.d.toFixed(1) : Math.round(x.d)} km`;
+    // OpenStreetMap shops nearest first; PriceCatcher shops not linked to any OSM shop are added so their prices stay reachable
+    const linked = new Set(OSM.map(o => o[6]).filter(i => i >= 0));
+    let cands = OSM.map((o, i) => ({ k: "o", i, name: o[0], type: o[1], area: o[5], hours: o[4], pc: o[6], d: km(loc.lat, loc.lng, o[2], o[3]) }))
+      .concat(PR.shops.map((p, i) => linked.has(i) ? null : { k: "p", i, name: shopName(p), type: p[1], area: p[6], hours: "", pc: i, d: km(loc.lat, loc.lng, p[2], p[3]) }).filter(Boolean));
+    cands = q ? cands.filter(x => x.name.toLowerCase().includes(q)).sort((a, b) => a.d - b.d).slice(0, 12)
+              : cands.filter(x => x.d <= 15).sort((a, b) => a.d - b.d).slice(0, S.nearN || 8);
+    const checked = x => x.k === "o" ? s.shop === -3 && s.osm === x.i : s.shop === x.i;
     const ring = c.near.filter(x => x.d <= 5).length;
     const cu = s.custom, cuChain = cu && chainOf(cu.name);
+    const row = x => { const pk = priceKind(x.name, x.pc), st = openStatus(x.hours);
+      return `<label class="shop"><input type="radio" name="shop" value="${x.k}:${x.i}" ${checked(x) ? "checked" : ""}><div><div class="n">${esc(x.name)}</div><div class="q">${esc(x.type)}${x.area ? " · " + esc(x.area) : ""}</div><div class="q hrs ${st.cls}">${esc(st.text)}</div></div><span class="tag ${pk.ok ? "ok" : ""}" style="white-space:normal;height:auto;padding:2px 8px;max-width:110px;text-align:right">${pk.t}</span></label>`; };
     const rows = [
-      `<label class="shop"><input type="radio" name="shop" value="-1" ${s.shop === -1 ? "checked" : ""}><div><div class="n">Any shop near me</div><div class="q">Typical price across ${ring >= MIN_SHOPS ? `${ring} shops within 5 km` : "the nearest shops"}</div></div><span class="km"></span></label>`,
-      cu ? `<label class="shop"><input type="radio" name="shop" value="-2" ${s.shop === -2 ? "checked" : ""}><div><div class="n">${esc(cu.name)}</div><div class="q">Your shop · ${cuChain && JG && cuChain.name === "Jaya Grocer" ? `Jaya Grocer online prices, checked ${jgDate}` : cuChain ? `${cuChain.name} prices are ${pctLabel(cuChain.idx)} average` : "priced like shops near you"}</div></div><span class="km">yours</span></label>` : "",
-      ...pool.map(x => `<label class="shop"><input type="radio" name="shop" value="${x.i}" ${s.shop === x.i ? "checked" : ""}><div><div class="n">${esc(shopName(x.s))}</div><div class="q">${esc(x.s[1])}${precisionNote(x.s) ? " · approx. location" : ""}</div></div><span class="km">${kmTxt(x)}</span></label>`),
+      `<label class="shop"><input type="radio" name="shop" value="-1" ${s.shop === -1 ? "checked" : ""}><div><div class="n">Any shop near me</div><div class="q">Typical price across ${ring >= MIN_SHOPS ? `${ring} surveyed shops around ${esc(loc.place)}` : "the nearest surveyed shops"}</div></div><span></span></label>`,
+      cu ? `<label class="shop"><input type="radio" name="shop" value="-2" ${s.shop === -2 ? "checked" : ""}><div><div class="n">${esc(cu.name)}</div><div class="q">Added by you</div></div><span class="tag ${cuChain && JG && cuChain.name === "Jaya Grocer" ? "ok" : ""}" style="white-space:normal;height:auto;padding:2px 8px;max-width:110px;text-align:right">${priceKind(cu.name, -1).t}</span></label>` : "",
+      ...cands.map(row),
     ].join("");
     const draft = S.shopDraft || "", dChain = chainOf(draft);
-    const add = S.adding ? `<div class="addshop"><label for="newshop" style="font-weight:600;font-size:15px">Your shop's name</label>
-        <div class="row"><input class="inp" id="newshop" placeholder="e.g. Jaya Grocer Bukit Jelutong" value="${esc(draft)}" style="background:var(--card)"><button class="btn primary" id="saveshop" style="height:48px" ${draft.trim().length < 3 ? "disabled" : ""}>Add</button></div>
-        <div class="chainmsg">${draft.trim().length < 3 ? "We'll use prices from shops near your postcode." : dChain ? (JG && dChain.name === "Jaya Grocer" ? `Recognised <b>Jaya Grocer</b>. We'll use its online-store prices for ${Object.keys(JG.items).length} ingredients (checked ${jgDate}), and nearby prices +${Math.round((dChain.idx - 1) * 100)}% for the rest.` : `Recognised <b>${dChain.name}</b>. KPDN surveys ${dChain.n} of its branches; they are ${pctLabel(dChain.idx)} average, so we'll adjust nearby prices by that.`) : "Not a chain we have data for. We'll use typical prices from shops near you."}</div></div>` : "";
+    const add = S.adding ? `<div class="addshop"><label for="newshop" style="font-weight:500;font-size:15px">Your shop's name</label>
+        <div class="row"><input class="inp" id="newshop" placeholder="e.g. TMG Alam Budiman" value="${esc(draft)}" style="background:var(--card)"><button class="btn primary" id="saveshop" style="height:48px" ${draft.trim().length < 3 ? "disabled" : ""}>Add</button></div>
+        <div class="chainmsg">${draft.trim().length < 3 ? "We'll use prices from shops near your postcode." : dChain ? (JG && dChain.name === "Jaya Grocer" ? `Recognised <b>Jaya Grocer</b>. We'll use its online-store prices for ${Object.keys(JG.items).length} ingredients (checked ${jgDate}).` : `Recognised <b>${dChain.name}</b>. Its surveyed branches are ${pctLabel(dChain.idx)} average, so we'll adjust nearby prices by that.`) : "Not a chain we have data for. We'll use typical prices from shops near you."}</div></div>` : "";
     return `<div class="field"><label for="postcode">Your postcode</label><div class="pc-row"><input class="inp" id="postcode" inputmode="numeric" maxlength="5" autocomplete="postal-code" value="${esc(s.postcode)}">${place}</div></div>
       <div class="field"><span class="lbl">Where you usually shop</span>
-        <div class="search-wrap">${ic("search")}<input class="search" id="shopq" type="search" placeholder="Search shops by name" value="${esc(S.shopQ || "")}" aria-label="Search shops"></div>
-        <div class="shops" role="radiogroup" aria-label="Where you shop">${rows}${q && !pool.length ? `<div class="shop"><span></span><div class="q">No surveyed shop matches "${esc(S.shopQ)}"</div><span></span></div>` : ""}</div>
-        <div class="shop-more">${!q && c.near.length > (S.nearN || 8) ? `<button class="link" id="moreshops">Show more nearby</button>` : ""}${S.adding ? "" : `<button class="link" id="addshop">My shop isn't listed</button>`}</div>
+        <div class="search-wrap">${ic("search")}<input class="search" id="shopq" type="search" placeholder="Search shops" value="${esc(S.shopQ || "")}" aria-label="Search shops"></div>
+        <div class="shops" role="radiogroup" aria-label="Where you shop">${rows}${q && !cands.length ? `<div class="shop"><span></span><div class="q">No shop matches "${esc(S.shopQ)}"</div><span></span></div>` : ""}</div>
+        <div class="shop-more">${!q ? `<button class="link" id="moreshops">Show more</button>` : ""}${S.adding ? "" : `<button class="link" id="addshop">My shop isn't listed</button>`}</div>
         ${add}
-        <div class="hint">Listed shops report prices to KPDN PriceCatcher, nearest first. KPDN surveys about 2,100 shops nationwide, so many branches are missing. Add yours and we'll estimate.</div></div>`;
+        <div class="hint">Shops and opening hours © OpenStreetMap contributors (ODbL), nearest to your postcode first. Prices from KPDN PriceCatcher where the shop is surveyed, Jaya Grocer's online store, or typical prices nearby.</div></div>`;
   }
   function householdBlock() {
     const s = S.settings;
@@ -744,9 +848,9 @@ const DATA = /*__DATA__*/null;
     const s = S.settings;
     const av = [["beef", "Beef"], ["mutton", "Mutton"], ["pedas", "Very spicy"]];
     const left = RECIPES.filter(allowed).length;
-    return `<div class="field"><span class="lbl">Allergies</span><div class="seg" role="group">${ALLERGENS.map(([k, l]) => `<button data-allergy="${k}" aria-pressed="${!!s.allergy[k]}">${l}</button>`).join("")}</div><div class="hint">Removes every dish with that ingredient, including sauces (oyster sauce and belacan count as shellfish, kicap as soy and wheat). Always check product labels.</div></div>
-      <div class="field"><span class="lbl">Vegetables you don't eat</span><div class="seg" role="group">${VEG.map(k => `<button data-dislike="${k}" aria-pressed="${!!s.dislike[k]}">${esc(ING[k].name.replace(/ \(.*\)/, ""))}</button>`).join("")}</div></div>
-      <div class="field"><span class="lbl">Also leave out</span><div class="seg" role="group">${av.map(([k, l]) => `<button data-avoid="${k}" aria-pressed="${!!s.avoid[k]}">${l}</button>`).join("")}</div><div class="hint">All dishes are halal</div></div>
+    return `<div class="field"><div class="lblrow"><span class="lbl">Allergies</span>${Object.values(s.allergy).some(Boolean) ? `<button class="link" data-clear="allergy">Clear</button>` : ""}</div><div class="seg" role="group">${ALLERGENS.map(([k, l]) => `<button data-allergy="${k}" aria-pressed="${!!s.allergy[k]}">${l}</button>`).join("")}</div><div class="hint">Removes every dish with that ingredient, including sauces (oyster sauce and belacan count as shellfish, kicap as soy and wheat). Always check product labels.</div></div>
+      <div class="field"><div class="lblrow"><span class="lbl">Vegetables you don't eat</span>${Object.values(s.dislike).some(Boolean) ? `<button class="link" data-clear="dislike">Clear</button>` : ""}</div><div class="seg" role="group">${VEG.map(k => `<button data-dislike="${k}" aria-pressed="${!!s.dislike[k]}">${esc(ING[k].name.replace(/ \(.*\)/, ""))}</button>`).join("")}</div></div>
+      <div class="field"><div class="lblrow"><span class="lbl">Also leave out</span>${Object.values(s.avoid).some(Boolean) ? `<button class="link" data-clear="avoid">Clear</button>` : ""}</div><div class="seg" role="group">${av.map(([k, l]) => `<button data-avoid="${k}" aria-pressed="${!!s.avoid[k]}">${l}</button>`).join("")}</div><div class="hint">All dishes are halal</div></div>
       <p class="sub" style="margin:0"><span class="num">${left}</span> of ${RECIPES.length} dishes match${left < 15 ? ". That's few, so expect repeats" : ""}</p>`;
   }
 
@@ -770,9 +874,18 @@ const DATA = /*__DATA__*/null;
       <h1>Settings</h1>
       <p class="sub">Changes apply when you replan</p>
       ${locationBlock()}${householdBlock()}<h2 style="font-size:17px;font-weight:500;margin:28px 0 12px">Food preferences</h2>${prefsBlock()}<div style="height:20px"></div>${budgetBlock()}
+      <div class="field"><span class="lbl">Sounds</span><div class="seg"><button data-sound aria-pressed="${S.settings.sound !== false}">${ic(S.settings.sound === false ? "mute" : "sound", 18)}&nbsp;${S.settings.sound === false ? "Off" : "On"}</button></div><div class="hint">Ticks when you check things off, a chime when a timer ends</div></div>
       <button class="btn primary big" id="replan">Save and plan a new week</button>
       <p class="fine">Prices: ${esc(PR.source)}, ${PR.shops.length.toLocaleString()} shops, latest ${PR.date}. Shop locations: GeoNames postcodes (CC BY 4.0). Recipes are drafts and still need checking by a home cook.</p>
     </div>`;
+  }
+
+  // ---------- nutrition ----------
+  const riceMacro = () => { const g = RICE_PER_PERSON, n = [360, 6.6, 79, 0.6]; return n.map(v => Math.round(v * g / 100)); };
+  function macroBox(r, withRice) {
+    const m = r.macro.slice(); if (withRice) riceMacro().forEach((v, i) => m[i] += v);
+    return `<div class="macros" aria-label="Nutrition per serving"><div><b>${m[0]}</b><span>kcal</span></div><div><b>${m[1]} g</b><span>protein</span></div><div><b>${m[2]} g</b><span>carbs</span></div><div><b>${m[3]} g</b><span>fat</span></div></div>
+      <p class="fine" style="margin:6px 0 16px">Per serving, approximate${r.kind === "lauk" ? ", without rice (a plate of rice adds about " + riceMacro()[0] + " kcal)" : ""}</p>`;
   }
 
   // ---------- recipe sheet ----------
@@ -785,6 +898,7 @@ const DATA = /*__DATA__*/null;
       <div class="grab"></div><button class="icon-btn close" id="shClose" aria-label="Close">${ic("x", 18)}</button>
       <h2 id="sh-t">${esc(r.name)}</h2><div style="color:var(--fg2)">${esc(r.en)}</div>
       <div class="meta"><span class="tag">${ic("clock", 12)}${r.mins} min</span><span class="tag">${r.guide.length} steps</span><span class="tag">${esc(r.cuisine)}</span>${r.spicy >= 2 ? '<span class="tag pedas">Pedas</span>' : r.spicy ? '<span class="tag">Mild heat</span>' : ""}<span class="tag num">${rm(dishCost(r))} for ${n}</span></div>
+      ${macroBox(r)}
       <button class="btn primary big" data-cookone="${r.id}">${ic("flame")}Start cooking</button>
       <h3>Ingredients for ${n}</h3>${ing}
       <p class="fine">Draft recipe, not yet tested by a home cook</p>
@@ -795,106 +909,190 @@ const DATA = /*__DATA__*/null;
   }
   const closeSheet = () => { document.getElementById("sheetRoot").innerHTML = ""; };
 
-  // ---------- cooking mode ----------
-  let C = null; // {queue:[ids], qi, step (-1 = get ready), day, timers:{}, ticking}
+  // ---------- sound (Web Audio, no files) ----------
+  const SFX = (() => {
+    let ctx = null;
+    const on = () => S.settings.sound !== false;
+    const ac = () => { try { if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)(); if (ctx.state === "suspended") ctx.resume(); } catch (e) { ctx = null; } return ctx; };
+    function tone(f, start, dur, vol = 0.07, type = "sine") {
+      const c = ac(); if (!c) return;
+      const o = c.createOscillator(), g = c.createGain(), t = c.currentTime + start;
+      o.type = type; o.frequency.setValueAtTime(f, t);
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g).connect(c.destination); o.start(t); o.stop(t + dur + 0.02);
+    }
+    let alarmTimer = null;
+    return {
+      unlock: ac,
+      tick() { if (on()) { tone(1320, 0, 0.07, 0.05, "triangle"); } },
+      untick() { if (on()) { tone(660, 0, 0.06, 0.035, "triangle"); } },
+      step() { if (on()) { tone(587, 0, 0.09, 0.05); tone(784, 0.07, 0.12, 0.05); } },
+      done() { if (on()) { [523, 659, 784, 1047].forEach((f, i) => tone(f, i * 0.11, 0.35, 0.06)); } },
+      alarm(start) {
+        if (!start) { clearInterval(alarmTimer); alarmTimer = null; return; }
+        if (alarmTimer || !on()) return;
+        const ring = () => { tone(880, 0, 0.18, 0.12); tone(1175, 0.2, 0.18, 0.12); tone(880, 0.4, 0.18, 0.12); };
+        ring(); alarmTimer = setInterval(ring, 1600);
+      },
+    };
+  })();
+
+  // ---------- motion (GSAP when available, respects reduced motion) ----------
+  const reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const G = !reduce && window.gsap ? window.gsap : null;
+  const EASE = "power3.out";
+  const tweenMem = {};
+  function captureTweens() {
+    document.querySelectorAll("[data-tw]").forEach(el => { tweenMem[el.dataset.tw] = { s: +el.dataset.s || 0, v: +el.dataset.v || 0 }; });
+  }
+  function playTweens(enter) {
+    if (!G) return;
+    if (enter) G.from(".enter > *, .enter .side > *", { y: 8, opacity: 0, duration: 0.4, stagger: { each: 0.05, amount: 0.25 }, ease: EASE, clearProps: "transform,opacity" });
+    document.querySelectorAll("[data-tw]").forEach(el => {
+      const prev = tweenMem[el.dataset.tw]; if (!prev) return;
+      if (el.dataset.s !== undefined && prev.s !== +el.dataset.s) G.fromTo(el, { scaleX: prev.s }, { scaleX: +el.dataset.s, duration: 0.5, ease: EASE });
+      if (el.dataset.v !== undefined && prev.v !== +el.dataset.v) {
+        const o = { v: prev.v }, fmt = el.dataset.fmt === "int" ? (x => String(Math.round(x))) : (x => rm(x));
+        G.to(o, { v: +el.dataset.v, duration: 0.5, ease: EASE, onUpdate: () => { el.textContent = fmt(o.v); } });
+      }
+    });
+  }
+  const pop = el => { if (G && el) G.fromTo(el, { scale: 0.9 }, { scale: 1, duration: 0.2, ease: EASE }); };
+
+  // ---------- cooking mode: one combined dinner run ----------
+  let C = null; // { ids, day, steps, step (-1 get ready, steps.length done), timers, prepped, started, dir }
   let wakeLock = null;
-  function startCooking(queue, day) {
-    closeSheet();
-    C = { queue, qi: 0, step: -1, day, timers: {}, ticking: null, prepped: {}, started: null };
-    C.clock = setInterval(() => { const el = document.getElementById("elapsed"); if (el && C && C.started) el.textContent = fmtClock(Math.floor((Date.now() - C.started) / 1000)); }, 1000);
+  function buildRun(ids, day) {
+    const n = S.settings.people, sc = scale(), steps = [];
+    const withRice = day != null && !S.plan.days[day].onepot;
+    if (withRice) steps.push({ dish: "rice", t: `Rinse ${qty(RICE_PER_PERSON * n, "g", "rice")} rice and start the rice cooker`, ing: [["rice", RICE_PER_PERSON * n]], sec: 0 });
+    const fromGuide = r => r.guide.map(st => ({ dish: r.id, t: st.t, ing: st.ing.map(k => [k, r.ing.find(x => x[0] === k)[1] * sc]), sec: st.sec }));
+    const main = RX[ids[0]], side = ids[1] ? RX[ids[1]] : null;
+    const ms = fromGuide(main);
+    if (side) {
+      const prep = { dish: side.id, parallel: true, t: `While that cooks, wash and cut what you need for the ${side.name.toLowerCase()}`, ing: side.ing.filter(([k]) => !ING[k].pantry).map(([k, q]) => [k, q * sc]), sec: 0 };
+      let at = -1, longest = 0; ms.forEach((s, i) => { if (s.sec > longest) { longest = s.sec; at = i; } });
+      if (longest >= 300) ms.splice(at + 1, 0, prep); else ms.push(prep);
+      steps.push(...ms, ...fromGuide(side));
+    } else steps.push(...ms);
+    return steps;
+  }
+  function startCooking(ids, day) {
+    closeSheet(); SFX.unlock();
+    C = { ids, day, steps: buildRun(ids, day), step: -1, timers: {}, prepped: {}, started: null, dir: 1 };
+    C.clock = setInterval(cookTick, 250);
     try { navigator.wakeLock && navigator.wakeLock.request("screen").then(l => { wakeLock = l; }).catch(() => {}); } catch (e) {}
     renderCook();
   }
   function stopCooking() {
-    if (C && C.ticking) clearInterval(C.ticking);
     if (C && C.clock) clearInterval(C.clock);
+    SFX.alarm(false);
     C = null; document.getElementById("cookRoot").innerHTML = "";
     try { wakeLock && wakeLock.release(); } catch (e) {} wakeLock = null;
     document.body.style.overflow = "";
   }
-  function timerKey() { return `${C.qi}:${C.step}`; }
-  function tick() {
-    let any = false;
-    for (const [k, t] of Object.entries(C.timers)) {
-      if (!t.running) continue;
-      t.left = Math.max(0, Math.round((t.end - Date.now()) / 1000)); any = true;
-      if (t.left === 0) { t.running = false; t.rang = true; try { navigator.vibrate && navigator.vibrate([300, 150, 300]); } catch (e) {} }
+  function cookTick() {
+    if (!C) return;
+    let ringing = false, changed = false;
+    for (const [i, t] of Object.entries(C.timers)) {
+      if (t.running) {
+        t.left = Math.max(0, Math.round((t.end - Date.now()) / 1000));
+        if (t.left === 0) { t.running = false; t.rang = true; changed = true; try { navigator.vibrate && navigator.vibrate([300, 150, 300]); } catch (e) {} }
+      }
+      if (t.rang && !t.acked) ringing = true;
+      document.querySelectorAll(`[data-tclock="${i}"]`).forEach(el => { el.textContent = fmtClock(t.left); });
     }
-    const el = document.getElementById("clock"), t = C.timers[timerKey()];
-    if (el && t) { el.textContent = fmtClock(t.left); }
-    if (!any) { clearInterval(C.ticking); C.ticking = null; }
-    if (t && t.rang && !document.querySelector(".timer.ring")) renderCook();
+    SFX.alarm(ringing);
+    const el = document.getElementById("elapsed"); if (el && C.started) el.textContent = fmtClock(Math.floor((Date.now() - C.started) / 1000));
+    if (changed) renderCook(true);
   }
-  function renderCook() {
+  const dishLabel = s => s.dish === "rice" ? "Rice" : RX[s.dish].name;
+  const dishKind = s => s.dish === "rice" ? "rice" : RX[s.dish].kind;
+  function renderCook(keep) {
     const root = document.getElementById("cookRoot");
     if (!C) return;
     document.body.style.overflow = "hidden";
-    const r = RX[C.queue[C.qi]], n = S.settings.people, total = r.guide.length;
-    const multi = C.queue.length > 1 ? ` · dish ${C.qi + 1} of ${C.queue.length}` : "";
-    const est = C.queue.reduce((a, id) => a + RX[id].mins, 0);
-    const elapsed = C.started ? `<span class="tag ok" style="height:28px;font-size:14px;padding:0 10px">${ic("clock", 14)}<span id="elapsed">${fmtClock(Math.floor((Date.now() - C.started) / 1000))}</span>&nbsp;/ ~${est} min</span>` : `<span class="tag">~${est} min total</span>`;
-    const segs = `<div class="segs">${[-1, ...r.guide.map((_, i) => i)].map(i => `<i class="${i <= C.step ? "on" : ""}"></i>`).join("")}</div>`;
+    const n = S.settings.people, total = C.steps.length;
+    const names = C.ids.map(id => RX[id].name).join(" + ");
+    const est = Math.max(...C.ids.map(id => RX[id].mins)) + (C.ids.length > 1 ? 10 : 0);
+    const elapsed = C.started ? `<span class="tag ok" style="height:28px;font-size:14px;padding:0 10px">${ic("clock", 14)}<span id="elapsed">${fmtClock(Math.floor((Date.now() - C.started) / 1000))}</span>&nbsp;/ ~${est} min</span>` : `<span class="tag">About ${est} min</span>`;
+    const segs = `<div class="segs">${[-1, ...C.steps.map((_, i) => i)].map(i => `<i class="${i <= C.step ? "on" : ""}"></i>`).join("")}</div>`;
+    const other = Object.entries(C.timers).filter(([i, t]) => +i !== C.step && (t.running || (t.rang && !t.acked)));
+    const strip = other.length ? `<div class="tstrip">${other.map(([i, t]) => `<button class="tchip ${t.rang ? "ring" : ""}" data-jump="${i}">${ic(t.rang ? "flame" : "clock", 14)}${esc(dishLabel(C.steps[i]))} · step ${+i + 1}<b data-tclock="${i}">${fmtClock(t.left)}</b></button>`).join("")}</div>` : "";
+    const sound = `<button class="icon-btn" id="ckSound" aria-label="${S.settings.sound === false ? "Turn sound on" : "Mute sound"}" aria-pressed="${S.settings.sound !== false}">${ic(S.settings.sound === false ? "mute" : "sound", 18)}</button>`;
     let body, foot;
     if (C.step === -1) {
-      const rice = C.qi === 0 && C.day != null && !S.plan.days[C.day].onepot
-        ? `<div class="tip">${ic("info")}<div>Start the rice first: <b class="num">${qty(RICE_PER_PERSON * n, "g", "rice")}</b> rice for ${n}. It will be ready when the lauk is.</div></div>` : "";
-      const ready = r.ing.filter(([k]) => C.prepped[k]).length;
-      body = `<div class="step-no">Get ready</div><h2 class="step-t">Gather these for ${n} ${n === 1 ? "person" : "people"}</h2>${rice}
-        <div style="display:flex;justify-content:space-between;font-size:14px;color:var(--fg2);margin-bottom:8px"><span><b style="color:var(--fg)">${ready} of ${r.ing.length}</b> ready</span>${ready === r.ing.length ? '<span style="color:var(--pos);font-weight:600">All set</span>' : ""}</div>
-        <div class="meter" style="margin-bottom:12px" role="progressbar" aria-valuemin="0" aria-valuemax="${r.ing.length}" aria-valuenow="${ready}" aria-label="Ingredients ready"><div style="transform:scaleX(${(ready / r.ing.length).toFixed(3)})"></div></div>
-        <div class="prep">${r.ing.map(([k, q]) => `<label><input type="checkbox" data-prep="${k}" ${C.prepped[k] ? "checked" : ""}><span>${esc(ING[k].name)}</span><span class="q">${qty(q * scale(), ING[k].unit, k)}</span></label>`).join("")}</div>`;
-      foot = `<button class="btn" id="ckBack">${C.qi > 0 ? "Back" : "Close"}</button><button class="btn primary" id="ckNext">${C.started ? "Start step 1" : `${ic("play")}Start cooking`}</button>`;
+      const merged = {};
+      C.steps.forEach(s => s.ing.forEach(([k, q]) => { merged[k] = Math.max(merged[k] || 0, 0); }));
+      C.ids.forEach(id => RX[id].ing.forEach(([k, q]) => { merged[k] = (merged[k] || 0) + q * scale(); }));
+      if (C.steps[0] && C.steps[0].dish === "rice") merged.rice = RICE_PER_PERSON * n;
+      const keys = Object.keys(merged), ready = keys.filter(k => C.prepped[k]).length;
+      body = `<div class="step-no">Get ready</div><h2 class="step-t">Gather everything for ${n} ${n === 1 ? "person" : "people"}</h2>
+        ${C.ids.length > 1 || C.steps[0].dish === "rice" ? `<div class="tip">${ic("info")}<div>MasakJe runs these together: ${C.steps[0].dish === "rice" ? "rice first, then " : ""}${esc(RX[C.ids[0]].name)}${C.ids[1] ? `, and you prep the ${esc(RX[C.ids[1]].name.toLowerCase())} while it cooks so it's served hot` : ""}.</div></div>` : ""}
+        <div style="display:flex;justify-content:space-between;font-size:14px;color:var(--fg2);margin-bottom:8px"><span><b style="color:var(--fg)">${ready} of ${keys.length}</b> ready</span>${ready === keys.length ? '<span style="color:var(--pos);font-weight:600">All set</span>' : ""}</div>
+        <div class="meter" style="margin-bottom:12px" role="progressbar" aria-valuemin="0" aria-valuemax="${keys.length}" aria-valuenow="${ready}" aria-label="Ingredients ready"><div data-tw="prep" data-s="${(ready / keys.length).toFixed(3)}" style="transform:scaleX(${(ready / keys.length).toFixed(3)})"></div></div>
+        <div class="prep">${keys.map(k => `<label><input type="checkbox" data-prep="${k}" ${C.prepped[k] ? "checked" : ""}><span>${esc(ING[k].name)}</span><span class="q">${qty(merged[k], ING[k].unit, k)}</span></label>`).join("")}</div>`;
+      foot = `<button class="btn" id="ckBack">Close</button><button class="btn primary" id="ckNext">${ic("play")}Start cooking</button>`;
     } else if (C.step < total) {
-      const st = r.guide[C.step];
-      const need = st.ing.length ? `<div class="need"><span class="lbl">You need</span><div class="need-list">${st.ing.map(k => { const q = r.ing.find(x => x[0] === k)[1]; return `<span class="need-chip">${esc(ING[k].name)} <b>${qty(q * scale(), ING[k].unit, k)}</b></span>`; }).join("")}</div></div>` : "";
+      const st = C.steps[C.step], kind = dishKind(st);
+      const tag = `<div class="dtag ${kind}">${esc(dishLabel(st))}${st.parallel ? " · at the same time" : ""}</div>`;
+      const need = st.ing.length ? `<div class="need"><span class="lbl">You need</span><div class="need-list">${st.ing.map(([k, q]) => `<span class="need-chip">${esc(ING[k].name)} <b>${qty(q, ING[k].unit, k)}</b></span>`).join("")}</div></div>` : "";
       let timer = "";
       if (st.sec) {
-        const t = C.timers[timerKey()] || { left: st.sec, running: false };
-        timer = `<div class="timer ${t.rang ? "ring" : ""}"><div><div class="clock" id="clock">${fmtClock(t.left)}</div><div class="lbl">${t.rang ? "Time's up" : t.running ? "Timer running" : "Timer"}</div></div><div class="acts">${t.running ? `<button class="btn" id="tPause" aria-label="Pause timer">${ic("pause")}</button>` : `<button class="btn primary" id="tStart">${ic("play")}${t.left === st.sec ? "Start" : "Resume"}</button>`}${t.left !== st.sec ? `<button class="btn" id="tReset" aria-label="Reset timer">${ic("reset")}</button>` : ""}</div></div>`;
+        const t = C.timers[C.step] || { left: st.sec, running: false };
+        timer = `<div class="timer ${t.rang ? "ring" : ""}"><div><div class="clock" data-tclock="${C.step}">${fmtClock(t.left)}</div><div class="lbl">${t.rang ? "Time's up" : t.running ? "Running. You can go to the next step" : "Timer"}</div></div><div class="acts">${t.rang && !t.acked ? `<button class="btn primary" id="tAck">${ic("check")}Stop alarm</button>` : t.running ? `<button class="btn" id="tPause" aria-label="Pause timer">${ic("pause")}</button>` : `<button class="btn primary" id="tStart">${ic("play")}${t.left === st.sec ? "Start" : "Resume"}</button>`}${t.left !== st.sec && !(t.rang && !t.acked) ? `<button class="btn" id="tReset" aria-label="Reset timer">${ic("reset")}</button>` : ""}</div></div>`;
       }
-      body = `<div class="step-no">Step ${C.step + 1} of ${total}</div><h2 class="step-t">${esc(st.t)}</h2>${need}${timer}`;
+      body = `<div class="step-no">Step ${C.step + 1} of ${total}</div>${tag}<h2 class="step-t">${esc(st.t)}</h2>${need}${timer}`;
       foot = `<button class="btn" id="ckBack">Back</button><button class="btn primary" id="ckNext">${C.step + 1 < total ? "Next" : "Finish"}</button>`;
     } else {
-      const more = C.qi + 1 < C.queue.length;
-      const took = C.started ? Math.round((Date.now() - C.started) / 60000) : 0;
-      body = `<div class="step-no">${ic("check")}</div><div class="done-t">${esc(r.name)} is ready</div>${C.started ? `<p class="sub">Cooking time so far: ${took} min</p>` : ""}<p class="sub">${more ? `Next: ${esc(RX[C.queue[C.qi + 1]].name)}` : C.day != null ? "Dinner is done. Selamat makan." : "Selamat makan."}</p>`;
-      foot = `<button class="btn" id="ckBack">Back</button><button class="btn primary" id="ckNext">${more ? `Cook ${esc(RX[C.queue[C.qi + 1]].name)}` : "Finish"}</button>`;
+      const took = C.started ? Math.max(1, Math.round((Date.now() - C.started) / 60000)) : 0;
+      body = `<div class="done-mark">${ic("check", 40)}</div><div class="done-t">${C.ids.length > 1 ? "Dinner is ready" : `${esc(RX[C.ids[0]].name)} is ready`}</div><p class="sub">${C.started ? `Cooked in ${took} min. ` : ""}Selamat makan.</p>`;
+      foot = `<button class="btn" id="ckBack">Back</button><button class="btn primary" id="ckNext">${C.day != null ? "Mark as cooked" : "Close"}</button>`;
     }
-    root.innerHTML = `<div class="cook" role="dialog" aria-modal="true" aria-label="Cooking ${esc(r.name)}">
-      <div class="cook-in"><div class="cook-top"><div style="min-width:0"><div class="n">${esc(r.name)}</div><div class="s" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:4px">${elapsed}<span>${r.mins} min dish${multi}</span></div></div><button class="icon-btn" id="ckClose" aria-label="Close cooking mode">${ic("x", 18)}</button></div>${segs}</div>
-      <div class="cook-body"><div class="cook-in enter">${body}</div></div>
+    root.innerHTML = `<div class="cook" role="dialog" aria-modal="true" aria-label="Cooking ${esc(names)}">
+      <div class="cook-in"><div class="cook-top"><div style="min-width:0"><div class="n">${esc(names)}</div><div class="s" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:4px">${elapsed}</div></div><div style="display:flex">${sound}<button class="icon-btn" id="ckClose" aria-label="Close cooking mode">${ic("x", 18)}</button></div></div>${segs}${strip}</div>
+      <div class="cook-body"><div class="cook-in" id="ckBody">${body}</div></div>
       <div class="cook-in"><div class="cook-foot">${foot}</div></div>
     </div>`;
+    if (G && !keep) G.from("#ckBody", { x: 28 * C.dir, opacity: 0, duration: 0.35, ease: EASE, clearProps: "transform,opacity" });
+    if (G && C.step >= total) G.from(".done-mark", { scale: 0.85, opacity: 0, duration: 0.45, ease: EASE });
+    playTweens(false);
     const $ = id => document.getElementById(id);
     $("ckClose").onclick = stopCooking;
-    $("ckBack").onclick = () => {
-      if (C.step >= 0) C.step--;
-      else if (C.qi > 0) { C.qi--; C.step = RX[C.queue[C.qi]].guide.length; }
-      else return stopCooking();
-      renderCook();
-    };
+    $("ckSound").onclick = () => { S.settings.sound = S.settings.sound === false; save(); if (S.settings.sound === false) SFX.alarm(false); renderCook(true); };
+    $("ckBack").onclick = () => { if (C.step === -1) return stopCooking(); C.step--; C.dir = -1; SFX.step(); renderCook(); };
     $("ckNext").onclick = () => {
-      if (C.step < total) { if (!C.started) C.started = Date.now(); C.step++; return renderCook(); }
-      if (C.qi + 1 < C.queue.length) { C.qi++; C.step = -1; return renderCook(); }
-      if (C.day != null) { S.flow.cooked[C.day] = true; deductCooked(C.day); save(); }
+      if (C.step < total) { if (!C.started) C.started = Date.now(); C.step++; C.dir = 1; if (C.step === total) SFX.done(); else SFX.step(); return renderCook(); }
+      if (C.day != null) { S.flow.cooked[C.day] = true; deductCooked(C.day); save(); toast("Marked as cooked"); }
       stopCooking(); render();
     };
-    const t = C.timers[timerKey()], st = r.guide[C.step];
-    if ($("tStart")) $("tStart").onclick = () => { const cur = C.timers[timerKey()] || { left: st.sec }; C.timers[timerKey()] = { left: cur.left, end: Date.now() + cur.left * 1000, running: true }; if (!C.ticking) C.ticking = setInterval(tick, 250); renderCook(); };
-    if ($("tPause")) $("tPause").onclick = () => { t.running = false; renderCook(); };
-    if ($("tReset")) $("tReset").onclick = () => { delete C.timers[timerKey()]; renderCook(); };
-    root.querySelectorAll("[data-prep]").forEach(el => el.onchange = () => { C.prepped[el.dataset.prep] = el.checked; const y = root.querySelector(".cook-body").scrollTop; renderCook(); root.querySelector(".cook-body").scrollTop = y; });
-    $("ckNext").focus();
+    const st = C.steps[C.step], t = C.timers[C.step];
+    if ($("tStart")) $("tStart").onclick = () => { const cur = C.timers[C.step] || { left: st.sec }; C.timers[C.step] = { left: cur.left, end: Date.now() + cur.left * 1000, running: true }; SFX.step(); renderCook(true); };
+    if ($("tPause")) $("tPause").onclick = () => { t.running = false; renderCook(true); };
+    if ($("tReset")) $("tReset").onclick = () => { delete C.timers[C.step]; renderCook(true); };
+    if ($("tAck")) $("tAck").onclick = () => { t.acked = true; SFX.alarm(false); renderCook(true); };
+    root.querySelectorAll("[data-jump]").forEach(b => b.onclick = () => { const i = +b.dataset.jump, tt = C.timers[i]; if (tt.rang) { tt.acked = true; SFX.alarm(false); } C.dir = i > C.step ? 1 : -1; C.step = i; renderCook(); });
+    root.querySelectorAll("[data-prep]").forEach(el => el.onchange = () => {
+      captureTweens(); C.prepped[el.dataset.prep] = el.checked; el.checked ? SFX.tick() : SFX.untick();
+      const y = root.querySelector(".cook-body").scrollTop; renderCook(true); root.querySelector(".cook-body").scrollTop = y;
+      pop(root.querySelector(`[data-prep="${el.dataset.prep}"]`));
+    });
+    if (!keep) $("ckNext").focus();
   }
 
   function toast(msg) {
     const el = document.createElement("div"); el.className = "toast"; el.setAttribute("role", "status"); el.textContent = msg;
-    document.body.appendChild(el); setTimeout(() => el.remove(), 2600);
+    document.body.appendChild(el);
+    if (G) G.from(el, { y: 12, opacity: 0, duration: 0.3, ease: EASE });
+    setTimeout(() => { if (G) G.to(el, { opacity: 0, duration: 0.25, onComplete: () => el.remove() }); else el.remove(); }, 2400);
   }
 
   // ---------- render ----------
-  const TABS = [["week", "Week", "week"], ["shop", "Shop", "list"], ["kitchen", "Kitchen", "fridge"], ["recipes", "Recipes", "book"], ["setup", "Settings", "sliders"]];
+  const TABS = [["week", "Today", "week"], ["shop", "Shop", "list"], ["kitchen", "Kitchen", "fridge"], ["recipes", "Recipes", "book"], ["setup", "Settings", "sliders"]];
+  let lastView = "";
+  if (!G) document.documentElement.classList.add("no-gsap");
   function render() {
+    captureTweens();
     const v = document.getElementById("view");
     const ob = !S.onboarded;
     document.getElementById("app").classList.toggle("bare", ob);
@@ -902,14 +1100,16 @@ const DATA = /*__DATA__*/null;
     document.getElementById("where").hidden = ob;
     if (ob) { v.innerHTML = viewOnboarding(); return; }
     if (!S.plan || S.plan.days.length !== 7) newWeek();
+    const viewKey = S.onboarded + S.tab;
     v.innerHTML = S.tab === "week" ? viewWeek() : S.tab === "shop" ? viewShop() : S.tab === "recipes" ? viewRecipes() : S.tab === "kitchen" ? viewKitchen() : viewSetup();
     document.getElementById("tabs").innerHTML = TABS.map(([k, l, i]) => `<button class="tab" data-tab="${k}" ${S.tab === k ? 'aria-current="page"' : ""}>${ic(i, 20)}<span>${l}</span></button>`).join("");
+    playTweens(viewKey !== lastView); lastView = viewKey;
     document.getElementById("where").innerHTML = `${ic("pin", 14)}<span>${esc(S.settings.postcode)} · ${S.settings.people} ${S.settings.people === 1 ? "person" : "people"}</span>`;
   }
   function go(tab) { S.tab = tab; render(); window.scrollTo({ top: 0 }); }
 
   document.addEventListener("click", e => {
-    const el = e.target.closest("[data-tab],[data-go],[data-swap],[data-off],[data-recipe],[data-filter],[data-people],[data-night],[data-avoid],[data-allergy],[data-dislike],[data-cookday],[data-cookone],#regen,#replan,#where,#lock,#shopped,#newweek,#obNext,#obBack,#moreshops,#addshop,#saveshop,#replanK,[data-kadd],[data-kdel],[data-kmove],[data-ksoon]");
+    const el = e.target.closest("[data-tab],[data-go],[data-swap],[data-off],[data-recipe],[data-filter],[data-people],[data-night],[data-avoid],[data-allergy],[data-dislike],[data-pick],[data-sound],[data-clear],[data-cookday],[data-cookone],#regen,#replan,#where,#lock,#shopped,#newweek,#obNext,#obBack,#moreshops,#addshop,#saveshop,#replanK,[data-kadd],[data-kdel],[data-kmove],[data-ksoon]");
     if (!el) return;
     const s = S.settings;
     if (el.dataset.tab) return go(el.dataset.tab);
@@ -918,6 +1118,9 @@ const DATA = /*__DATA__*/null;
     if (el.dataset.swap) { const [i, slot] = el.dataset.swap.split(":"); return swap(+i, slot); }
     if (el.dataset.off !== undefined) return toggleOff(+el.dataset.off);
     if (el.dataset.recipe) return openRecipe(el.dataset.recipe);
+    if (el.dataset.clear) { const k = el.dataset.clear; s[k] = k === "avoid" ? { beef: false, mutton: false, pedas: false } : {}; save(); return render(); }
+    if (el.dataset.pick) { const [i, slot] = el.dataset.pick.split(":"); return openPicker(+i, slot); }
+    if (el.dataset.sound !== undefined) { S.settings.sound = S.settings.sound === false; save(); if (S.settings.sound !== false) SFX.tick(); return render(); }
     if (el.dataset.cookday !== undefined) { const di = +el.dataset.cookday; return startCooking(dayItems(S.plan.days[di]).map(r => r.id), di); }
     if (el.dataset.cookone) return startCooking([el.dataset.cookone], null);
     if (el.dataset.filter) { S.filter = el.dataset.filter; return render(); }
@@ -926,9 +1129,13 @@ const DATA = /*__DATA__*/null;
     if (el.dataset.avoid) { s.avoid[el.dataset.avoid] = !s.avoid[el.dataset.avoid]; return render(); }
     if (el.dataset.allergy) { s.allergy[el.dataset.allergy] = !s.allergy[el.dataset.allergy]; return render(); }
     if (el.dataset.dislike) { s.dislike[el.dataset.dislike] = !s.dislike[el.dataset.dislike]; return render(); }
-    if (el.id === "regen") { S.plan = makePlan(); S.flow.locked = false; S.flow.shopped = false; save(); return render(); }
+    if (el.id === "regen") { captureTweens(); S.plan = makePlan(); S.flow.shopped = false; save(); render(); toast("New plan for the week"); return; }
     if (el.id === "lock") { S.flow.locked = true; save(); return go("shop"); }
-    if (el.id === "shopped") { finishShopping(); toast("Leftover pack amounts added to your kitchen"); return go("week"); }
+    if (el.id === "shopped") {
+      const before = Object.keys(S.kitchen).length; finishShopping(); SFX.done();
+      const added = Object.keys(S.kitchen).length - before;
+      toast(added > 0 ? `Done. ${added} leftover pack ${added === 1 ? "amount" : "amounts"} saved to your fridge` : "Shopping done"); return go("week");
+    }
     if (el.id === "newweek" || el.id === "replan") { newWeek(); return go("week"); }
     if (el.dataset.kadd) { addKitchen(el.dataset.kadd, ING[el.dataset.kadd].pack, false); S.kq = ""; save(); return render(); }
     if (el.dataset.kdel) { delete S.kitchen[el.dataset.kdel]; save(); return render(); }
@@ -946,9 +1153,9 @@ const DATA = /*__DATA__*/null;
   });
   document.addEventListener("change", e => {
     const t = e.target, s = S.settings;
-    if (t.dataset.bought) { S.bought[t.dataset.bought] = t.checked; save(); return render(); }
+    if (t.dataset.bought) { captureTweens(); S.bought[t.dataset.bought] = t.checked; t.checked ? SFX.tick() : SFX.untick(); save(); render(); pop(document.querySelector(`[data-bought="${t.dataset.bought}"]`)); return; }
     if (t.dataset.need) { S.pantryNeed[t.dataset.need] = t.checked; save(); return render(); }
-    if (t.name === "shop") { s.shop = +t.value; save(); return render(); }
+    if (t.name === "shop") { if (t.value.startsWith("o:")) { s.shop = -3; s.osm = +t.value.slice(2); } else if (t.value.startsWith("p:")) { s.shop = +t.value.slice(2); } else s.shop = +t.value; save(); return render(); }
     if (t.dataset.kqty) { const v = +t.value; if (v > 0) S.kitchen[t.dataset.kqty].q = v; else delete S.kitchen[t.dataset.kqty]; save(); return render(); }
     if (t.id === "budget") { s.budget = Math.max(20, +t.value || DEFAULTS.budget); save(); }
   });

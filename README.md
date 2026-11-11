@@ -14,6 +14,8 @@ builds the shopping list, and prices it with real shop prices from KPDN PriceCat
 | Price pipeline: downloads PriceCatcher, keeps latest price per shop (last 45 days), district/state medians | `scripts/build_prices.py` |
 | Geocodes shops (postcode → town name → district centre) with GeoNames postcodes | `scripts/build_prices.py` |
 | Jaya Grocer online prices (personal use, weekly, polite) matched to ingredients | `scripts/fetch_jayagrocer.py` + `src/data/jayagrocer_map.json` |
+| Shops + opening hours + neighbourhood names from OpenStreetMap (10.6k shops), linked to PriceCatcher shops | `scripts/build_osm_shops.py` |
+| Approximate macros per serving | `src/data/nutrition.json` |
 | Bundles everything into one offline page, derives per-step ingredients and timers | `scripts/build_prototype.py` |
 | Prototype UI | `prototype/src.html` → `prototype/index.html` |
 
@@ -46,4 +48,4 @@ python3 scripts/build_prototype.py
 - ~15 ingredients (tauhu, taugeh, light/dark soy, whole spices…) have no recent PriceCatcher data and use estimates, labelled "Estimate".
 - Recipes are AI-drafted and need review by a home cook.
 
-Price data: KPDN PriceCatcher via OpenDOSM, CC BY 4.0. Postcode coordinates: GeoNames, CC BY 4.0.
+Price data: KPDN PriceCatcher via OpenDOSM, CC BY 4.0. Postcode coordinates: GeoNames, CC BY 4.0. Shops and opening hours: © OpenStreetMap contributors, ODbL 1.0.

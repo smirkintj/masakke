@@ -22,6 +22,8 @@ jobs:
         run: python3 scripts/build_prices.py
       - name: Jaya Grocer online prices (personal use, polite, once a week)
         run: python3 scripts/fetch_jayagrocer.py
+      - name: Shops and opening hours (OpenStreetMap, ODbL)
+        run: pip install osmium && python3 scripts/build_osm_shops.py
       - name: Rebuild prototype
         run: python3 scripts/build_prototype.py
       - name: Commit if changed
