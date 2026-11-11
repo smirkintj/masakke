@@ -25,6 +25,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 URL = "https://download.openstreetmap.fr/extracts/asia/malaysia-latest.osm.pbf"
 OUT = os.path.join(ROOT, "public", "data", "prices", "osm_shops.json")
 P = os.path.join(ROOT, "public", "data", "prices")
+DEFUNCT = re.compile(r"\btesco\b|\bclosed\b|\btutup\b", re.I)
 SHOP_TAGS = {"supermarket", "grocery", "convenience", "greengrocer", "butcher", "seafood", "wholesale"}
 
 
@@ -33,13 +34,17 @@ class Shops(osmium.SimpleHandler):
         super().__init__()
         self.out = []
         self.places = []  # (lat, lng, name) of suburbs / neighbourhoods, for "Jaya Grocer · Bukit Jelutong"
+        self.addr = {}    # postcode -> [(lat, lng)] of addresses tagged with it
 
-    def take(self, tags, lat, lng):
+    def take(self, tags, lat, lng, year):
         shop, amenity = tags.get("shop"), tags.get("amenity")
         if shop not in SHOP_TAGS and amenity != "marketplace":
             return
         name = tags.get("name") or tags.get("name:en") or tags.get("brand")
         if not name:
+            return
+        # Defunct in Malaysia (Tesco became Lotus's in 2021) or marked closed on the map
+        if DEFUNCT.search(name + " " + tags.get("brand", "")) or "disused" in tags or tags.get("opening_hours", "").strip().lower() in ("closed", "off"):
             return
         self.out.append({
             "name": name, "brand": tags.get("brand", ""),
@@ -48,20 +53,29 @@ class Shops(osmium.SimpleHandler):
             "hours": tags.get("opening_hours", ""),
             "area": tags.get("addr:suburb") or tags.get("addr:city") or tags.get("addr:place") or "",
             "postcode": tags.get("addr:postcode", ""),
+            "year": year,   # year this map entry was last edited; old entries may be out of date
         })
 
     def node(self, n):
+        pc = n.tags.get("addr:postcode")
+        if pc and n.location.valid():
+            self.addr.setdefault(pc.strip(), []).append((n.location.lat, n.location.lon))
         if n.tags.get("place") in ("suburb", "neighbourhood", "quarter", "village", "hamlet") and n.tags.get("name"):
             self.places.append((n.location.lat, n.location.lon, n.tags.get("name:en") or n.tags["name"]))
         if "shop" in n.tags or n.tags.get("amenity") == "marketplace":
-            self.take(n.tags, n.location.lat, n.location.lon)
+            self.take(n.tags, n.location.lat, n.location.lon, n.timestamp.year)
 
     def way(self, w):
+        pc = w.tags.get("addr:postcode")
+        if pc:
+            pts = [(nd.lat, nd.lon) for nd in w.nodes if nd.location.valid()]
+            if pts:
+                self.addr.setdefault(pc.strip(), []).append((sum(p[0] for p in pts) / len(pts), sum(p[1] for p in pts) / len(pts)))
         if "shop" not in w.tags and w.tags.get("amenity") != "marketplace":
             return
         pts = [(nd.lat, nd.lon) for nd in w.nodes if nd.location.valid()]
         if pts:
-            self.take(w.tags, sum(p[0] for p in pts) / len(pts), sum(p[1] for p in pts) / len(pts))
+            self.take(w.tags, sum(p[0] for p in pts) / len(pts), sum(p[1] for p in pts) / len(pts), w.timestamp.year)
 
 
 def km(a, b, c, d):
@@ -126,6 +140,33 @@ def main():
     for s in h.out:
         if not s["hours"] and chain_key(s) in typical:
             s["typ"] = typical[chain_key(s)]
+    # Neighbourhoods inside each postcode: map every address tagged with the postcode to its nearest
+    # OSM neighbourhood, count, and keep the postcode's real centre (median of its addresses).
+    import statistics
+    from collections import Counter
+    pc_hoods = {}
+    for code, pts in h.addr.items():
+        if not re.fullmatch(r"\d{5}", code) or len(pts) < 8:
+            continue
+        mla, mln = statistics.median(p[0] for p in pts), statistics.median(p[1] for p in pts)
+        pts = [p for p in pts if abs(p[0] - mla) < 0.06 and abs(p[1] - mln) < 0.06]
+        cnt, where = Counter(), {}
+        for la, ln in pts:
+            best, bd = None, 0.02 ** 2
+            for dla in (-0.1, 0, 0.1):
+                for dln in (-0.1, 0, 0.1):
+                    for pla, pln, nm in grid.get((round(la + dla, 1), round(ln + dln, 1)), []):
+                        dd = (pla - la) ** 2 + (pln - ln) ** 2
+                        if dd < bd:
+                            bd, best = dd, (nm, pla, pln)
+            if best:
+                cnt[best[0]] += 1
+                where[best[0]] = best[1:]
+        hoods = [[nm, round(where[nm][0], 4), round(where[nm][1], 4)] for nm, c in cnt.most_common(20) if c >= 2]
+        if hoods:
+            pc_hoods[code] = {"c": [round(mla, 4), round(mln, 4)], "h": hoods}
+    json.dump(pc_hoods, open(os.path.join(P, "osm_postcode_hoods.json"), "w"), separators=(",", ":"), ensure_ascii=False)
+    print(f"postcodes with neighbourhoods from addresses: {len(pc_hoods)}", file=sys.stderr)
     linked = 0
     for s in h.out:
         sw = words(s["name"] + " " + s["brand"])

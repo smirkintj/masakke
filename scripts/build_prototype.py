@@ -109,6 +109,13 @@ def main():
                         if dd < bd:
                             bd, best = dd, nm
             v.append(best)
+    # Real neighbourhoods inside each postcode (from OSM addresses) and a better centre point
+    ph = os.path.join(P, "osm_postcode_hoods.json")
+    if os.path.exists(ph):
+        for k, v in json.load(open(ph)).items():
+            if k in postcodes:
+                postcodes[k][0], postcodes[k][1] = v["c"]
+                postcodes[k].append(v["h"])
     keys = sorted(k for k, v in ingredients.items() if v.get("codes"))
 
     def pack(m):
@@ -169,7 +176,7 @@ def main():
         for o in json.load(open(op)):
             area = o["area"].split(",")[0].strip() or place(o["lat"], o["lng"])
             name = o["name"] if o["brand"].lower() in o["name"].lower() or not o["brand"] else f'{o["brand"]} {o["name"]}'
-            osm.append([name, o["type"], o["lat"], o["lng"], o["hours"], area, pc_index.get(o.get("pc"), -1), o.get("typ", "")])
+            osm.append([name, o["type"], o["lat"], o["lng"], o["hours"], area, pc_index.get(o.get("pc"), -1), o.get("typ", ""), o.get("year", 0)])
 
     data = {
         "ingredients": ingredients,

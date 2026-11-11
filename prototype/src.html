@@ -188,7 +188,8 @@ h1 { font-size: 30px; line-height: 1.15; font-weight: 500; margin: 12px 0 4px; t
 .shops .shop { grid-template-columns: 24px minmax(0, 1fr); align-items: start; }
 .shops .shop input { margin-top: 2px; }
 .shop .hrs.open, .shopline .hrs.open { color: var(--pos); }
-.shop .dir { color: var(--fg2); font-weight: 500; text-underline-offset: 3px; }
+.shop .dir { color: var(--fg2); font-weight: 500; text-decoration: underline; text-underline-offset: 3px; background: none; border: 0; padding: 0; font-size: inherit; }
+.shop .stale { color: var(--muted); }
 .shopline { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; gap: 10px; align-items: center; background: var(--surface); border-radius: 12px; padding: 10px 10px 10px 12px; margin-bottom: 16px; font-size: 14px; color: var(--fg2); }
 .summary .shopline { margin-bottom: 0; }
 .shopline svg { color: var(--fg2); }
@@ -414,7 +415,7 @@ const DATA = /*__DATA__*/null;
     const key = pc + (hd ? "|" + hd.name : "");
     if (CTX && CTX.key === key) return CTX;
     let loc = lookupPostcode(pc);
-    if (loc) { if (hd) loc = { ...loc, lat: hd.lat, lng: hd.lng, hood: hd.name }; else { const h0 = hoodsNear(loc.lat, loc.lng)[0]; loc = { ...loc, hood: h0 ? h0.name : loc.hood }; } }
+    if (loc) { if (hd) loc = { ...loc, lat: hd.lat, lng: hd.lng, hood: hd.name }; else loc = { ...loc, hood: "" }; }
     if (!loc) return (CTX = { key, pc, loc: null, near: [], med: {}, stateIdx: -1 });
     const near = PR.shops.map((s, i) => ({ i, s, d: km(loc.lat, loc.lng, s[2], s[3]) })).filter(x => x.d <= RADII[RADII.length - 1]).sort((a, b) => a.d - b.d);
     const med = {};  // key -> {v, r, n}
@@ -434,9 +435,14 @@ const DATA = /*__DATA__*/null;
   const JG = PR.jg && PR.jg.items ? PR.jg : null;
   const OSM = DATA.osm || [];
   const PLACES = DATA.places || [];
-  function hoodsNear(lat, lng) {  // OpenStreetMap neighbourhoods within ~5 km, nearest first
-    return PLACES.map(p => ({ name: p[2], lat: p[0], lng: p[1], d: Math.hypot(p[0] - lat, (p[1] - lng) * 0.998) }))
-      .filter(x => x.d < 0.045).sort((a, b) => a.d - b.d).filter((x, i, a) => a.findIndex(y => y.name === x.name) === i).slice(0, 15);
+  // Neighbourhoods for a postcode: first the ones its own addresses fall in (from OpenStreetMap), then others nearby.
+  function hoodsFor(pc) {
+    const v = PC[pc]; if (!v) return { inside: [], near: [] };
+    const inside = (v[4] || []).map(h => ({ name: h[0], lat: h[1], lng: h[2] }));
+    const seen = new Set(inside.map(h => h.name));
+    const near = PLACES.map(p => ({ name: p[2], lat: p[0], lng: p[1], d: Math.hypot(p[0] - v[0], p[1] - v[1]) }))
+      .filter(x => x.d < 0.05 && !seen.has(x.name)).sort((a, b) => a.d - b.d).filter((x, i, a) => a.findIndex(y => y.name === x.name) === i).slice(0, 12);
+    return { inside, near };
   }
   // OpenStreetMap opening_hours, common forms: "24/7", "Mo-Fr 09:00-21:00; Sa,Su 10:00-22:00", "Mo-Su 07:00-01:00"
   const DN = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
@@ -904,14 +910,14 @@ const DATA = /*__DATA__*/null;
   const hoursText = (h, typ) => { if (h) return openStatus(h); if (typ) { const st = openStatus(typ); return { text: `${st.text} (usual hours)`, cls: st.cls }; } return null; };
   function chosenShop() {
     const s = S.settings;
-    if (s.shop === -3 && OSM[s.osm]) { const o = OSM[s.osm]; return { name: `${o[0]} · ${o[5]}`, url: dirUrl(o[2], o[3]), hrs: hoursText(o[4], o[7]) }; }
+    if (s.shop === -3 && OSM[s.osm]) { const o = OSM[s.osm], town = (lookupPostcode(s.postcode) || { place: "" }).place; return { name: `${o[0]} · ${o[5]}`, url: searchUrl(o[0], `${o[5]}, ${town}`), hrs: hoursText(o[4], o[7]) }; }
     if (s.shop >= 0) { const p = PR.shops[s.shop]; return { name: shopName(p), url: searchUrl(shopName(p), p[6]), hrs: null }; }
     if (s.shop === -2 && s.custom) return { name: s.custom.name, url: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.custom.name + " " + s.postcode)}`, hrs: null };
     return null;
   }
   function shopLine() {
     const c = chosenShop(); if (!c) return "";
-    return `<div class="shopline">${ic("store")}<div><b>${esc(c.name)}</b>${c.hrs ? `<span class="hrs ${c.hrs.cls}">${esc(c.hrs.text)}</span>` : ""}</div><a class="btn" href="${c.url}" target="_blank" rel="noopener" style="height:36px;padding:0 12px">${ic("nav")}Directions</a></div>`;
+    return `<div class="shopline">${ic("store")}<div><b>${esc(c.name)}</b>${c.hrs ? `<span class="hrs ${c.hrs.cls}">${esc(c.hrs.text)}</span>` : ""}</div><a class="btn" href="${c.url}" target="_blank" rel="noopener" style="height:36px;padding:0 12px">${ic("nav")}Open in Maps</a></div>`;
   }
   function priceKind(name, pcIdx) {
     const c = chainOf(name);
@@ -927,16 +933,20 @@ const DATA = /*__DATA__*/null;
     const q = (S.shopQ || "").trim().toLowerCase();
     // OpenStreetMap shops nearest first; PriceCatcher shops not linked to any OSM shop are added so their prices stay reachable
     const linked = new Set(OSM.map(o => o[6]).filter(i => i >= 0));
-    let cands = OSM.map((o, i) => ({ k: "o", i, name: o[0], type: o[1], area: o[5], hours: o[4], typ: o[7], lat: o[2], lng: o[3], pc: o[6], d: km(loc.lat, loc.lng, o[2], o[3]) }))
+    let cands = OSM.map((o, i) => ({ k: "o", i, name: o[0], type: o[1], area: o[5], hours: o[4], typ: o[7], year: o[8], lat: o[2], lng: o[3], pc: o[6], d: km(loc.lat, loc.lng, o[2], o[3]) }))
       .concat(PR.shops.map((p, i) => linked.has(i) ? null : { k: "p", i, name: shopName(p), type: p[1], area: p[6], hours: "", typ: "", lat: p[2], lng: p[3], pc: i, d: km(loc.lat, loc.lng, p[2], p[3]) }).filter(Boolean));
+    const hidden = s.hidden || {};
+    cands = cands.filter(x => !(x.k === "o" && hidden[x.i]));
+    // Map entries not edited since before 2022 sink a little: they're more likely to be out of date
+    const rank = x => x.d + (x.year && x.year < 2022 ? 1.5 : 0);
     cands = q ? cands.filter(x => x.name.toLowerCase().includes(q)).sort((a, b) => a.d - b.d).slice(0, 12)
-              : cands.filter(x => x.d <= 15).sort((a, b) => a.d - b.d).slice(0, S.nearN || 8);
+              : cands.filter(x => x.d <= 15).sort((a, b) => rank(a) - rank(b)).slice(0, S.nearN || 8);
     const checked = x => x.k === "o" ? s.shop === -3 && s.osm === x.i : s.shop === x.i;
     const ring = c.near.filter(x => x.d <= 5).length;
     const cu = s.custom && (!s.custom.postcode || s.custom.postcode === s.postcode) ? s.custom : null, cuChain = cu && chainOf(cu.name);
     const row = x => { const pk = priceKind(x.name, x.pc), st = hoursText(x.hours, x.typ);
       const hrs = st ? `<span class="hrs ${st.cls}">${esc(st.text)}</span> · ` : "";
-      return `<label class="shop"><input type="radio" name="shop" value="${x.k}:${x.i}" ${checked(x) ? "checked" : ""}><div><div class="n">${esc(x.name)}</div><div class="q">${esc(x.type)}${x.area ? " · " + esc(x.area) : ""}</div><div class="q">${hrs}<span class="${pk.ok ? "src-ok" : ""}">${pk.t}</span> · <a class="dir" href="${x.k === "o" ? dirUrl(x.lat, x.lng) : searchUrl(x.name, x.area)}" target="_blank" rel="noopener">Directions</a></div></div></label>`; };
+      return `<label class="shop"><input type="radio" name="shop" value="${x.k}:${x.i}" ${checked(x) ? "checked" : ""}><div><div class="n">${esc(x.name)}</div><div class="q">${esc(x.type)}${x.area ? " · " + esc(x.area) : ""}</div><div class="q">${hrs}<span class="${pk.ok ? "src-ok" : ""}">${pk.t}</span> · <a class="dir" href="${searchUrl(x.name, x.area + ", " + loc.place)}" target="_blank" rel="noopener">Open in Maps</a>${x.k === "o" ? ` · <button class="dir" data-hide="${x.i}" type="button">Closed?</button>` : ""}</div>${x.year && x.year < 2022 ? `<div class="q stale">Not checked on the map since ${x.year}</div>` : ""}</div></label>`; };
     const rows = [
       `<label class="shop"><input type="radio" name="shop" value="-1" ${s.shop === -1 ? "checked" : ""}><div><div class="n">Any shop near me</div><div class="q">Typical price across ${ring >= MIN_SHOPS ? `${ring} surveyed shops around ${esc(loc.hood || loc.place)}` : "the nearest surveyed shops"}</div></div></label>`,
       cu ? `<label class="shop"><input type="radio" name="shop" value="-2" ${s.shop === -2 ? "checked" : ""}><div><div class="n">${esc(cu.name)}</div><div class="q">Added by you</div><div class="q"><span class="${priceKind(cu.name, -1).ok ? "src-ok" : ""}">${priceKind(cu.name, -1).t}</span></div></div></label>` : "",
@@ -946,9 +956,17 @@ const DATA = /*__DATA__*/null;
     const add = S.adding ? `<div class="addshop"><label for="newshop" style="font-weight:500;font-size:15px">Your shop's name</label>
         <div class="row"><input class="inp" id="newshop" placeholder="e.g. TMG Alam Budiman" value="${esc(draft)}" style="background:var(--card)"><button class="btn primary" id="saveshop" style="height:48px" ${draft.trim().length < 3 ? "disabled" : ""}>Add</button></div>
         <div class="chainmsg">${draft.trim().length < 3 ? "We'll use prices from shops near your postcode." : dChain ? (JG && dChain.name === "Jaya Grocer" ? `Recognised <b>Jaya Grocer</b>. We'll use its online-store prices for ${Object.keys(JG.items).length} ingredients (checked ${jgDate}).` : `Recognised <b>${dChain.name}</b>. Its surveyed branches are ${pctLabel(dChain.idx)} average, so we'll adjust nearby prices by that.`) : "Not a chain we have data for. We'll use typical prices from shops near you."}</div></div>` : "";
-    const base = lookupPostcode(s.postcode), hoods = base ? hoodsNear(base.lat, base.lng) : [];
-    const cur = loc.hood;
-    const hoodSel = hoods.length ? `<div class="field"><label for="hood">Your neighbourhood</label><select class="inp" id="hood">${hoods.map(h => `<option ${h.name === cur ? "selected" : ""}>${esc(h.name)}</option>`).join("")}</select><div class="hint">Pick the closest one. Shops are listed from here</div></div>` : "";
+    const H = hoodsFor(s.postcode), cur = loc.hood;
+    const opt = h => `<option ${h.name === cur ? "selected" : ""}>${esc(h.name)}</option>`;
+    const typed = cur && !H.inside.concat(H.near).some(h => h.name === cur);
+    const hoodSel = `<div class="field"><label for="hood">Your neighbourhood</label><select class="inp" id="hood">
+        <option value="" ${!cur ? "selected" : ""}>Choose your taman or seksyen</option>
+        ${H.inside.length ? `<optgroup label="In ${esc(s.postcode)}">${H.inside.map(opt).join("")}</optgroup>` : ""}
+        ${H.near.length ? `<optgroup label="Nearby">${H.near.map(opt).join("")}</optgroup>` : ""}
+        ${typed ? `<option selected>${esc(cur)}</option>` : ""}
+        <option value="__type">Not listed? Type it</option></select>
+        ${S.typingHood ? `<div class="addshop" style="margin-top:8px"><div class="row"><input class="inp" id="hoodtext" placeholder="e.g. Taman Bukit Subang" value="${esc(S.hoodDraft || "")}" style="background:var(--card)"><button class="btn primary" id="savehood" style="height:48px" ${(S.hoodDraft || "").trim().length < 3 ? "disabled" : ""}>Use</button></div></div>` : ""}
+        <div class="hint">${H.inside.length ? `Listed first: areas where addresses in ${esc(s.postcode)} are on OpenStreetMap. ` : ""}Optional. It helps list the shops nearest you first</div></div>`;
     return `<div class="field"><label for="postcode">Your postcode</label><div class="pc-row"><input class="inp" id="postcode" inputmode="numeric" maxlength="5" autocomplete="postal-code" value="${esc(s.postcode)}">${place}</div></div>
       ${hoodSel}
       <div class="field"><span class="lbl">Where you usually shop</span>
@@ -956,7 +974,7 @@ const DATA = /*__DATA__*/null;
         <div class="shops" role="radiogroup" aria-label="Where you shop">${rows}${q && !cands.length ? `<div class="shop"><span></span><div class="q">No shop matches "${esc(S.shopQ)}"</div><span></span></div>` : ""}</div>
         <div class="shop-more">${!q ? `<button class="link" id="moreshops">Show more</button>` : ""}${S.adding ? "" : `<button class="link" id="addshop">My shop isn't listed</button>`}</div>
         ${add}
-        <div class="hint">Shops and opening hours © OpenStreetMap contributors (ODbL), nearest to your postcode first. Prices from KPDN PriceCatcher where the shop is surveyed, Jaya Grocer's online store, or typical prices nearby.</div></div>`;
+        <div class="hint">Shops and opening hours © OpenStreetMap contributors (ODbL), nearest first. It's crowd-mapped, so check Maps before you go. Prices from KPDN PriceCatcher where the shop is surveyed, Jaya Grocer's online store, or typical prices nearby.</div></div>`;
   }
   function householdBlock() {
     const s = S.settings;
@@ -1251,7 +1269,7 @@ const DATA = /*__DATA__*/null;
   function go(tab) { S.tab = tab; render(); window.scrollTo({ top: 0 }); }
 
   document.addEventListener("click", e => {
-    const el = e.target.closest("[data-tab],[data-go],[data-swap],[data-off],[data-recipe],[data-filter],[data-people],[data-night],[data-avoid],[data-allergy],[data-dislike],[data-pick],[data-sound],[data-clear],[data-pneed],[data-tonight],[data-pickday],[data-cookday],[data-cookone],#regen,#replan,#where,#lock,#shopped,#newweek,#obNext,#obBack,#guideOk,#logo,#moreshops,#addshop,#saveshop,#replanK,[data-kadd],[data-kdel],[data-kmove],[data-ksoon]");
+    const el = e.target.closest("[data-tab],[data-go],[data-swap],[data-off],[data-recipe],[data-filter],[data-people],[data-night],[data-avoid],[data-allergy],[data-dislike],[data-pick],[data-sound],[data-clear],[data-pneed],[data-tonight],[data-pickday],[data-cookday],[data-cookone],#regen,#replan,#where,#lock,#shopped,#newweek,#obNext,#obBack,#guideOk,#logo,#savehood,[data-hide],#moreshops,#addshop,#saveshop,#replanK,[data-kadd],[data-kdel],[data-kmove],[data-ksoon]");
     if (!el) return;
     const s = S.settings;
     if (el.dataset.tab) return go(el.dataset.tab);
@@ -1290,6 +1308,8 @@ const DATA = /*__DATA__*/null;
     if (el.id === "moreshops") { S.nearN = (S.nearN || 8) + 10; return render(); }
     if (el.id === "addshop") { S.adding = true; render(); const n = document.getElementById("newshop"); n && n.focus(); return; }
     if (el.id === "saveshop") { const name = (S.shopDraft || "").trim(); if (name.length < 3) return; s.custom = { name, postcode: s.postcode }; s.shop = -2; S.adding = false; S.shopDraft = ""; save(); return render(); }
+    if (el.id === "savehood") { const name = (S.hoodDraft || "").trim(), b = lookupPostcode(s.postcode); if (name.length >= 3 && b) { s.hood = { pc: s.postcode, name, lat: b.lat, lng: b.lng }; S.typingHood = false; S.hoodDraft = ""; save(); render(); } return; }
+    if (el.dataset.hide !== undefined) { e.preventDefault(); const i = +el.dataset.hide; s.hidden = s.hidden || {}; s.hidden[i] = true; if (s.shop === -3 && s.osm === i) s.shop = -1; save(); render(); toast("Hidden. It won't be listed again"); return; }
     if (el.id === "logo") { if (!S.onboarded) { S.ob = -1; render(); } else go("week"); return; }
     if (el.id === "guideOk") { S.guideSeen = true; save(); const g = document.querySelector(".guide"); if (G && g) G.to(g, { opacity: 0, y: -6, duration: 0.25, ease: EASE, onComplete: render }); else render(); return; }
     if (el.id === "obBack") { S.ob = Math.max(-1, S.ob - 1); render(); return window.scrollTo({ top: 0 }); }
@@ -1304,14 +1324,20 @@ const DATA = /*__DATA__*/null;
     if (t.dataset.need) { S.pantryNeed[t.dataset.need] = t.checked; save(); return render(); }
     if (t.name === "shop") { if (t.value.startsWith("o:")) { s.shop = -3; s.osm = +t.value.slice(2); } else if (t.value.startsWith("p:")) { s.shop = +t.value.slice(2); } else s.shop = +t.value; save(); return render(); }
     if (t.dataset.kqty) { const v = +t.value; if (v > 0) S.kitchen[t.dataset.kqty].q = v; else delete S.kitchen[t.dataset.kqty]; save(); return render(); }
-    if (t.id === "hood") { const base = lookupPostcode(s.postcode), h = hoodsNear(base.lat, base.lng).find(x => x.name === t.value); if (h) { s.hood = { pc: s.postcode, name: h.name, lat: h.lat, lng: h.lng }; s.shop = s.shop === -2 ? -2 : -1; save(); return render(); } }
+    if (t.id === "hood") {
+      if (t.value === "__type") { S.typingHood = true; render(); const el = document.getElementById("hoodtext"); el && el.focus(); return; }
+      S.typingHood = false;
+      if (!t.value) { s.hood = null; save(); return render(); }
+      const H = hoodsFor(s.postcode), h = H.inside.concat(H.near).find(x => x.name === t.value);
+      if (h) { s.hood = { pc: s.postcode, name: h.name, lat: h.lat, lng: h.lng }; if (s.shop !== -2) s.shop = -1; save(); return render(); }
+    }
     if (t.id === "budget") { s.budget = Math.max(20, +t.value || DEFAULTS.budget); save(); }
   });
   document.addEventListener("input", e => {
     const t = e.target;
     if (t.id === "q") { S.q = t.value; const pos = t.selectionStart; render(); const q = document.getElementById("q"); q.focus(); q.setSelectionRange(pos, pos); }
-    if (t.id === "shopq" || t.id === "newshop" || t.id === "kq") {
-      if (t.id === "shopq") S.shopQ = t.value; else if (t.id === "kq") S.kq = t.value; else S.shopDraft = t.value;
+    if (t.id === "shopq" || t.id === "newshop" || t.id === "kq" || t.id === "hoodtext") {
+      if (t.id === "shopq") S.shopQ = t.value; else if (t.id === "kq") S.kq = t.value; else if (t.id === "hoodtext") S.hoodDraft = t.value; else S.shopDraft = t.value;
       const id = t.id, pos = t.selectionStart; render(); const el = document.getElementById(id); el.focus(); el.setSelectionRange(pos, pos); return;
     }
     if (t.id === "postcode") {
