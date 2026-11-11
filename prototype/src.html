@@ -188,6 +188,10 @@ h1 { font-size: 30px; line-height: 1.15; font-weight: 500; margin: 12px 0 4px; t
 .addshop { margin-top: 12px; background: var(--surface); border-radius: 20px; padding: 16px; display: grid; gap: 12px; }
 .addshop .row { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
 .addshop .chainmsg { font-size: 14px; color: var(--fg2); }
+.toggle { display: inline-grid; grid-template-columns: 1fr 1fr; padding: 3px; gap: 2px; border-radius: 12px; background: var(--surface); }
+.toggle button { height: 34px; min-width: 56px; padding: 0 12px; border: 0; border-radius: 9px; background: transparent; color: var(--fg2); font-size: 14px; font-weight: 500; transition: background-color 150ms var(--ease), color 150ms var(--ease); }
+.toggle button[aria-pressed="true"] { background: var(--card); color: var(--fg); box-shadow: 0 1px 2px var(--shadow); }
+.toggle button[data-pneed$=":1"][aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
 .lblrow { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 10px; }
 .lblrow .lbl { font-size: 15px; font-weight: 500; }
 .lblrow .link { font-size: 14px; text-decoration: none; }
@@ -737,7 +741,9 @@ const DATA = /*__DATA__*/null;
       const gd = g.filter(r => S.bought[r.k]).length;
       return `<div class="group"><h3><span>${a}</span><span>${gd}/${g.length}</span></h3><div class="list">${g.map(row).join("")}</div></div>`;
     }).join("");
-    const prow = r => `<label class="item"><input type="checkbox" id="p-${r.k}" data-need="${r.k}" ${S.pantryNeed[r.k] ? "checked" : ""}><div><div class="n">${esc(r.it.name)}</div><div class="q"><span>uses ${qty(r.q, r.it.unit, r.k)}</span><span>· ${unitPrice(r.k)}</span></div></div><span class="p">${S.pantryNeed[r.k] ? "Need" : '<span style="color:var(--muted)">Have</span>'}</span></label>`;
+    const prow = r => { const need = !!S.pantryNeed[r.k];
+      return `<div class="item" style="grid-template-columns:minmax(0,1fr) auto"><div><div class="n">${esc(r.it.name)}</div><div class="q"><span>uses ${qty(r.q, r.it.unit, r.k)}</span><span>· ${unitPrice(r.k)}</span></div></div>
+        <div class="toggle" role="group" aria-label="${esc(r.it.name)}"><button data-pneed="${r.k}:0" aria-pressed="${!need}">Have</button><button data-pneed="${r.k}:1" aria-pressed="${need}">Need</button></div></div>`; };
     const lockNote = "";
     const pct = all.length ? got / all.length : 0;
     return `<div class="enter">
@@ -748,7 +754,7 @@ const DATA = /*__DATA__*/null;
         <div style="display:flex;justify-content:space-between;gap:12px;align-items:baseline"><div class="k"><b style="color:var(--fg);font-size:18px">${got} of ${all.length}</b> items bought</div><div class="k">${rm(spent)} of ${rm(t.toBuy)}</div></div>
         <div class="meter" style="margin-top:12px" role="progressbar" aria-valuemin="0" aria-valuemax="${all.length}" aria-valuenow="${got}" aria-label="Items bought"><div data-tw="shopbar" data-s="${pct.toFixed(3)}" style="transform:scaleX(${pct.toFixed(3)})"></div></div>
       </div>
-      <details class="group" ${S.flow.shopped ? "" : "open"}><summary style="cursor:pointer;font-size:14px;font-weight:600;color:var(--fg2);margin-bottom:8px">Before you go: pantry check (${needP.length} to buy)</summary><div class="list">${pantry.sort((a, b) => a.it.name.localeCompare(b.it.name)).map(prow).join("")}</div></details>
+      <details class="group" ${S.flow.shopped ? "" : "open"}><summary style="cursor:pointer;font-size:14px;font-weight:500;color:var(--fg2);margin-bottom:8px">Before you go: pantry check (${needP.length} to buy)</summary><p class="sub" style="font-size:14px;margin:0 0 8px">Tap Need for anything you've run out of. It's added to your list</p><div class="list">${pantry.sort((a, b) => a.it.name.localeCompare(b.it.name)).map(prow).join("")}</div></details>
       ${covered.length ? `<div class="tip">${ic("fridge")}<div><b>Already at home, not on the list:</b> ${covered.map(r => esc(r.it.name)).join(", ")}</div></div>` : ""}
       <div class="groups">${sec}</div>
       <div class="totals"><div><div class="k">${all.length - got ? `${all.length - got} left to buy` : "Everything bought"}</div><div class="v">${rm(t.toBuy)}</div></div><button class="btn primary" id="shopped" ${S.flow.shopped ? "disabled" : ""}>${S.flow.shopped ? "Shopping done" : "Finish shopping"}</button></div>
@@ -1112,7 +1118,7 @@ const DATA = /*__DATA__*/null;
   function go(tab) { S.tab = tab; render(); window.scrollTo({ top: 0 }); }
 
   document.addEventListener("click", e => {
-    const el = e.target.closest("[data-tab],[data-go],[data-swap],[data-off],[data-recipe],[data-filter],[data-people],[data-night],[data-avoid],[data-allergy],[data-dislike],[data-pick],[data-sound],[data-clear],[data-cookday],[data-cookone],#regen,#replan,#where,#lock,#shopped,#newweek,#obNext,#obBack,#moreshops,#addshop,#saveshop,#replanK,[data-kadd],[data-kdel],[data-kmove],[data-ksoon]");
+    const el = e.target.closest("[data-tab],[data-go],[data-swap],[data-off],[data-recipe],[data-filter],[data-people],[data-night],[data-avoid],[data-allergy],[data-dislike],[data-pick],[data-sound],[data-clear],[data-pneed],[data-cookday],[data-cookone],#regen,#replan,#where,#lock,#shopped,#newweek,#obNext,#obBack,#moreshops,#addshop,#saveshop,#replanK,[data-kadd],[data-kdel],[data-kmove],[data-ksoon]");
     if (!el) return;
     const s = S.settings;
     if (el.dataset.tab) return go(el.dataset.tab);
@@ -1121,6 +1127,7 @@ const DATA = /*__DATA__*/null;
     if (el.dataset.swap) { const [i, slot] = el.dataset.swap.split(":"); return swap(+i, slot); }
     if (el.dataset.off !== undefined) return toggleOff(+el.dataset.off);
     if (el.dataset.recipe) return openRecipe(el.dataset.recipe);
+    if (el.dataset.pneed) { const [k, v] = el.dataset.pneed.split(":"); captureTweens(); S.pantryNeed[k] = v === "1"; v === "1" ? SFX.tick() : SFX.untick(); save(); return render(); }
     if (el.dataset.clear) { const k = el.dataset.clear; s[k] = k === "avoid" ? { chicken: false, beef: false, mutton: false, pedas: false } : {}; save(); return render(); }
     if (el.dataset.pick) { const [i, slot] = el.dataset.pick.split(":"); return openPicker(+i, slot); }
     if (el.dataset.sound !== undefined) { S.settings.sound = S.settings.sound === false; save(); if (S.settings.sound !== false) SFX.tick(); return render(); }
