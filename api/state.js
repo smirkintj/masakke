@@ -6,7 +6,7 @@
 // different items at the same time never overwrite each other.
 import { redis, send, readBody, auth, hashToObj, guard } from "./_lib.js";
 
-const FIELD = /^(settings|plan|flow|onboarded|(bought|pantryNeed|kitchen)\.[A-Za-z0-9_-]{1,60}|ratings\.[A-Za-z0-9_-]{1,60}~[A-Za-z0-9_-]{1,60})$/;
+const FIELD = /^(settings|plan|flow|onboarded|(bought|pantryNeed|kitchen|recipes)\.[A-Za-z0-9_-]{1,60}|ratings\.[A-Za-z0-9_-]{1,60}~[A-Za-z0-9_-]{1,60})$/;
 
 export default async function handler(req, res) {
   if (!guard(res)) return;
@@ -39,6 +39,7 @@ export default async function handler(req, res) {
       const keys = [...Object.keys(set), ...del];
       if (keys.length > 400) return send(res, 400, { error: "Too many changes at once" });
       for (const k of keys) if (!FIELD.test(k)) return send(res, 400, { error: `Unknown field ${String(k).slice(0, 40)}` });
+      for (const v of Object.values(set)) if (JSON.stringify(v).length > 32768) return send(res, 413, { error: "That is too big to save" });
       const cmds = [];
       const pairs = Object.entries(set).flatMap(([k, v]) => [k, JSON.stringify(v)]);
       if (pairs.length) cmds.push(["HSET", `state:${hh}`, ...pairs]);

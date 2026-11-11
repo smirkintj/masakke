@@ -181,6 +181,7 @@ def main():
     data = {
         "ingredients": ingredients,
         "recipes": recipes,
+        "nutri": nutri,
         "postcodes": postcodes,
         "osm": osm,
         "places": json.load(open(os.path.join(P, "osm_places.json"))) if os.path.exists(os.path.join(P, "osm_places.json")) else [],

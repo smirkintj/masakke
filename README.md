@@ -41,6 +41,9 @@ python3 scripts/build_prototype.py
 - Fridge & freezer: list subtracts it, planner prefers it, pack leftovers added after shopping
 - Cooking mode: get-ready checklist with progress, one step per screen, step timers, total elapsed time
 - Allergies (incl. hidden in sauces) and vegetable dislikes
+- Recipe browser: sort by quickest, cheapest per plate, most protein, fewest calories, family favourites; filter by protein, time, type, heat, fridge
+- Household recipes ("Write your own" or "Make my version" of ours): shared with everyone, anyone can edit; the planner starts picking one after it has been cooked once and nobody said "Not again"
+- Sounds and springy feedback on taps, selections and completions (mute from cooking mode)
 
 ## Weekly refresh
 

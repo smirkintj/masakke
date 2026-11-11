@@ -193,6 +193,39 @@ h1 { font-size: 30px; line-height: 1.15; font-weight: 500; margin: 12px 0 4px; t
 .seg.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .rx-foot { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px; margin-top: 20px; position: sticky; bottom: 0; background: var(--card); padding: 8px 0; }
 .rx-foot .btn { height: 52px; }
+.rx-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.rx-head .btn { height: 40px; padding: 0 14px; }
+.tag.hh { background: var(--accent-soft, #fff1e8); color: var(--accent); }
+.hhbox { border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; margin: 16px 0 4px; }
+.ed .ed-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 4px 0 8px; }
+.ed .linkbtn { display: inline-flex; align-items: center; gap: 4px; }
+.ed-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 12px 0 4px; }
+.ed-grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 10px; }
+.ed-sel { display: grid; gap: 4px; font-size: 13px; color: var(--muted); min-width: 0; }
+.ed-sel select, .ed-sel .inp { height: 44px; width: 100%; min-width: 0; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); padding: 0 10px; font: 400 15px/1 inherit; font-family: inherit; box-sizing: border-box; }
+.ed-h { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-top: 20px; }
+.ed-h h3 { margin: 0; }
+.ed-ing { display: grid; grid-template-columns: minmax(0, 1fr) 84px 34px 36px; gap: 6px; align-items: center; padding: 6px 0; border-top: 1px solid var(--line); }
+.ed-ing .n { font-size: 15px; min-width: 0; overflow-wrap: anywhere; }
+.ed-ing .inp { height: 40px; text-align: right; padding: 0 10px; width: 100%; box-sizing: border-box; }
+.ed-ing .u { font-size: 13px; color: var(--muted); }
+.ed-res { border: 1px solid var(--line); border-radius: 14px; margin-top: 6px; overflow: hidden; }
+.ed-hit { display: flex; justify-content: space-between; align-items: center; gap: 8px; width: 100%; padding: 10px 14px; background: var(--card); border: 0; border-top: 1px solid var(--line); text-align: left; font-size: 15px; color: var(--fg); }
+.ed-hit:first-child { border-top: 0; }
+.ed-step { border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px; margin-top: 10px; }
+.ed-sh { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.ed-sh span { display: flex; gap: 14px; font-size: 14px; }
+.ed-step textarea { width: 100%; box-sizing: border-box; min-height: 64px; resize: vertical; padding: 10px 12px; font: 400 15px/1.4 inherit; font-family: inherit; }
+.ed-step .k { margin: 10px 0 6px; }
+.chip.sm { height: 30px; padding: 0 10px; font-size: 13px; }
+.btn.dashed { border-style: dashed; color: var(--accent); margin-top: 10px; background: none; }
+.btn.danger { background: var(--neg); color: #fff; border-color: transparent; }
+.ed-err { color: var(--neg); font-size: 14px; min-height: 20px; margin: 12px 0 4px; }
+.ed .btn.big + .btn.big { margin-top: 8px; }
+.chip, .seg button, .toggle button, .rrow, .tab, .ed-hit, .rtabs button, .icon-btn { transition: background-color 150ms var(--ease), color 150ms var(--ease), transform 120ms var(--ease); }
+.chip:active, .seg button:active, .toggle button:active, .tab:active, .ed-hit:active, .icon-btn:active { transform: scale(0.94); }
+.rrow:active { transform: scale(0.985); }
+@media (prefers-reduced-motion: reduce) { .chip:active, .seg button:active, .toggle button:active, .tab:active, .rrow:active, .icon-btn:active { transform: none; } }
 .chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
 .rlist { display: grid; gap: 8px; }
 .rrow { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; padding: 14px 16px; border: 1px solid var(--line); border-radius: 18px; background: var(--card); text-align: left; width: 100%; transition: background-color 150ms var(--ease); }
@@ -387,6 +420,25 @@ const DATA = /*__DATA__*/null;
 (() => {
   const ING = DATA.ingredients, RECIPES = DATA.recipes, PR = DATA.prices, PC = DATA.postcodes;
   const RX = Object.fromEntries(RECIPES.map(r => [r.id, r]));
+  // ---------- household recipes: written by someone in the household, stored per 4 servings like ours ----------
+  const NUT = DATA.nutri || {}, BUILTIN = RECIPES.length;
+  function macroOf(ing) {
+    const t = [0, 0, 0, 0];
+    for (const [k, q0] of ing) { const n = NUT[k]; if (!n || !ING[k]) continue; let q = q0; if (k === "oil" && q > 60) q = 60 + (q - 60) * 0.3; const f = ING[k].unit === "pc" ? q : q / 100; for (let i = 0; i < 4; i++) t[i] += n[i] * f; }
+    return t.map(x => Math.round(x / 4));
+  }
+  function houseRecipe(id, h) {
+    const ing = (h.ing || []).filter(([k, q]) => ING[k] && q > 0), keys = new Set(ing.map(x => x[0]));
+    const guide = (h.guide || []).filter(st => st.t && st.t.trim()).map(st => ({ t: st.t.trim(), ing: (st.ing || []).filter(k => keys.has(k)), sec: Math.max(0, +st.sec || 0), cue: st.cue || "" }));
+    return { id, name: h.name, en: `${h.cuisine || "Our"} · our recipe`, kind: h.kind || "lauk", protein: h.protein || "chicken", cuisine: h.cuisine || "Malay", mins: +h.mins || 30, spicy: +h.spicy || 0,
+      ing, guide: guide.length ? guide : [{ t: "Cook it the way you usually do", ing: [...keys], sec: 0, cue: "" }], steps: guide.map(x => x.t), macro: macroOf(ing),
+      by: h.by || "You", byId: h.byId || "", editedBy: h.editedBy || "", cookedAt: h.cookedAt || 0, from: h.from || "", serves: h.serves || 4, deleted: !!h.deleted };
+  }
+  function syncHouseRecipes() {   // deleted ones stay in RX so a plan that still uses them keeps working
+    RECIPES.splice(BUILTIN);
+    for (const k of Object.keys(RX)) if (RX[k].by) delete RX[k];
+    for (const [id, h] of Object.entries(S.recipes || {})) { if (!h || !h.name) continue; const r = houseRecipe(id, h); RX[id] = r; if (!r.deleted) RECIPES.push(r); }
+  }
   const KEYIDX = Object.fromEntries(PR.keys.map((k, i) => [k, i]));
   const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const DAYS_LONG = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
@@ -429,6 +481,8 @@ const DATA = /*__DATA__*/null;
     nav: '<polygon points="3 11 22 2 13 21 11 13 3 11"/>',
     store: '<path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/>',
     plus: '<path d="M5 12h14"/><path d="M12 5v14"/>',
+    edit: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
+    back: '<path d="m15 18-6-6 6-6"/>',
     flame: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
   };
   const ic = (n, s = 16) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n]}</svg>`;
@@ -441,10 +495,12 @@ const DATA = /*__DATA__*/null;
   const DEFAULTS = { postcode: "47400", shop: -1, people: 3, nights: [true, true, true, true, true, true, false], budget: 150,
     avoid: { beef: false, mutton: false, pedas: false }, allergy: {}, dislike: {} };
   const clone = o => JSON.parse(JSON.stringify(o));
-  let S = { settings: clone(DEFAULTS), plan: null, bought: {}, pantryNeed: {}, flow: { locked: false, shopped: false, cooked: {} }, kitchen: {}, ratings: {},
+  let S = { settings: clone(DEFAULTS), plan: null, bought: {}, pantryNeed: {}, flow: { locked: false, shopped: false, cooked: {} }, kitchen: {}, ratings: {}, recipes: {},
     onboarded: false, ob: -1, guideSeen: false, tab: "week", filter: "all", q: "" };
   try { const raw = localStorage.getItem(STORE); if (raw) Object.assign(S, JSON.parse(raw), { tab: "week", ob: -1 }); } catch (e) {}
-  const save = () => { if (typeof schedulePush === "function") schedulePush(); try { localStorage.setItem(STORE, JSON.stringify({ settings: S.settings, plan: S.plan, bought: S.bought, pantryNeed: S.pantryNeed, flow: S.flow, kitchen: S.kitchen, ratings: S.ratings, onboarded: S.onboarded, guideSeen: S.guideSeen })); } catch (e) {} };
+  if (!S.recipes) S.recipes = {};
+  syncHouseRecipes();
+  const save = () => { if (typeof schedulePush === "function") schedulePush(); try { localStorage.setItem(STORE, JSON.stringify({ settings: S.settings, plan: S.plan, bought: S.bought, pantryNeed: S.pantryNeed, flow: S.flow, kitchen: S.kitchen, ratings: S.ratings, recipes: S.recipes, onboarded: S.onboarded, guideSeen: S.guideSeen })); } catch (e) {} };
 
   // ---------- location ----------
   function lookupPostcode(pc) {
@@ -651,7 +707,8 @@ const DATA = /*__DATA__*/null;
     for (const [id, , keys] of ALLERGENS) if (s.allergy[id]) keys.forEach(k => banned.add(k));
     return !r.ing.some(([k]) => banned.has(k));
   }
-  const pool = kind => RECIPES.filter(r => r.kind === kind && allowed(r));
+  const autoOk = r => !r.by || (r.cookedAt && !ratingsOf(r.id).some(x => x.v === -1));
+  const pool = (kind, manual) => RECIPES.filter(r => r.kind === kind && allowed(r) && (manual || autoOk(r)));
   // ---------- ratings: each person rates for themselves; nothing is ever hidden ----------
   // stored as ratings["<recipe>~<member>"] = { v: 1 liked | 0 ok | -1 not again, name, at }
   const meKey = () => (CLOUD && AUTH ? AUTH.member.id : "me");
@@ -895,7 +952,7 @@ const DATA = /*__DATA__*/null;
     const day = S.plan.days[P0.di], cur = RX[day[P0.slot]], used = inPlan();
     const base = totals(S.plan).toBuy;
     const fridge = new Set(Object.keys(S.kitchen).filter(k => !ING[k].pantry));
-    let list = pool(P0.slot).filter(r => r.id !== cur.id && !used.has(r.id));
+    let list = pool(P0.slot, true).filter(r => r.id !== cur.id && !used.has(r.id));
     if (P0.slot !== "sayur" && P0.f !== "all") list = list.filter(r => P0.f === "beef" ? (r.protein === "beef" || r.protein === "mutton") : P0.f === "egg" ? ["egg", "tofu", "veg"].includes(r.protein) : r.protein === P0.f);
     if (P0.q) list = list.filter(r => (r.name + " " + r.en).toLowerCase().includes(P0.q.toLowerCase()));
     const rows = list.map(r => {
@@ -998,7 +1055,7 @@ const DATA = /*__DATA__*/null;
   const RX_KEY = "masakje.rx.v1", RX0 = { tab: "all", sort: "quick", prot: [], time: "any", kind: [], mild: false, fridge: false };
   let RXS = clone(RX0); try { Object.assign(RXS, JSON.parse(localStorage.getItem(RX_KEY) || "{}")); } catch (e) {}
   const saveRx = () => { try { localStorage.setItem(RX_KEY, JSON.stringify(RXS)); } catch (e) {} };
-  const REGION = { Malay: "malaysian", Chinese: "malaysian", Indian: "malaysian", "Thai-Malay": "malaysian" };
+  const REGION = { Malay: "malaysian", Chinese: "malaysian", Indian: "malaysian", "Thai-Malay": "malaysian", Thai: "asian", Japanese: "asian", Korean: "asian", Vietnamese: "asian", "Other Asian": "asian", Western: "western" };
   const regionOf = r => r.region || REGION[r.cuisine] || "asian";
   const REGIONS = [["all", "All"], ["malaysian", "Malaysian"], ["asian", "Asian"], ["western", "Western"], ["ours", "Ours"]];
   const CUISINE_LABEL = { Malay: "Malay", Chinese: "Chinese", Indian: "Indian", "Thai-Malay": "Kelantan-Thai" };
@@ -1026,7 +1083,7 @@ const DATA = /*__DATA__*/null;
   const rxActive = () => [...RXS.prot.map(k => ["prot:" + k, PROTS.find(p => p[0] === k)[1]]), ...(RXS.time !== "any" ? [["time", TIMES.find(t => t[0] === RXS.time)[1]]] : []), ...RXS.kind.map(k => ["kind:" + k, KIND_LABEL[k]]), ...(RXS.mild ? [["mild", "Not spicy"]] : []), ...(RXS.fridge ? [["fridge", "Uses my fridge"]] : [])];
   function rxRow(r) {
     const meta = [CUISINE_LABEL[r.cuisine] || r.cuisine, KIND_LABEL[r.kind], `${r.macro[1]} g protein`].join(" · ");
-    return `<button class="rrow" data-recipe="${r.id}"><div><div class="n">${esc(r.name)}${r.spicy >= 2 ? ' <span class="pedas" title="Pedas">•</span>' : ""}</div><div class="e">${esc(meta)}</div>${verdicts(r.id).length ? `<div class="vtags" style="margin-top:6px">${verdictTags(r.id)}</div>` : ""}</div><div class="m"><div style="color:var(--fg);font-weight:500">${r.mins} min</div><div class="num">${rm(platePrice(r))}/plate</div></div></button>`;
+    return `<button class="rrow" data-recipe="${r.id}"><div><div class="n">${esc(r.name)}${r.spicy >= 2 ? ' <span class="pedas" title="Pedas">•</span>' : ""}</div><div class="e">${esc(meta)}</div>${r.by || verdicts(r.id).length ? `<div class="vtags" style="margin-top:6px">${r.by ? `<span class="tag hh">Added by ${esc(byName(r.by))}</span> ` : ""}${verdictTags(r.id)}</div>` : ""}</div><div class="m"><div style="color:var(--fg);font-weight:500">${r.mins} min</div><div class="num">${rm(platePrice(r))}/plate</div></div></button>`;
   }
   function viewRecipes() {
     const ok = RECIPES.filter(allowed), hidden = RECIPES.length - ok.length;
@@ -1035,8 +1092,8 @@ const DATA = /*__DATA__*/null;
     const list = rxList(), act = rxActive(), sortL = SORTS.find(x => x[0] === RXS.sort) || SORTS[0];
     const quick = [["kind:lauk", "Lauk"], ["kind:sayur", "Sayur"], ["kind:onepot", "One-pot"], ["time:30", "30 min or less"], ["mild", "Not spicy"]].filter(([k]) => !act.some(a => a[0] === k || (k.startsWith("time") && a[0] === "time")));
     return `<div class="enter">
-      <h1>Recipes</h1>
-      <p class="sub">${ok.length} dishes${hidden ? `, ${hidden} hidden by your preferences` : ""}</p>
+      <div class="rx-head"><h1>Recipes</h1><button class="btn primary" data-ed="new">${ic("plus", 16)}${loadDraft() ? "Your draft" : "Add"}</button></div>
+      <p class="sub">${ok.length} dishes${ok.some(r => r.by) ? ` · ${ok.filter(r => r.by).length} from your household` : ""}${hidden ? `, ${hidden} hidden by your preferences` : ""}</p>
       ${tabs.length < 3 ? "" : `<div class="rtabs" role="tablist" aria-label="Cuisine">${tabs.map(([k, l]) => `<button role="tab" data-rxtab="${k}" aria-selected="${RXS.tab === k}">${l}</button>`).join("")}</div>`}
       <div class="rx-bar"><div class="search-wrap">${ic("search")}<input class="search" id="q" type="search" placeholder="Search" value="${esc(S.q)}" aria-label="Search recipes"></div><button class="btn" id="rxsort" aria-haspopup="dialog">${ic("sliders", 16)}${esc(sortL[1])}${act.length ? ` · ${act.length}` : ""}</button></div>
       <div class="chips" role="group" aria-label="Filters">${act.map(([k, l]) => `<button class="chip" data-rxoff="${k}" aria-pressed="true" aria-label="Remove filter ${esc(l)}">${esc(l)} ${ic("x", 12)}</button>`).join("")}${quick.map(([k, l]) => `<button class="chip" data-rxon="${k}" aria-pressed="false">${esc(l)}</button>`).join("")}</div>
@@ -1073,7 +1130,6 @@ const DATA = /*__DATA__*/null;
         else if (k === "sort") { RXS.sort = v; saveRx(); }
         else if (k === "time") { RXS.time = v; saveRx(); }
         else rxToggle(b.dataset.s);
-        if (typeof SFX !== "undefined" && S.settings.sound !== false) SFX.tick();
         draw();
       };
     };
@@ -1241,8 +1297,10 @@ const DATA = /*__DATA__*/null;
         <div class="k" style="margin-top:6px">Your verdict</div>
         <div class="toggle three" role="group" aria-label="Your verdict on ${esc(r.name)}">${[[1, "Liked"], [0, "OK"], [-1, "Not again"]].map(([v, l]) => `<button data-rate="${r.id}:${v}" data-rsheet="1" aria-pressed="${myRating(r.id) === v}">${l}</button>`).join("")}</div>
       </div>
+      ${r.by ? houseBlock(r) : ""}
       <h3>Ingredients for ${n}</h3>${ing}
-      <p class="fine">Draft recipe, not yet tested by a home cook</p>
+      ${r.by ? `<p class="fine">Written by your household${r.from ? `, based on our ${esc(r.from)}` : ""}. Prices and nutrition are worked out from the ingredients.</p>` : `<p class="fine">Draft recipe, not yet tested by a home cook</p>
+      <button class="btn big" data-ed="copy:${r.id}">${ic("edit", 16)}Make my version</button>`}
     </div></div>`;
     requestAnimationFrame(() => { document.getElementById("scrim").classList.add("open"); root.querySelector(".sheet").classList.add("open"); });
     document.getElementById("scrim").onclick = closeSheet; document.getElementById("shClose").onclick = closeSheet;
@@ -1265,6 +1323,7 @@ const DATA = /*__DATA__*/null;
     let alarmTimer = null;
     return {
       unlock: ac,
+      tap() { if (on()) { tone(980, 0, 0.035, 0.028, "triangle"); } },
       tick() { if (on()) { tone(1320, 0, 0.07, 0.05, "triangle"); } },
       untick() { if (on()) { tone(660, 0, 0.06, 0.035, "triangle"); } },
       step() { if (on()) { tone(587, 0, 0.09, 0.05); tone(784, 0.07, 0.12, 0.05); } },
@@ -1413,6 +1472,7 @@ const DATA = /*__DATA__*/null;
     $("ckBack").onclick = () => { if (C.step === -1) return stopCooking(); C.step--; C.dir = -1; SFX.step(); renderCook(); };
     $("ckNext").onclick = () => {
       if (C.step < total) { if (!C.started) C.started = Date.now(); C.step++; C.dir = 1; if (C.step === total) SFX.done(); else SFX.step(); return renderCook(); }
+      C.ids.forEach(id => { const h = S.recipes[id]; if (h && !h.cookedAt) { h.cookedAt = Date.now(); syncHouseRecipes(); save(); } });
       if (C.day != null) { S.flow.cooked[C.day] = true; deductCooked(C.day); save(); toast("Marked as cooked"); }
       stopCooking(); render();
     };
@@ -1444,7 +1504,7 @@ const DATA = /*__DATA__*/null;
   let AUTH = null; try { AUTH = JSON.parse(localStorage.getItem(AUTH_KEY) || "null"); } catch (e) {}
   let HH = AUTH ? AUTH.household : null, MEMBERS = [], VER = 0, SYNCED = null, pushT = null, pulling = false, deferRender = false;
   const A = { mode: "start", err: "", busy: false };   // auth screen state
-  const SHARED_WHOLE = ["settings", "plan", "flow", "onboarded"], SHARED_MAPS = ["bought", "pantryNeed", "kitchen", "ratings"];
+  const SHARED_WHOLE = ["settings", "plan", "flow", "onboarded"], SHARED_MAPS = ["bought", "pantryNeed", "kitchen", "ratings", "recipes"];
   const myName = () => (AUTH && AUTH.member && AUTH.member.name) || "";
   function snapshot() {
     const f = {};
@@ -1512,11 +1572,12 @@ const DATA = /*__DATA__*/null;
         dirty.forEach(f => { if (f.startsWith(m + ".") && f in local) o[f.slice(m.length + 1)] = JSON.parse(local[f]); });
         S[m] = o;
       });
+      syncHouseRecipes();
       if (!S.flow) S.flow = { shopped: false, cooked: {} };
       if (!S.settings) S.settings = clone(DEFAULTS);
       SYNCED = { ...fields }; saveSync();
       if (!fields.onboarded && S.onboarded) { SYNCED = {}; }        // first device to finish setup: push everything
-      try { localStorage.setItem(STORE, JSON.stringify({ settings: S.settings, plan: S.plan, bought: S.bought, pantryNeed: S.pantryNeed, flow: S.flow, kitchen: S.kitchen, ratings: S.ratings, onboarded: S.onboarded, guideSeen: S.guideSeen })); } catch (e) {}
+      try { localStorage.setItem(STORE, JSON.stringify({ settings: S.settings, plan: S.plan, bought: S.bought, pantryNeed: S.pantryNeed, flow: S.flow, kitchen: S.kitchen, ratings: S.ratings, recipes: S.recipes, onboarded: S.onboarded, guideSeen: S.guideSeen })); } catch (e) {}
       if (before !== JSON.stringify(snapshot()) || force) { CTX = null; safeRender(); }
       else updateMembersLine();
       if (!Object.keys(SYNCED).length) schedulePush();
@@ -1640,16 +1701,146 @@ const DATA = /*__DATA__*/null;
     if (created) { v.innerHTML = viewCreated(); return; }
     if (ob) { if (CLOUD && S.ob === -1) S.ob = 0; v.innerHTML = viewOnboarding(); return; }
     if (!S.plan || S.plan.days.length !== 7) newWeek();
-    const viewKey = S.onboarded + S.tab;
-    v.innerHTML = S.tab === "week" ? viewWeek() : S.tab === "shop" ? viewShop() : S.tab === "recipes" ? viewRecipes() : S.tab === "kitchen" ? viewKitchen() : viewSetup();
+    const viewKey = S.onboarded + S.tab + (ED ? "ed" : "");
+    v.innerHTML = ED ? viewEditor() : S.tab === "week" ? viewWeek() : S.tab === "shop" ? viewShop() : S.tab === "recipes" ? viewRecipes() : S.tab === "kitchen" ? viewKitchen() : viewSetup();
     document.getElementById("tabs").innerHTML = TABS.map(([k, l, i]) => `<button class="tab" data-tab="${k}" ${S.tab === k ? 'aria-current="page"' : ""}>${ic(i, 20)}<span>${l}</span></button>`).join("");
     playTweens(viewKey !== lastView); lastView = viewKey;
     document.getElementById("where").innerHTML = `${ic("pin", 14)}<span>${esc((ctx().loc && ctx().loc.hood) || S.settings.postcode)} · ${S.settings.people} ${S.settings.people === 1 ? "person" : "people"}</span>`;
   }
-  function go(tab) { S.tab = tab; render(); window.scrollTo({ top: 0 }); }
+  function go(tab) { ED = null; S.tab = tab; render(); window.scrollTo({ top: 0 }); }
+  // ---------- write your own recipe ----------
+  const DRAFT_KEY = "masakje.draft.v1";
+  let ED = null;
+  const loadDraft = () => { try { return JSON.parse(localStorage.getItem(DRAFT_KEY) || "null"); } catch (e) { return null; } };
+  const saveDraft = () => { try { localStorage.setItem(DRAFT_KEY, JSON.stringify(ED)); } catch (e) {} };
+  const dropDraft = () => { try { localStorage.removeItem(DRAFT_KEY); } catch (e) {} };
+  const byName = n => (n === myName() || n === "You") ? "you" : n;
+  const shortName = k => ING[k].name.replace(/\s*\(.*?\)\s*/g, " ").trim();
+  const CUISINES = [["Malay", "Malaysian"], ["Chinese", "Malaysian"], ["Indian", "Malaysian"], ["Thai", "Asian"], ["Japanese", "Asian"], ["Korean", "Asian"], ["Vietnamese", "Asian"], ["Other Asian", "Asian"], ["Western", "Western"]];
+  const PROTEIN_OPTS = [["chicken", "Ayam"], ["beef", "Daging"], ["mutton", "Kambing"], ["fish", "Ikan"], ["seafood", "Udang & sotong"], ["egg", "Telur"], ["tofu", "Tauhu"], ["veg", "Vegetarian"]];
+  function openEditor(id, copyOf) {
+    const src = id ? S.recipes[id] : copyOf ? RX[copyOf] : null;
+    if (!src) { ED = loadDraft() || { id: null, name: "", cuisine: "Malay", kind: "lauk", protein: "chicken", serves: S.settings.people, mins: 30, spicy: 0, ing: [], guide: [{ t: "", ing: [], min: "", cue: "" }], from: "" }; }
+    else {
+      const sv = id ? src.serves || 4 : 4, f = sv / 4;
+      ED = { id: id || null, name: id ? src.name : `${src.name} (our way)`, cuisine: src.cuisine === "Thai-Malay" ? "Thai" : src.cuisine, kind: src.kind, protein: src.protein, serves: sv, mins: src.mins, spicy: src.spicy,
+        ing: src.ing.map(([k, q]) => [k, Math.round(q * f * 10) / 10]), guide: (src.guide || []).map(st => ({ t: st.t, ing: [...st.ing], min: st.sec ? Math.round(st.sec / 6) / 10 : "", cue: st.cue || "" })), from: id ? src.from || "" : src.name };
+    }
+    ED.iq = ""; ED.err = ""; ED.confirmDel = false;
+    closeSheet(); S.tab = "recipes"; render(); window.scrollTo({ top: 0 });
+  }
+  function edCost() { return ED.ing.reduce((a, [k, q]) => a + (+q || 0) * price(k).unit, 0); }
+  function edResults() {
+    const q = (ED.iq || "").trim().toLowerCase(); if (!q) return "";
+    const have = new Set(ED.ing.map(x => x[0]));
+    const hits = Object.entries(ING).filter(([k, it]) => !have.has(k) && (it.name.toLowerCase().includes(q) || k.replace(/_/g, " ").includes(q))).slice(0, 6);
+    return hits.length ? `<div class="ed-res">${hits.map(([k, it]) => `<button class="ed-hit" data-ed="addIng:${k}"><span>${esc(it.name)}</span><span class="tag ok">${ic("plus", 12)}Add</span></button>`).join("")}</div>`
+      : `<p class="fine">Nothing priced matches "${esc(ED.iq)}". Leave it out of the list and mention it in a step.</p>`;
+  }
+  function viewEditor() {
+    const d = ED, opt = (list, cur) => list.map(([v, l]) => `<option value="${v}" ${String(cur) === String(v) ? "selected" : ""}>${l}</option>`).join("");
+    const unit = k => ING[k].unit === "pc" ? "pcs" : ING[k].unit;
+    return `<div class="enter narrow ed">
+      <div class="ed-top"><button class="linkbtn" data-ed="cancel">${ic("back", 16)}Back</button><span class="fine" style="margin:0">${d.id ? "Editing for everyone in your household" : "Draft kept on this phone"}</span></div>
+      <h1>${d.id ? "Edit recipe" : d.from ? "Make your version" : "Write your own"}</h1>
+      ${d.from && !d.id ? `<p class="sub">Starting from our ${esc(d.from)}. Change anything</p>` : ""}
+      <div class="field"><label for="ed-name">Name</label><input class="inp" id="ed-name" data-edf="name" maxlength="60" placeholder="e.g. Ayam goreng Mak" value="${esc(d.name)}"></div>
+      <div class="ed-grid">
+        <label class="ed-sel">Cuisine<select data-edf="cuisine">${["Malaysian", "Asian", "Western"].map(g => `<optgroup label="${g}">${CUISINES.filter(c => c[1] === g).map(([c]) => `<option value="${c}" ${d.cuisine === c ? "selected" : ""}>${c}</option>`).join("")}</optgroup>`).join("")}</select></label>
+        <label class="ed-sel">Type<select data-edf="kind">${opt([["lauk", "Lauk"], ["sayur", "Sayur"], ["onepot", "One-pot"]], d.kind)}</select></label>
+        <label class="ed-sel">Main protein<select data-edf="protein">${opt(PROTEIN_OPTS, d.protein)}</select></label>
+        <label class="ed-sel">Serves<select data-edf="serves">${opt([1, 2, 3, 4, 5, 6, 8].map(n => [n, n]), d.serves)}</select></label>
+        <label class="ed-sel">Minutes<input class="inp" type="number" inputmode="numeric" min="5" max="600" data-edf="mins" value="${esc(d.mins)}"></label>
+        <label class="ed-sel">Heat<select data-edf="spicy">${opt([[0, "Not spicy"], [1, "Mild"], [2, "Pedas"]], d.spicy)}</select></label>
+      </div>
+      <div class="ed-h"><h3>Ingredients</h3><span class="num" id="edCost">${d.ing.length ? `${rm(edCost())} for ${d.serves}` : ""}</span></div>
+      <p class="fine" style="margin-top:0">Amounts for ${d.serves} ${+d.serves === 1 ? "person" : "people"}. MasakJe scales them to your household</p>
+      ${d.ing.map(([k, q], i) => `<div class="ed-ing"><span class="n">${esc(ING[k].name)}</span><input class="inp num" type="number" inputmode="decimal" min="0" step="any" data-edq="${i}" value="${esc(q)}" aria-label="Amount of ${esc(ING[k].name)}"><span class="u">${unit(k)}</span><button class="icon-btn" data-ed="delIng:${i}" aria-label="Remove ${esc(ING[k].name)}">${ic("x", 16)}</button></div>`).join("")}
+      <div class="search-wrap" style="margin-top:8px">${ic("plus")}<input class="search" id="ed-iq" type="search" placeholder="Add an ingredient, e.g. santan" value="${esc(d.iq)}" aria-label="Add an ingredient" autocomplete="off"></div>
+      <div id="edRes">${edResults()}</div>
+      <div class="ed-h"><h3>Steps</h3><span class="fine" style="margin:0">In the order things go into the pot</span></div>
+      ${d.guide.map((st, i) => `<div class="ed-step">
+        <div class="ed-sh"><b>Step ${i + 1}</b><span>${i ? `<button class="linkbtn" data-ed="up:${i}">Move up</button>` : ""}${d.guide.length > 1 ? `<button class="linkbtn" data-ed="delStep:${i}">Remove</button>` : ""}</span></div>
+        <textarea class="inp" rows="2" data-eds="t:${i}" placeholder="${i ? "e.g. Add the chicken and stir until coated" : "e.g. Heat the oil, fry the blended paste"}" aria-label="Step ${i + 1}">${esc(st.t)}</textarea>
+        ${d.ing.length ? `<div class="k">Goes into the pot now${i ? "" : ". Anything you don't place goes in here"}</div><div class="chips wrap">${d.ing.map(([k]) => `<button class="chip sm" data-ed="sing:${i}:${k}" aria-pressed="${st.ing.includes(k)}">${esc(shortName(k))}</button>`).join("")}</div>` : ""}
+        <div class="ed-grid two"><label class="ed-sel">Timer, minutes<input class="inp" type="number" inputmode="decimal" min="0" step="any" data-eds="min:${i}" value="${esc(st.min)}" placeholder="None"></label><label class="ed-sel">Wait until<input class="inp" data-eds="cue:${i}" maxlength="80" value="${esc(st.cue)}" placeholder="e.g. pecah minyak"></label></div>
+      </div>`).join("")}
+      <button class="btn big dashed" data-ed="addStep">${ic("plus", 16)}Add step</button>
+      <div class="ed-err" id="edErr" role="alert">${esc(d.err || "")}</div>
+      <button class="btn primary big" data-ed="save">${d.id ? "Save changes" : "Save to our recipes"}</button>
+      ${d.id ? `<button class="btn big ${d.confirmDel ? "danger" : ""}" data-ed="delete">${d.confirmDel ? "Tap again to delete for everyone" : "Delete recipe"}</button>` : !d.from && (d.name || d.ing.length) ? `<button class="btn big" data-ed="discard">Discard draft</button>` : ""}
+    </div>`;
+  }
+  function saveRecipe() {
+    const d = ED, name = d.name.trim(), steps = d.guide.filter(st => st.t.trim());
+    const err = !name ? "Give it a name" : !d.ing.length ? "Add at least one ingredient" : d.ing.some(([, q]) => !(+q > 0)) ? "Every ingredient needs an amount" : !steps.length ? "Write at least one step" : "";
+    if (err) { d.err = err; render(); const e = document.getElementById("edErr"); e && e.scrollIntoView({ block: "center", behavior: "smooth" }); return; }
+    const f = 4 / d.serves, who = (CLOUD && myName()) || "You", old = d.id ? S.recipes[d.id] : null;
+    const id = d.id || "h" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    S.recipes[id] = { name: name.slice(0, 60), cuisine: d.cuisine, kind: d.kind, protein: d.protein, serves: +d.serves, mins: Math.max(5, Math.min(600, Math.round(+d.mins || 30))), spicy: +d.spicy,
+      ing: d.ing.map(([k, q]) => [k, Math.round(+q * f * 10) / 10]), guide: steps.map((st, si) => ({ t: st.t.trim().slice(0, 500), ing: [...st.ing.filter(k => d.ing.some(x => x[0] === k)), ...(si ? [] : d.ing.map(x => x[0]).filter(k => !steps.some(o => o.ing.includes(k))))], sec: Math.round((+st.min || 0) * 60), cue: (st.cue || "").trim() })),
+      from: d.from || "", by: old ? old.by : who, byId: old ? old.byId : meKey(), at: old ? old.at : Date.now(), editedBy: old ? who : "", editedAt: old ? Date.now() : 0, cookedAt: old ? old.cookedAt || 0 : 0 };
+    syncHouseRecipes(); save(); if (!d.id) dropDraft();
+    ED = null; SFX.done(); render(); toast(old ? "Saved for everyone" : "Added to your recipes"); openRecipe(id);
+  }
+  function edAction(a) {
+    const [cmd, x, y] = a.split(":"), d = ED;
+    if (cmd === "new") return openEditor();
+    if (cmd === "edit") return openEditor(x);
+    if (cmd === "copy") return openEditor(null, x);
+    if (cmd === "plan") { const [di, slot] = [+x, y], id = a.split(":")[3]; closeSheet(); captureTweens(); S.plan.days[di] = slot === "onepot" ? { onepot: id } : { ...S.plan.days[di], [slot]: id }; save(); SFX.step(); go("week"); toast(`${RX[id].name} is on ${DAYS_LONG[di]}`); return; }
+    if (!d) return;
+    if (cmd === "cancel") { ED = null; return render(); }
+    if (cmd === "discard") { dropDraft(); ED = null; SFX.untick(); return render(); }
+    if (cmd === "save") return saveRecipe();
+    if (cmd === "delete") { if (!d.confirmDel) { d.confirmDel = true; return render(); } S.recipes[d.id] = { ...S.recipes[d.id], deleted: true }; syncHouseRecipes(); save(); ED = null; SFX.untick(); render(); return toast("Recipe deleted"); }
+    if (cmd === "addIng") { d.ing.push([x, ING[x].unit === "pc" ? 1 : ING[x].unit === "ml" ? 100 : 100]); d.iq = ""; }
+    if (cmd === "delIng") { const k = d.ing[+x][0]; d.ing.splice(+x, 1); d.guide.forEach(st => st.ing = st.ing.filter(v => v !== k)); }
+    if (cmd === "addStep") d.guide.push({ t: "", ing: [], min: "", cue: "" });
+    if (cmd === "delStep") d.guide.splice(+x, 1);
+    if (cmd === "up") { const i = +x; [d.guide[i - 1], d.guide[i]] = [d.guide[i], d.guide[i - 1]]; }
+    if (cmd === "sing") { const st = d.guide[+x], i = st.ing.indexOf(y); if (i < 0) { d.guide.forEach(o => o.ing = o.ing.filter(v => v !== y)); st.ing.push(y); } else st.ing.splice(i, 1); }   // each ingredient goes in at one step
+    d.err = ""; d.confirmDel = false; saveDraftIfNew(); render();
+    if (cmd === "addIng") { const q = document.querySelectorAll("[data-edq]"); const last = q[q.length - 1]; last && last.focus(); last && last.select(); }
+    if (cmd === "addStep") { const t = document.querySelectorAll("[data-eds^='t:']"); t[t.length - 1].focus(); }
+  }
+  const saveDraftIfNew = () => { if (ED && !ED.id) saveDraft(); };
+  function edInput(t) {
+    const d = ED; if (!d) return false;
+    if (t.id === "ed-iq") { d.iq = t.value; document.getElementById("edRes").innerHTML = edResults(); return true; }
+    if (t.dataset.edf) { const k = t.dataset.edf; d[k] = t.value; if (k === "serves") { render(); } saveDraftIfNew(); updEdCost(); return true; }
+    if (t.dataset.edq !== undefined) { d.ing[+t.dataset.edq][1] = t.value; saveDraftIfNew(); updEdCost(); return true; }
+    if (t.dataset.eds) { const [k, i] = t.dataset.eds.split(":"); d.guide[+i][k] = t.value; saveDraftIfNew(); return true; }
+    return false;
+  }
+  function updEdCost() { const e = document.getElementById("edCost"); if (e) e.textContent = ED.ing.length ? `${rm(edCost())} for ${ED.serves}` : ""; }
+  function houseBlock(r) {
+    const ready = autoOk(r), nots = ratingsOf(r.id).some(x => x.v === -1);
+    const ti = todayIdx(), slot = r.kind;
+    const days = S.plan ? S.plan.days.map((d, i) => ({ d, i })).filter(({ d, i }) => i >= ti && !d.off && !S.flow.cooked[i] && (slot === "onepot" ? d.onepot !== r.id : d[slot] && d[slot] !== r.id)) : [];
+    return `<div class="hhbox">
+      <div class="vh">Added by ${esc(byName(r.by))}${r.editedBy && r.editedBy !== r.by ? `, edited by ${esc(byName(r.editedBy))}` : ""}</div>
+      <p class="k" style="margin:4px 0 10px">${ready ? "The planner can pick it for your weeks" : nots ? "Someone said Not again, so the planner won't pick it. You can still add it yourself" : "The planner starts picking it after someone has cooked it once"}</p>
+      ${days.length ? `<div class="k">Put it on this week's plan</div><div class="chips wrap" style="margin:6px 0 10px">${days.map(({ d, i }) => `<button class="chip" data-ed="plan:${i}:${slot}:${r.id}" title="Replaces ${esc((RX[slot === "onepot" ? d.onepot || d.lauk : d[slot]] || {}).name || "")}">${i === ti ? "Today" : DAYS_LONG[i]}</button>`).join("")}</div>` : ""}
+      <button class="btn" data-ed="edit:${r.id}">${ic("edit", 16)}Edit</button>
+    </div>`;
+  }
 
+
+
+  // ---------- feel: a soft tap on every press, tick/untick when something is selected, a spring on the selected item ----------
+  const OWN_SOUND = "[data-rate],[data-sound],[data-pneed],#ckNext,#ckBack,#ckSound,#tStart,#tPause,#tReset,#tAck,[data-jump],[data-ed='save']";
+  const selectorFor = b => { if (b.id) return "#" + CSS.escape(b.id); const a = [...b.attributes].find(x => x.name.startsWith("data-") && x.name !== "data-tw"); return a ? `[${a.name}="${CSS.escape(a.value)}"]` : null; };
   document.addEventListener("click", e => {
-    const el = e.target.closest("[data-tab],[data-go],[data-swap],[data-off],[data-recipe],[data-filter],[data-rxtab],[data-rxon],[data-rxoff],[data-rxreset],#rxsort,[data-people],[data-night],[data-avoid],[data-allergy],[data-dislike],[data-pick],[data-sound],[data-clear],[data-pneed],[data-applysave],[data-rate],[data-tonight],[data-pickday],[data-cookday],[data-cookone],#regen,#replan,#where,#lock,#shopped,#newweek,#obNext,#obBack,#guideOk,#logo,#savehood,[data-hide],[data-amode],#doCreate,#doJoin,#copyPin,#afterCreated,#leave,#leaveYes,#moreshops,#addshop,#saveshop,#replanK,[data-kadd],[data-kdel],[data-kmove],[data-ksoon]");
+    const b = e.target.closest("button, a.btn, .rrow"); if (!b || b.disabled || b.matches(OWN_SOUND)) return;
+    const sel = b.hasAttribute("aria-pressed") || b.getAttribute("role") === "tab";
+    if (sel) (b.getAttribute("aria-pressed") === "true" || b.getAttribute("aria-selected") === "true" ? SFX.untick : SFX.tick)(); else SFX.tap();
+    if (!sel || !G) return;
+    const q = selectorFor(b);
+    requestAnimationFrame(() => { const n = q && document.querySelector(q); if (n) G.fromTo(n, { scale: 0.92 }, { scale: 1, duration: 0.32, ease: "back.out(2.6)", clearProps: "transform" }); });
+  }, true);
+  document.addEventListener("click", e => {
+    const el = e.target.closest("[data-tab],[data-go],[data-swap],[data-off],[data-recipe],[data-filter],[data-ed],[data-rxtab],[data-rxon],[data-rxoff],[data-rxreset],#rxsort,[data-people],[data-night],[data-avoid],[data-allergy],[data-dislike],[data-pick],[data-sound],[data-clear],[data-pneed],[data-applysave],[data-rate],[data-tonight],[data-pickday],[data-cookday],[data-cookone],#regen,#replan,#where,#lock,#shopped,#newweek,#obNext,#obBack,#guideOk,#logo,#savehood,[data-hide],[data-amode],#doCreate,#doJoin,#copyPin,#afterCreated,#leave,#leaveYes,#moreshops,#addshop,#saveshop,#replanK,[data-kadd],[data-kdel],[data-kmove],[data-ksoon]");
     if (!el) return;
     const s = S.settings;
     if (el.dataset.tab) return go(el.dataset.tab);
@@ -1658,6 +1849,7 @@ const DATA = /*__DATA__*/null;
     if (el.dataset.swap) { const [i, slot] = el.dataset.swap.split(":"); return swap(+i, slot); }
     if (el.dataset.off !== undefined) return toggleOff(+el.dataset.off);
     if (el.dataset.recipe) return openRecipe(el.dataset.recipe);
+    if (el.dataset.ed) return edAction(el.dataset.ed);
     if (el.dataset.tonight !== undefined) return openTonightList(+el.dataset.tonight);
     if (el.dataset.pickday !== undefined) { const di = +el.dataset.pickday; closeSheet(); return openPicker(di, S.plan.days[di].onepot ? "onepot" : "lauk"); }
     if (el.dataset.pneed) { const [k, v] = el.dataset.pneed.split(":"); captureTweens(); if (v === "1") S.pantryNeed[k] = true; else delete S.pantryNeed[k]; v === "1" ? SFX.tick() : SFX.untick(); save(); return render(); }
@@ -1714,7 +1906,11 @@ const DATA = /*__DATA__*/null;
   });
   document.addEventListener("change", e => {
     const t = e.target, s = S.settings;
-    if (t.dataset.bought) { captureTweens(); if (t.checked) S.bought[t.dataset.bought] = CLOUD ? { by: myName(), at: Date.now() } : true; else delete S.bought[t.dataset.bought]; t.checked ? SFX.tick() : SFX.untick(); save(); render(); pop(document.querySelector(`[data-bought="${t.dataset.bought}"]`)); return; }
+    if (t.dataset.bought) { captureTweens(); if (t.checked) S.bought[t.dataset.bought] = CLOUD ? { by: myName(), at: Date.now() } : true; else delete S.bought[t.dataset.bought]; save(); render(); pop(document.querySelector(`[data-bought="${t.dataset.bought}"]`));
+      const allDone = t.checked && document.querySelectorAll("[data-bought]").length && !document.querySelectorAll("[data-bought]:not(:checked)").length;
+      if (allDone) { SFX.done(); toast("Everything's bought"); const m = document.querySelector(".meter"); if (G && m) G.fromTo(m, { scaleY: 1 }, { scaleY: 2.2, duration: 0.18, yoyo: true, repeat: 1, ease: "power2.out", clearProps: "transform" }); }
+      else t.checked ? SFX.tick() : SFX.untick();
+      return; }
     if (t.dataset.need) { S.pantryNeed[t.dataset.need] = t.checked; save(); return render(); }
     if (t.name === "shop") { if (t.value.startsWith("o:")) { s.shop = -3; s.osm = +t.value.slice(2); } else if (t.value.startsWith("p:")) { s.shop = +t.value.slice(2); } else s.shop = +t.value; save(); return render(); }
     if (t.dataset.kqty) { const v = +t.value; if (v > 0) S.kitchen[t.dataset.kqty].q = v; else delete S.kitchen[t.dataset.kqty]; save(); return render(); }
@@ -1729,6 +1925,7 @@ const DATA = /*__DATA__*/null;
   });
   document.addEventListener("input", e => {
     const t = e.target;
+    if (edInput(t)) return;
     if (t.id === "q") { S.q = t.value; const pos = t.selectionStart; render(); const q = document.getElementById("q"); q.focus(); q.setSelectionRange(pos, pos); }
     if (t.id === "shopq" || t.id === "newshop" || t.id === "kq" || t.id === "hoodtext") {
       if (t.id === "shopq") S.shopQ = t.value; else if (t.id === "kq") S.kq = t.value; else if (t.id === "hoodtext") S.hoodDraft = t.value; else S.shopDraft = t.value;
