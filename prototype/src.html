@@ -2,255 +2,269 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&display=swap">
 <style>
-/* Layout: one phone-width column, receipt card as the rich moment, quiet tab bar, full-screen cooking mode.
-   Direction — Product: plans a week of home dinners for a 2–4 person Malaysian household, prices the list at shops near you, then walks you through cooking.
-   Character: thrifty, homely, exact. World: wet market stall and kitchen counter, banana leaf and receipt paper.
-   Moments: the weekly receipt; the cooking screen. Signature: dotted price leaders, like a printed receipt. */
+/* Layout: phone-first single column; from 900px a two-column week (dinners left, sticky "next step" and budget right).
+   Direction — Product: plans a week of Malaysian home dinners, prices them at shops near you, guides the cooking.
+   Character: warm, appetising, encouraging. World: a busy home kitchen, chili and sambal, a Saturday pasar.
+   Moment: the "Tonight" card in soft chili tint. Signature: the chili-orange progress line (budget, steps, cooking). */
 :root {
-  --bg: #f3f4f0; --card: #ffffff; --raised: #eaece6; --line: rgba(26, 29, 25, 0.10);
-  --fg: #1a1d19; --fg2: #4d544b; --muted: #656c62;
-  --accent: #2c6a3f; --accent-ink: #ffffff; --accent-soft: rgba(44, 106, 63, 0.10);
-  --neg: #b8382a; --paper: #fffffc; --shadow: rgba(20, 24, 18, 0.10);
-  --font: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --bg: #ffffff; --surface: #f5f5f4; --card: #ffffff; --raised: #f0efed; --line: rgba(28, 25, 23, 0.10);
+  --fg: #1c1917; --fg2: #57534e; --muted: #737373;
+  --accent: #c8420c; --accent-bright: #f26a1b; --accent-ink: #ffffff; --accent-soft: #fff1e8; --accent-line: rgba(200, 66, 12, 0.22);
+  --pos: #15803d; --neg: #dc2626; --shadow: rgba(28, 25, 23, 0.08);
+  --font: "Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #121411; --card: #1a1c19; --raised: #242722; --line: rgba(236, 239, 233, 0.10);
-    --fg: #eceee9; --fg2: #aab1a7; --muted: #8b9288;
-    --accent: #79c58f; --accent-ink: #0e1a11; --accent-soft: rgba(121, 197, 143, 0.14);
-    --neg: #e8705f; --paper: #1d201c; --shadow: rgba(0, 0, 0, 0.4); color-scheme: dark;
+    --bg: #121212; --surface: #191919; --card: #1e1e1e; --raised: #2a2a2a; --line: rgba(245, 245, 245, 0.10);
+    --fg: #f5f5f5; --fg2: #c2c2c2; --muted: #969696;
+    --accent: #ff8a4c; --accent-bright: #ff8a4c; --accent-ink: #1f0e04; --accent-soft: rgba(255, 138, 76, 0.13); --accent-line: rgba(255, 138, 76, 0.35);
+    --pos: #4ade80; --neg: #f87171; --shadow: rgba(0, 0, 0, 0.5); color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #121411; --card: #1a1c19; --raised: #242722; --line: rgba(236, 239, 233, 0.10);
-  --fg: #eceee9; --fg2: #aab1a7; --muted: #8b9288;
-  --accent: #79c58f; --accent-ink: #0e1a11; --accent-soft: rgba(121, 197, 143, 0.14);
-  --neg: #e8705f; --paper: #1d201c; --shadow: rgba(0, 0, 0, 0.4); color-scheme: dark;
+  --bg: #121212; --surface: #191919; --card: #1e1e1e; --raised: #2a2a2a; --line: rgba(245, 245, 245, 0.10);
+  --fg: #f5f5f5; --fg2: #c2c2c2; --muted: #969696;
+  --accent: #ff8a4c; --accent-bright: #ff8a4c; --accent-ink: #1f0e04; --accent-soft: rgba(255, 138, 76, 0.13); --accent-line: rgba(255, 138, 76, 0.35);
+  --pos: #4ade80; --neg: #f87171; --shadow: rgba(0, 0, 0, 0.5); color-scheme: dark;
 }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 html, body { background: var(--bg); }
 body {
-  color: var(--fg); font: 400 15px/22px var(--font);
+  color: var(--fg); font: 400 16px/24px var(--font); font-variant-numeric: tabular-nums;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
   padding-block: 0;
-  -webkit-font-smoothing: antialiased;
+  -webkit-font-smoothing: antialiased; overflow-wrap: anywhere;
 }
 body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
 button, input, select { font: inherit; color: inherit; }
-button { cursor: pointer; }
+button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 button:disabled { cursor: default; opacity: 0.5; }
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
-.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 8px; }
+.num { font-variant-numeric: tabular-nums; }
 .money-v { white-space: nowrap; }
-.app { max-width: 560px; margin: 0 auto; padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+.app { max-width: 600px; margin: 0 auto; padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px)); }
 .app.bare { padding-bottom: 32px; }
 
 /* top bar */
-.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 56px; }
-.logo { font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; }
-.logo svg { color: var(--accent); }
-.where { display: inline-flex; align-items: center; gap: 6px; min-width: 0; height: 32px; padding: 0 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--fg2); font-size: 13px; transition: background-color 150ms var(--ease); }
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 60px; }
+.logo { font-weight: 600; font-size: 20px; display: flex; align-items: center; gap: 8px; }
+.logo svg { color: var(--accent-bright); }
+.where { display: inline-flex; align-items: center; gap: 6px; min-width: 0; height: 36px; padding: 0 14px; border-radius: 18px; border: 0; background: var(--surface); color: var(--fg2); font-size: 14px; font-weight: 500; transition: background-color 150ms var(--ease); }
 .where span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .where:hover { background: var(--raised); }
 
-h1 { font-size: 28px; line-height: 1.15; font-weight: 500; margin: 16px 0 4px; text-wrap: balance; }
-.sub { color: var(--fg2); font-size: 14px; margin: 0 0 20px; }
-.link { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; background: none; border: 0; padding: 0; font-size: inherit; }
+h1 { font-size: 30px; line-height: 1.15; font-weight: 600; margin: 12px 0 4px; text-wrap: balance; }
+.sub { color: var(--fg2); font-size: 15px; margin: 0 0 20px; }
+.link { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; background: none; border: 0; padding: 0; font-size: inherit; font-weight: 500; }
 
-/* flow tracker + next action */
-.flow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin: 4px 0 12px; }
-.flow div { display: grid; gap: 6px; font-size: 13px; color: var(--muted); }
+/* week layout */
+.week-grid { display: grid; gap: 24px; }
+.side { display: grid; gap: 16px; align-content: start; }
+
+/* flow + next */
+.flow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.flow div { display: grid; gap: 6px; font-size: 13px; font-weight: 500; color: var(--muted); }
 .flow i { display: block; height: 4px; border-radius: 2px; background: var(--raised); }
-.flow .done i, .flow .now i { background: var(--accent); }
-.flow .now { color: var(--fg); font-weight: 500; }
+.flow .done i, .flow .now i { background: var(--accent-bright); }
+.flow .now { color: var(--accent); }
 .flow .done { color: var(--fg2); }
-.next { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 16px; margin-bottom: 24px; display: grid; gap: 12px; }
-.next .k { font-size: 13px; color: var(--muted); }
-.next .t { font-size: 18px; line-height: 24px; font-weight: 500; }
-.next .d { font-size: 14px; color: var(--fg2); }
+.next { background: var(--accent-soft); border-radius: 24px; padding: 20px; display: grid; gap: 16px; }
+.next .k { font-size: 13px; font-weight: 600; color: var(--accent); letter-spacing: 0.02em; }
+.next .t { font-size: 22px; line-height: 28px; font-weight: 600; margin-top: 4px; }
+.next .d { font-size: 15px; color: var(--fg2); margin-top: 6px; }
 
-/* receipt */
-.receipt-wrap { filter: drop-shadow(0 1px 1px var(--shadow)) drop-shadow(0 6px 16px var(--shadow)); margin-bottom: 28px; }
-.receipt {
-  background: var(--paper); border-radius: 14px 14px 0 0; padding: 20px 20px 28px;
-  -webkit-mask: linear-gradient(#000 0 0) top / 100% calc(100% - 8px) no-repeat, conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / 16px 8px repeat-x;
-          mask: linear-gradient(#000 0 0) top / 100% calc(100% - 8px) no-repeat, conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / 16px 8px repeat-x;
-}
-.r-head { display: flex; justify-content: space-between; gap: 12px; font-family: var(--mono); font-size: 12px; line-height: 16px; color: var(--muted); margin-bottom: 16px; }
-.r-head span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
-.lead-row { display: flex; align-items: baseline; gap: 8px; font-size: 14px; line-height: 24px; }
-.lead-row .l { color: var(--fg2); white-space: nowrap; }
-.lead-row .dots { flex: 1; min-width: 12px; border-bottom: 1.5px dotted var(--muted); opacity: 0.6; transform: translateY(-4px); }
-.lead-row .v { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.r-rule { border: 0; border-top: 1.5px dashed var(--line); margin: 12px 0; }
-.r-big { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
-.r-big .l { font-size: 14px; color: var(--fg2); }
-.r-big .v { font-family: var(--mono); font-size: 30px; line-height: 1; font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.meter { margin-top: 20px; height: 10px; border-radius: 5px; background: var(--raised); overflow: hidden; }
-.meter div { height: 100%; border-radius: 5px; background: var(--accent); transform-origin: left; transition: transform 400ms var(--ease); }
+/* summary */
+.summary { background: var(--card); border: 1px solid var(--line); border-radius: 24px; padding: 20px; }
+.summary .k { font-size: 14px; color: var(--fg2); }
+.summary .big { font-size: 36px; line-height: 1.1; font-weight: 600; margin: 4px 0 16px; white-space: nowrap; }
+.meter { height: 8px; border-radius: 4px; background: var(--raised); overflow: hidden; }
+.meter div { height: 100%; border-radius: 4px; background: var(--accent-bright); transform-origin: left; transition: transform 400ms var(--ease); }
 .meter.over div { background: var(--neg); }
-.budget { margin-top: 8px; font-size: 14px; color: var(--fg2); display: flex; justify-content: space-between; gap: 12px; }
+.budget { margin-top: 8px; font-size: 14px; color: var(--fg2); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .budget.over { color: var(--neg); }
+.srows { display: grid; gap: 4px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 14px; color: var(--fg2); }
+.srows div { display: flex; justify-content: space-between; gap: 12px; }
+.srows b { font-weight: 500; color: var(--fg); white-space: nowrap; }
 
 /* days */
-.section-h { display: flex; justify-content: space-between; align-items: center; margin: 0 0 12px; }
-.section-h h2 { font-size: 17px; font-weight: 500; margin: 0; }
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 36px; padding: 0 14px; border-radius: 9px; border: 1px solid var(--line); background: var(--card); color: var(--fg); font-size: 14px; font-weight: 500; transition: background-color 150ms var(--ease), transform 120ms var(--ease); white-space: nowrap; }
-.btn:hover { background: var(--raised); }
+.section-h { display: flex; justify-content: space-between; align-items: center; margin: 0 0 12px; gap: 12px; }
+.section-h h2 { font-size: 20px; font-weight: 600; margin: 0; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 16px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--fg); font-size: 15px; font-weight: 500; transition: background-color 150ms var(--ease), transform 120ms var(--ease); white-space: nowrap; }
+.btn:hover { background: var(--surface); }
 .btn:active { transform: scale(0.98); }
-.btn.primary { background: var(--accent); border-color: transparent; color: var(--accent-ink); }
-.btn.primary:hover { filter: brightness(1.06); }
-.btn.big { height: 48px; width: 100%; font-size: 15px; }
-.days { display: grid; gap: 8px; }
-.day { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px 12px 12px 16px; display: grid; grid-template-columns: 44px 1fr; gap: 12px; }
-.day.off { background: transparent; border-style: dashed; }
-.day.today { border-color: var(--accent); }
-.dlabel { font-size: 13px; line-height: 18px; color: var(--muted); padding-top: 4px; }
-.dlabel b { display: block; font-weight: 500; font-size: 15px; color: var(--fg); }
-.dishes { display: grid; gap: 4px; min-width: 0; }
-.dish { display: grid; grid-template-columns: 1fr auto 32px; align-items: center; gap: 8px; min-height: 44px; }
-.dish-main { min-width: 0; text-align: left; background: none; border: 0; padding: 4px 0; border-radius: 6px; }
-.dish-main .n { display: block; font-weight: 500; font-size: 15px; line-height: 20px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.dish-main .e { display: block; font-size: 13px; line-height: 18px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.dish .c { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 13px; color: var(--fg2); white-space: nowrap; }
-.icon-btn { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 8px; border: 0; background: transparent; color: var(--muted); transition: background-color 150ms var(--ease), color 150ms var(--ease); }
-.icon-btn:hover { background: var(--raised); color: var(--fg); }
-.day-foot { grid-column: 2; display: flex; justify-content: space-between; align-items: center; gap: 8px; border-top: 1px solid var(--line); padding-top: 8px; margin-top: 4px; font-size: 13px; color: var(--muted); }
-.day-foot .acts { display: flex; gap: 16px; }
-.day-foot .link { color: var(--fg2); text-decoration: none; display: inline-flex; gap: 6px; align-items: center; }
+.btn.primary { background: var(--accent); border-color: transparent; color: var(--accent-ink); font-weight: 600; }
+.btn.primary:hover { filter: brightness(1.07); }
+.btn.big { height: 52px; width: 100%; font-size: 16px; border-radius: 14px; }
+.days { display: grid; gap: 12px; }
+.day { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 14px 14px 12px 16px; display: grid; gap: 4px; }
+.day.off { background: var(--surface); border-color: transparent; }
+.day.today { border-color: var(--accent-line); box-shadow: 0 0 0 3px var(--accent-soft); }
+.dhead { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 2px; }
+.dlabel { font-size: 14px; font-weight: 600; color: var(--fg); }
+.dlabel span { color: var(--muted); font-weight: 400; margin-left: 4px; }
+.dishes { display: grid; gap: 2px; min-width: 0; }
+.dish { display: grid; grid-template-columns: 1fr auto 40px; align-items: center; gap: 8px; min-height: 52px; }
+.dish-main { min-width: 0; text-align: left; background: none; border: 0; padding: 4px 0; border-radius: 8px; }
+.dish-main .n { display: block; font-weight: 600; font-size: 16px; line-height: 22px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dish-main .e { display: block; font-size: 14px; line-height: 20px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dish .c { font-size: 14px; color: var(--fg2); white-space: nowrap; }
+.icon-btn { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 12px; border: 0; background: transparent; color: var(--muted); transition: background-color 150ms var(--ease), color 150ms var(--ease); }
+.icon-btn:hover { background: var(--surface); color: var(--fg); }
+.day-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; border-top: 1px solid var(--line); padding-top: 10px; margin-top: 4px; font-size: 14px; color: var(--muted); }
+.day-foot .acts { display: flex; gap: 20px; }
+.day-foot .link { color: var(--fg2); text-decoration: none; display: inline-flex; gap: 6px; align-items: center; min-height: 32px; }
 .day-foot .link:hover { color: var(--fg); }
-.day-foot .link.go { color: var(--accent); font-weight: 500; }
-.off-msg { display: flex; justify-content: space-between; align-items: center; gap: 12px; color: var(--muted); font-size: 14px; min-height: 44px; }
-.tag { display: inline-flex; align-items: center; gap: 4px; height: 20px; padding: 0 6px; border-radius: 5px; background: var(--raised); color: var(--fg2); font-size: 12px; line-height: 16px; white-space: nowrap; }
+.day-foot .link.go { color: var(--accent); font-weight: 600; }
+.off-msg { display: flex; justify-content: space-between; align-items: center; gap: 12px; color: var(--muted); font-size: 15px; min-height: 44px; }
+.tag { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 8px; border-radius: 11px; background: var(--surface); color: var(--fg2); font-size: 12px; font-weight: 500; line-height: 16px; white-space: nowrap; }
 .tag.ok { background: var(--accent-soft); color: var(--accent); }
+.tag.good { color: var(--pos); }
 .pedas { color: var(--neg); }
 
 /* shopping list */
-.group { margin-bottom: 24px; }
-.group h3 { font-size: 13px; font-weight: 500; color: var(--muted); margin: 0 0 8px; display: flex; justify-content: space-between; gap: 12px; }
-.list { background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
-.item { display: grid; grid-template-columns: 28px 1fr auto; gap: 10px; align-items: center; padding: 10px 14px; min-height: 52px; border-top: 1px solid var(--line); }
+.groups { display: block; }
+.group { margin-bottom: 24px; break-inside: avoid; }
+.group h3 { font-size: 14px; font-weight: 600; color: var(--fg2); margin: 0 0 8px; display: flex; justify-content: space-between; gap: 12px; }
+.list { background: var(--card); border: 1px solid var(--line); border-radius: 20px; overflow: hidden; }
+.item { display: grid; grid-template-columns: 28px 1fr auto; gap: 12px; align-items: center; padding: 12px 16px; min-height: 60px; border-top: 1px solid var(--line); }
 .item:first-child { border-top: 0; }
-.item input { width: 20px; height: 20px; accent-color: var(--accent); margin: 0; }
-.item .n { font-size: 15px; line-height: 20px; }
-.item .q { font-size: 13px; color: var(--muted); line-height: 18px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-.item .p { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 14px; text-align: right; white-space: nowrap; }
+.item input { width: 22px; height: 22px; accent-color: var(--accent); margin: 0; }
+.item .n { font-size: 16px; line-height: 22px; font-weight: 500; }
+.item .q { font-size: 13px; color: var(--muted); line-height: 18px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-top: 2px; }
+.item .p { font-size: 15px; font-weight: 500; text-align: right; white-space: nowrap; }
 .item.done .n, .item.done .p { color: var(--muted); text-decoration: line-through; }
-.totals { position: sticky; bottom: calc(68px + env(safe-area-inset-bottom, 0px)); background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px 12px 12px 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; box-shadow: 0 8px 24px var(--shadow); }
-.totals .v { font-family: var(--mono); font-size: 20px; font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.totals .k { font-size: 12px; color: var(--muted); }
+.totals { position: sticky; bottom: calc(76px + env(safe-area-inset-bottom, 0px)); background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 12px 12px 12px 18px; display: flex; justify-content: space-between; align-items: center; gap: 12px; box-shadow: 0 8px 24px var(--shadow); }
+.totals .v { font-size: 22px; font-weight: 600; white-space: nowrap; }
+.totals .k { font-size: 13px; color: var(--muted); }
 
 /* recipes */
-.search { width: 100%; height: 44px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); padding: 0 14px 0 40px; font-size: 15px; }
+.search { width: 100%; height: 48px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); padding: 0 14px 0 42px; font-size: 16px; }
 .search-wrap { position: relative; margin-bottom: 12px; }
-.search-wrap svg { position: absolute; left: 12px; top: 13px; color: var(--muted); }
+.search-wrap svg { position: absolute; left: 14px; top: 16px; color: var(--muted); }
 .chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 16px; scrollbar-width: none; }
-.chip { flex: none; height: 32px; padding: 0 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--fg2); font-size: 14px; transition: background-color 150ms var(--ease); }
-.chip[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: transparent; }
-.rlist { display: grid; background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
-.rrow { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; padding: 12px 16px; border: 0; border-top: 1px solid var(--line); background: transparent; text-align: left; width: 100%; transition: background-color 150ms var(--ease); }
-.rrow:first-child { border-top: 0; }
-.rrow:hover { background: var(--raised); }
-.rrow .n { font-weight: 500; }
-.rrow .e { font-size: 13px; color: var(--muted); }
-.rrow .m { text-align: right; font-size: 13px; color: var(--fg2); line-height: 18px; white-space: nowrap; }
+.chip { flex: none; height: 36px; padding: 0 14px; border-radius: 18px; border: 1px solid var(--line); background: var(--card); color: var(--fg2); font-size: 14px; font-weight: 500; transition: background-color 150ms var(--ease); }
+.chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.rlist { display: grid; gap: 8px; }
+.rrow { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; padding: 14px 16px; border: 1px solid var(--line); border-radius: 18px; background: var(--card); text-align: left; width: 100%; transition: background-color 150ms var(--ease); }
+.rrow:hover { background: var(--surface); }
+.rrow .n { font-weight: 600; }
+.rrow .e { font-size: 14px; color: var(--muted); }
+.rrow .m { text-align: right; font-size: 14px; color: var(--fg2); white-space: nowrap; }
 
 /* forms */
-.field { margin-bottom: 20px; }
-.field > label, .field > .lbl { display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px; }
-.field .hint { font-size: 13px; color: var(--muted); margin-top: 6px; }
+.field { margin-bottom: 24px; }
+.field > label, .field > .lbl { display: block; font-size: 15px; font-weight: 600; margin-bottom: 10px; }
+.field .hint { font-size: 13px; color: var(--muted); margin-top: 8px; line-height: 19px; }
 .seg { display: flex; gap: 8px; flex-wrap: wrap; }
-.seg button { min-width: 44px; height: 40px; padding: 0 12px; border-radius: 9px; border: 1px solid var(--line); background: var(--card); font-size: 15px; transition: background-color 150ms var(--ease); }
-.seg button[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: transparent; }
-.inp { width: 100%; height: 44px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); padding: 0 12px; font-size: 15px; }
+.seg button { min-width: 48px; height: 44px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); font-size: 15px; font-weight: 500; transition: background-color 150ms var(--ease); }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.inp { width: 100%; height: 48px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); padding: 0 14px; font-size: 16px; }
 .pc-row { display: grid; grid-template-columns: 140px 1fr; gap: 12px; align-items: center; }
-.pc-row .inp { font-family: var(--mono); font-size: 18px; letter-spacing: 0.04em; }
-.pc-place { font-size: 14px; color: var(--fg2); }
+.pc-row .inp { font-size: 20px; font-weight: 600; letter-spacing: 0.04em; }
+.pc-place { font-size: 15px; color: var(--fg2); }
 .pc-place.bad { color: var(--neg); }
 .money { position: relative; }
-.money span { position: absolute; left: 12px; top: 11px; color: var(--muted); font-family: var(--mono); }
-.money .inp { padding-left: 44px; font-family: var(--mono); }
-.shops { display: grid; background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
-.shop { display: grid; grid-template-columns: 24px 1fr auto; gap: 10px; align-items: center; padding: 10px 14px; min-height: 56px; border-top: 1px solid var(--line); }
+.money span { position: absolute; left: 14px; top: 12px; color: var(--muted); font-weight: 500; }
+.money .inp { padding-left: 48px; font-weight: 600; }
+.shops { display: grid; background: var(--card); border: 1px solid var(--line); border-radius: 20px; overflow: hidden; }
+.shop { display: grid; grid-template-columns: 24px 1fr auto; gap: 12px; align-items: center; padding: 12px 16px; min-height: 60px; border-top: 1px solid var(--line); }
 .shop:first-child { border-top: 0; }
-.shop input { width: 18px; height: 18px; accent-color: var(--accent); margin: 0; }
-.shop .n { font-size: 15px; line-height: 20px; }
+.shop input { width: 20px; height: 20px; accent-color: var(--accent); margin: 0; }
+.shop .n { font-size: 15px; line-height: 21px; font-weight: 500; }
 .shop .q { font-size: 13px; color: var(--muted); line-height: 18px; }
-.shop .km { font-family: var(--mono); font-size: 13px; color: var(--fg2); text-align: right; white-space: nowrap; }
+.shop .km { font-size: 14px; color: var(--fg2); text-align: right; white-space: nowrap; }
+.shop-more { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px; }
+.addshop { margin-top: 12px; background: var(--surface); border-radius: 20px; padding: 16px; display: grid; gap: 12px; }
+.addshop .row { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+.addshop .chainmsg { font-size: 14px; color: var(--fg2); }
 .fine { font-size: 13px; color: var(--muted); line-height: 20px; margin: 24px 0 0; }
-.ob-step { font-size: 13px; color: var(--muted); margin-top: 8px; }
-.ob-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin: 8px 0 0; }
+.ob-step { font-size: 13px; color: var(--muted); margin-top: 8px; font-weight: 500; }
+.ob-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 8px 0 0; }
 .ob-bar i { height: 4px; border-radius: 2px; background: var(--raised); }
-.ob-bar i.on { background: var(--accent); }
-.ob-actions { display: grid; grid-template-columns: auto 1fr; gap: 12px; margin-top: 24px; }
+.ob-bar i.on { background: var(--accent-bright); }
+.ob-actions { display: grid; grid-template-columns: auto 1fr; gap: 12px; margin-top: 24px; position: sticky; bottom: 0; padding: 12px 0 calc(12px + env(safe-area-inset-bottom, 0px)); background: var(--bg); }
 .ob-actions.solo { grid-template-columns: 1fr; }
 
 /* tabs */
 .tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; background: var(--card); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom, 0px); padding-left: max(8px, env(safe-area-inset-left, 0px)); padding-right: max(8px, env(safe-area-inset-right, 0px)); }
-.tabs-in { max-width: 560px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); }
-.tab { height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border: 0; background: none; color: var(--muted); font-size: 12px; line-height: 16px; transition: color 150ms var(--ease); }
+.tabs-in { max-width: 600px; margin: 0 auto; display: grid; grid-template-columns: repeat(5, 1fr); }
+.tab { height: 64px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border: 0; background: none; color: var(--muted); font-size: 12px; font-weight: 500; line-height: 16px; transition: color 150ms var(--ease); }
 .tab[aria-current="page"] { color: var(--accent); }
 
 /* recipe sheet */
-.scrim { position: fixed; inset: 0; background: rgba(10, 12, 9, 0.4); z-index: 20; opacity: 0; transition: opacity 200ms var(--ease); }
+.scrim { position: fixed; inset: 0; background: rgba(12, 10, 9, 0.45); z-index: 20; opacity: 0; transition: opacity 200ms var(--ease); }
 .scrim.open { opacity: 1; }
-.sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 21; max-height: 88vh; overflow-y: auto; background: var(--card); border-radius: 18px 18px 0 0; padding: 8px max(20px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) max(20px, env(safe-area-inset-left, 0px)); transform: translateY(16px); opacity: 0; transition: transform 300ms var(--ease), opacity 300ms var(--ease); }
+.sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 21; max-height: 90vh; overflow-y: auto; background: var(--card); border-radius: 28px 28px 0 0; padding: 8px max(20px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) max(20px, env(safe-area-inset-left, 0px)); transform: translateY(16px); opacity: 0; transition: transform 300ms var(--ease), opacity 300ms var(--ease); }
 .sheet.open { transform: none; opacity: 1; }
-.sheet-in { max-width: 560px; margin: 0 auto; position: relative; }
-.grab { width: 36px; height: 4px; border-radius: 2px; background: var(--line); margin: 4px auto 12px; }
-.sheet h2 { font-size: 24px; line-height: 1.2; font-weight: 500; margin: 0 40px 4px 0; }
-.meta { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 20px; }
-.sheet h3 { font-size: 15px; font-weight: 500; margin: 20px 0 8px; }
-.ing { display: grid; grid-template-columns: 1fr auto; gap: 8px; padding: 8px 0; border-top: 1px solid var(--line); font-size: 14px; }
+.sheet-in { max-width: 600px; margin: 0 auto; position: relative; }
+.grab { width: 40px; height: 5px; border-radius: 3px; background: var(--raised); margin: 4px auto 16px; }
+.sheet h2 { font-size: 26px; line-height: 1.2; font-weight: 600; margin: 0 48px 4px 0; }
+.meta { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0 20px; }
+.sheet h3 { font-size: 17px; font-weight: 600; margin: 24px 0 8px; }
+.ing { display: grid; grid-template-columns: 1fr auto; gap: 8px; padding: 10px 0; border-top: 1px solid var(--line); font-size: 15px; }
 .ing:first-of-type { border-top: 0; }
-.ing .up { display: block; font-family: var(--mono); font-size: 12px; color: var(--muted); }
-.toast { position: fixed; left: 50%; bottom: calc(84px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 40; background: var(--fg); color: var(--bg); padding: 10px 14px; border-radius: 10px; font-size: 14px; max-width: calc(100% - 32px); }
-.ing .q { font-family: var(--mono); font-variant-numeric: tabular-nums; color: var(--fg2); white-space: nowrap; }
-.close { position: absolute; right: 0; top: 0; }
+.ing .up { display: block; font-size: 13px; color: var(--muted); }
+.ing .q { font-weight: 500; color: var(--fg); white-space: nowrap; }
+.close { position: absolute; right: -8px; top: -4px; }
+.toast { position: fixed; left: 50%; bottom: calc(88px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 40; background: var(--fg); color: var(--bg); padding: 12px 16px; border-radius: 14px; font-size: 14px; max-width: calc(100% - 32px); }
 
 /* cooking mode */
-.cook { position: fixed; inset: 0; z-index: 30; background: var(--card); display: grid; grid-template-rows: auto 1fr auto; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
-.cook-in { width: 100%; max-width: 560px; margin: 0 auto; }
-.cook-top { display: grid; grid-template-columns: 1fr 32px; gap: 12px; align-items: center; padding: 12px 0 8px; }
-.cook-top .n { font-size: 15px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cook { position: fixed; inset: 0; z-index: 30; background: var(--bg); display: grid; grid-template-rows: auto 1fr auto; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
+.cook-in { width: 100%; max-width: 640px; margin: 0 auto; }
+.cook-top { display: grid; grid-template-columns: 1fr 40px; gap: 12px; align-items: center; padding: 12px 0 10px; }
+.cook-top .n { font-size: 16px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cook-top .s { font-size: 13px; color: var(--muted); }
 .segs { display: flex; gap: 4px; padding-bottom: 8px; }
-.segs i { flex: 1; height: 4px; border-radius: 2px; background: var(--raised); }
-.segs i.on { background: var(--accent); }
-.cook-body { overflow-y: auto; padding: 16px 0 24px; }
-.step-no { font-family: var(--mono); font-size: 13px; color: var(--muted); margin-bottom: 12px; }
-.step-t { font-size: 24px; line-height: 32px; font-weight: 500; margin: 0 0 24px; text-wrap: pretty; }
-.need { display: grid; gap: 8px; margin-bottom: 24px; }
-.need .lbl { font-size: 13px; color: var(--muted); }
+.segs i { flex: 1; height: 5px; border-radius: 3px; background: var(--raised); }
+.segs i.on { background: var(--accent-bright); }
+.cook-body { overflow-y: auto; padding: 20px 0 24px; }
+.step-no { font-size: 14px; font-weight: 600; color: var(--accent); margin-bottom: 12px; }
+.step-t { font-size: 26px; line-height: 34px; font-weight: 600; margin: 0 0 28px; text-wrap: pretty; }
+.need { display: grid; gap: 10px; margin-bottom: 24px; }
+.need .lbl { font-size: 14px; font-weight: 600; color: var(--fg2); }
 .need-list { display: flex; flex-wrap: wrap; gap: 8px; }
-.need-chip { display: inline-flex; align-items: baseline; gap: 8px; padding: 8px 12px; border-radius: 10px; background: var(--raised); font-size: 15px; }
-.need-chip b { font-family: var(--mono); font-weight: 500; font-size: 14px; font-variant-numeric: tabular-nums; }
-.timer { border: 1px solid var(--line); border-radius: 16px; padding: 16px; display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; }
-.timer .clock { font-family: var(--mono); font-size: 40px; line-height: 1; font-weight: 500; font-variant-numeric: tabular-nums; }
-.timer .lbl { font-size: 13px; color: var(--muted); margin-top: 6px; }
-.timer.ring { border-color: var(--accent); background: var(--accent-soft); }
+.need-chip { display: inline-flex; align-items: baseline; gap: 8px; padding: 10px 14px; border-radius: 14px; background: var(--accent-soft); font-size: 16px; }
+.need-chip b { font-weight: 600; }
+.timer { background: var(--surface); border-radius: 24px; padding: 20px; display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; }
+.timer .clock { font-size: 48px; line-height: 1; font-weight: 600; }
+.timer .lbl { font-size: 14px; color: var(--muted); margin-top: 8px; }
+.timer.ring { background: var(--accent-soft); box-shadow: inset 0 0 0 2px var(--accent-line); }
 .timer .acts { display: flex; gap: 8px; }
+.timer .btn { height: 48px; border-radius: 14px; }
 .prep { display: grid; }
-.prep label { display: grid; grid-template-columns: 24px 1fr auto; gap: 10px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); font-size: 15px; }
+.prep label { display: grid; grid-template-columns: 24px 1fr auto; gap: 12px; align-items: center; padding: 12px 0; border-top: 1px solid var(--line); font-size: 16px; }
 .prep label:first-child { border-top: 0; }
-.prep input { width: 18px; height: 18px; accent-color: var(--accent); margin: 0; }
-.prep .q { font-family: var(--mono); font-size: 14px; color: var(--fg2); white-space: nowrap; }
-.tip { display: flex; gap: 10px; background: var(--accent-soft); border-radius: 12px; padding: 12px; font-size: 14px; margin-bottom: 20px; }
-.tip svg { flex: none; color: var(--accent); margin-top: 2px; }
-.cook-foot { display: grid; grid-template-columns: 1fr 2fr; gap: 12px; padding: 12px 0 16px; border-top: 1px solid var(--line); }
-.cook-foot .btn { height: 52px; font-size: 16px; }
-.done-t { font-size: 28px; line-height: 1.2; font-weight: 500; margin: 24px 0 8px; }
+.prep input { width: 20px; height: 20px; accent-color: var(--accent); margin: 0; }
+.prep .q { font-weight: 600; white-space: nowrap; }
+.tip { display: flex; gap: 10px; background: var(--accent-soft); border-radius: 16px; padding: 14px; font-size: 15px; margin-bottom: 20px; }
+.tip svg { flex: none; color: var(--accent); margin-top: 3px; }
+.cook-foot { display: grid; grid-template-columns: 1fr 2fr; gap: 12px; padding: 12px 0 16px; }
+.cook-foot .btn { height: 56px; font-size: 17px; border-radius: 16px; }
+.done-t { font-size: 30px; line-height: 1.2; font-weight: 600; margin: 24px 0 8px; }
 
 .enter { animation: rise 360ms var(--ease) both; }
 @keyframes rise { from { opacity: 0; transform: translateY(8px); } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
-@media (max-width: 380px) { .day { grid-template-columns: 1fr; } .day-foot { grid-column: 1; } .dlabel b { display: inline; margin-right: 6px; } .pc-row { grid-template-columns: 1fr; } }
+@media (max-width: 360px) {
+  h1 { font-size: 26px; } .pc-row { grid-template-columns: 1fr; } .dish { grid-template-columns: 1fr 40px; } .dish .c { display: none; }
+  .next .t { font-size: 20px; } .summary .big { font-size: 30px; } .step-t { font-size: 22px; line-height: 30px; }
+}
+@media (min-width: 900px) {
+  .app { max-width: 1080px; }
+  .app.bare { max-width: 640px; }
+  .week-grid { grid-template-columns: minmax(0, 1fr) 360px; gap: 32px; align-items: start; }
+  .side { grid-column: 2; grid-row: 1; position: sticky; top: calc(76px + env(safe-area-inset-top, 0px)); }
+  .week-main { grid-column: 1; grid-row: 1; }
+  .groups { columns: 2; column-gap: 24px; }
+  .rlist { grid-template-columns: 1fr 1fr; }
+  .tabs-in { max-width: 640px; }
+  .narrow { max-width: 640px; }
+}
 </style>
 
 <div class="app" id="app">
@@ -273,7 +287,7 @@ const DATA = /*__DATA__*/null;
   const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const DAYS_LONG = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
   const RICE_PER_PERSON = 80;
-  const STORE = "masakje.proto.v3";
+  const STORE = "masakje.proto.v4";
   const ALLERGENS = [
     ["shellfish", "Shellfish", ["prawn", "squid", "cockle", "dried_shrimp", "belacan", "oyster_sauce"]],
     ["fish", "Fish", ["fish_kembung", "fish_selar", "fish_tenggiri", "fish_siakap", "fish_tilapia", "ikan_bilis", "salted_fish", "fish_sauce"]],
@@ -303,6 +317,10 @@ const DATA = /*__DATA__*/null;
     pause: '<rect x="14" y="4" width="4" height="16" rx="1"/><rect x="6" y="4" width="4" height="16" rx="1"/>',
     reset: '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>',
     check: '<path d="M20 6 9 17l-5-5"/>',
+    cart: '<circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>',
+    fridge: '<path d="M5 6a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6Z"/><path d="M5 10h14"/><path d="M15 7v6"/>',
+    trash: '<path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+    plus: '<path d="M5 12h14"/><path d="M12 5v14"/>',
     flame: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
   };
   const ic = (n, s = 16) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n]}</svg>`;
@@ -315,10 +333,10 @@ const DATA = /*__DATA__*/null;
   const DEFAULTS = { postcode: "47400", shop: -1, people: 3, nights: [true, true, true, true, true, true, false], budget: 150,
     avoid: { beef: false, mutton: false, pedas: false }, allergy: {}, dislike: {} };
   const clone = o => JSON.parse(JSON.stringify(o));
-  let S = { settings: clone(DEFAULTS), plan: null, bought: {}, pantryNeed: {}, flow: { locked: false, shopped: false, cooked: {} },
+  let S = { settings: clone(DEFAULTS), plan: null, bought: {}, pantryNeed: {}, flow: { locked: false, shopped: false, cooked: {} }, kitchen: {},
     onboarded: false, ob: 0, tab: "week", filter: "all", q: "" };
   try { const raw = localStorage.getItem(STORE); if (raw) Object.assign(S, JSON.parse(raw), { tab: "week", ob: 0 }); } catch (e) {}
-  const save = () => { try { localStorage.setItem(STORE, JSON.stringify({ settings: S.settings, plan: S.plan, bought: S.bought, pantryNeed: S.pantryNeed, flow: S.flow, onboarded: S.onboarded })); } catch (e) {} };
+  const save = () => { try { localStorage.setItem(STORE, JSON.stringify({ settings: S.settings, plan: S.plan, bought: S.bought, pantryNeed: S.pantryNeed, flow: S.flow, kitchen: S.kitchen, onboarded: S.onboarded })); } catch (e) {} };
 
   // ---------- location ----------
   function lookupPostcode(pc) {
@@ -353,6 +371,9 @@ const DATA = /*__DATA__*/null;
     return (CTX = { pc, loc, near, med, stateIdx });
   }
   const shopName = s => title(s[0]);
+  const CHAINS = PR.chains.map(([name, pat, idx, n]) => ({ name, re: new RegExp(pat, "i"), idx, n }));
+  const chainOf = name => CHAINS.find(c => c.re.test(name || "")) || null;
+  const pctLabel = idx => { const p = Math.round((idx - 1) * 100); return p === 0 ? "about the same as" : p > 0 ? `${p}% above` : `${-p}% below`; };
   const precisionNote = s => (s[4] === "postcode" || s[4] === "near-postcode") ? "" : "approx. location";
 
   // ---------- prices ----------
@@ -361,8 +382,9 @@ const DATA = /*__DATA__*/null;
     let per = null, src = "Estimate";
     if (ki !== undefined) {
       const shop = S.settings.shop >= 0 ? PR.shops[S.settings.shop] : null;
+      const custom = S.settings.shop === -2 && S.settings.custom ? chainOf(S.settings.custom.name) : null;
       if (shop && shop[7][ki] > 0) { per = shop[7][ki]; src = "This shop"; }
-      else if (c.med[key]) { per = c.med[key].v; src = `Within ${c.med[key].r} km`; }
+      else if (c.med[key]) { per = c.med[key].v * (custom ? custom.idx : 1); src = custom ? `${custom.name} est.` : `Within ${c.med[key].r} km`; }
       else if (c.stateIdx >= 0 && PR.stateMedian[c.stateIdx][ki] > 0) { per = PR.stateMedian[c.stateIdx][ki]; src = "State"; }
       else if (PR.national[ki] > 0) { per = PR.national[ki]; src = "Malaysia"; }
     }
@@ -379,6 +401,7 @@ const DATA = /*__DATA__*/null;
   }
   function priceLabel() {
     if (S.settings.shop >= 0) return shopName(PR.shops[S.settings.shop]);
+    if (S.settings.shop === -2 && S.settings.custom) return S.settings.custom.name;
     const c = ctx(); return c.loc ? `shops near ${S.settings.postcode}` : "Malaysia average";
   }
 
@@ -402,16 +425,54 @@ const DATA = /*__DATA__*/null;
     return agg;
   }
   function totals(plan) {
-    const agg = aggregate(plan); let fresh = 0, pantryUse = 0, pantryBuy = 0; const rows = [];
+    const agg = aggregate(plan); let fresh = 0, pantryUse = 0, pantryBuy = 0, fromKitchen = 0; const rows = [];
+    const stock = haveMap();
     for (const [k, q] of Object.entries(agg)) {
       const it = ING[k], p = price(k);
-      const packs = Math.max(1, Math.ceil(q / it.pack - 1e-9)), cost = packs * it.pack * p.unit;
-      if (it.pantry) { pantryUse += q * p.unit; if (S.pantryNeed[k]) pantryBuy += cost; }
-      else fresh += cost;
-      rows.push({ k, it, q, buy: packs * it.pack, cost, src: p.src, pantry: !!it.pantry });
+      if (it.pantry) {
+        const packs = Math.max(1, Math.ceil(q / it.pack - 1e-9)), cost = packs * it.pack * p.unit;
+        pantryUse += q * p.unit; if (S.pantryNeed[k]) pantryBuy += cost;
+        rows.push({ k, it, q, have: 0, buy: packs * it.pack, cost, src: p.src, pantry: true });
+      } else {
+        const have = Math.min(stock[k] || 0, q), need = q - have;
+        const packs = need > 1e-6 ? Math.ceil(need / it.pack - 1e-9) : 0, cost = packs * it.pack * p.unit;
+        fresh += cost; fromKitchen += have * p.unit;
+        rows.push({ k, it, q, have, need, buy: packs * it.pack, cost, src: p.src, pantry: false });
+      }
     }
     const nights = plan.days.filter(d => !d.off).length, plates = nights * S.settings.people;
-    return { rows, fresh, pantryUse, pantryBuy, toBuy: fresh + pantryBuy, plates, nights, perPlate: plates ? (fresh + pantryUse) / plates : 0 };
+    return { rows, fresh, pantryUse, pantryBuy, fromKitchen, toBuy: fresh + pantryBuy, plates, nights, perPlate: plates ? (fresh + pantryUse) / plates : 0 };
+  }
+
+  // ---------- kitchen (fridge / freezer) ----------
+  // Before shopping, the list subtracts what's in the kitchen. After "Done shopping" it uses the
+  // snapshot taken at that moment, so leftovers added then don't change the list you already bought.
+  function haveMap() {
+    if (S.flow.shopped && S.flow.have) return S.flow.have;
+    return Object.fromEntries(Object.entries(S.kitchen).map(([k, v]) => [k, v.q]));
+  }
+  function finishShopping() {
+    const t = totals(S.plan), have = haveMap(), reserved = {};
+    for (const r of t.rows) if (!r.pantry && r.have > 0) reserved[r.k] = r.have;
+    S.flow.have = have; S.flow.reserved = reserved;
+    for (const r of t.rows) {           // surplus from whole packs goes into the kitchen
+      if (r.pantry || !r.buy) continue;
+      const extra = r.buy - r.need;
+      if (extra > r.it.pack * 0.1) addKitchen(r.k, extra, true);
+    }
+    S.flow.locked = true; S.flow.shopped = true; save();
+  }
+  function addKitchen(k, q, leftover) {
+    const it = ING[k];
+    const cur = S.kitchen[k] || { q: 0, where: /Meat|Fish/.test(it.aisle) ? "freezer" : "fridge", soon: false };
+    cur.q += q; if (leftover) cur.leftover = true; S.kitchen[k] = cur;
+  }
+  function deductCooked(day) {
+    const res = S.flow.reserved || {};
+    for (const r of dayItems(S.plan.days[day])) for (const [k, q] of r.ing) {
+      const used = q * scale(), d = Math.min(res[k] || 0, used, (S.kitchen[k] || { q: 0 }).q);
+      if (d > 0) { S.kitchen[k].q -= d; res[k] -= d; if (S.kitchen[k].q < 1e-6) delete S.kitchen[k]; }
+    }
   }
 
   // ---------- planner ----------
@@ -446,7 +507,8 @@ const DATA = /*__DATA__*/null;
     const t = totals(plan), b = S.settings.budget;
     const proteins = new Set(plan.days.flatMap(d => dayItems(d).filter(r => r.kind !== "sayur").map(r => r.protein))).size;
     if (t.toBuy > b) return 1000 + (t.toBuy - b);
-    return -proteins * 3 + t.toBuy * 0.3 + Math.random() * 4;
+    const useK = plan.days.flatMap(d => dayItems(d)).reduce((a, r) => a + r.ing.filter(([k]) => S.kitchen[k] && !ING[k].pantry).reduce((x, [k]) => x + (S.kitchen[k].soon ? 2 : 1), 0), 0);
+    return -proteins * 3 + t.toBuy * 0.3 - useK * 2 + Math.random() * 4;
   }
   function makePlan() {
     let best = null, bs = Infinity;
@@ -501,71 +563,115 @@ const DATA = /*__DATA__*/null;
   function viewWeek() {
     const t = totals(S.plan), b = S.settings.budget, diff = b - t.toBuy, stage = flowStage();
     const steps = ["Plan", "Shop", "Cook"].map((l, i) => `<div class="${i < stage ? "done" : i === stage ? "now" : ""}"><i></i>${i + 1}. ${l}</div>`).join("");
+    const fresh = t.rows.filter(r => !r.pantry), bought = fresh.filter(r => S.bought[r.k]).length;
+    const di = nextCookDay();
     let next;
-    if (stage === 0) next = `<div class="next"><div><div class="k">Step 1 of 3</div><div class="t">Check this week's dinners</div><div class="d">Swap anything your family won't eat, or skip nights you eat out. Then lock the plan to get your shopping list.</div></div><button class="btn primary big" id="lock">Lock plan and make my list</button></div>`;
-    else if (stage === 1) next = `<div class="next"><div><div class="k">Step 2 of 3</div><div class="t">Go shopping</div><div class="d">${t.rows.filter(r => !r.pantry).length} items, about <span class="num money-v">${rm(t.toBuy)}</span> at ${esc(priceLabel())}. Tick items off as you buy them.</div></div><button class="btn primary big" data-go="shop">Open shopping list</button></div>`;
+    if (stage === 0) next = `<div class="next"><div><div class="k">STEP 1 OF 3</div><div class="t">Check this week's dinners</div><div class="d">Swap anything your family won't eat, or skip nights you eat out. Then lock the plan to get your shopping list.</div></div><button class="btn primary big" id="lock">Lock plan and make my list</button></div>`;
+    else if (di < 0) next = `<div class="next"><div><div class="k">ALL DONE</div><div class="t">Every dinner this week is cooked</div><div class="d">Plan next week when you're ready.</div></div><button class="btn primary big" id="newweek">Plan next week</button></div>`;
     else {
-      const di = nextCookDay();
-      if (di < 0) next = `<div class="next"><div><div class="k">All done</div><div class="t">Every dinner this week is cooked</div><div class="d">Plan next week when you're ready.</div></div><button class="btn primary big" id="newweek">Plan next week</button></div>`;
-      else {
-        const items = dayItems(S.plan.days[di]); const mins = Math.max(...items.map(r => r.mins));
-        const when = di === todayIdx() ? "Tonight" : DAYS_LONG[di];
-        next = `<div class="next"><div><div class="k">Step 3 of 3 · ${when}</div><div class="t">${items.map(r => esc(r.name)).join(" + ")}</div><div class="d">About ${mins} min${S.plan.days[di].onepot ? "" : ", with rice"}. MasakJe walks you through each step.</div></div><button class="btn primary big" data-cookday="${di}">${ic("flame")}Start cooking</button></div>`;
-      }
+      const items = dayItems(S.plan.days[di]); const mins = Math.max(...items.map(r => r.mins));
+      const when = di === todayIdx() ? "TONIGHT" : DAYS_LONG[di].toUpperCase();
+      const shopLine = stage === 1 ? `<div class="d">Shopping list: <b>${bought} of ${fresh.length}</b> bought</div>` : "";
+      next = `<div class="next"><div><div class="k">${when}</div><div class="t">${items.map(r => esc(r.name)).join(" + ")}</div><div class="d">About ${mins} min${S.plan.days[di].onepot ? "" : ", with rice"}</div>${shopLine}</div>
+        <div style="display:grid;gap:8px">
+          ${stage === 1 ? `<button class="btn primary big" data-go="shop">${ic("cart")}I'm at the shop</button><button class="btn big" data-cookday="${di}">${ic("flame")}I'm cooking now</button>`
+                        : `<button class="btn primary big" data-cookday="${di}">${ic("flame")}I'm cooking now</button><button class="btn big" data-go="shop">${ic("cart")}Shopping list</button>`}
+        </div></div>`;
     }
     const pct = Math.min(1, t.toBuy / b);
+    const summary = `<div class="summary">
+        <div class="k">To spend this week</div>
+        <div class="big">${rm(t.toBuy)}</div>
+        <div class="meter ${diff < 0 ? "over" : ""}" role="img" aria-label="${rm(t.toBuy)} of ${rm0(b)} budget"><div style="transform:scaleX(${pct.toFixed(3)})"></div></div>
+        <div class="budget ${diff < 0 ? "over" : ""}"><span>${diff >= 0 ? `<b class="money-v">${rm(diff)}</b> left` : `<b class="money-v">${rm(-diff)}</b> over budget`}</span><span>of <span class="money-v">${rm0(b)}</span> budget</span></div>
+        <div class="srows">
+          <div><span>Groceries</span><b>${rm(t.fresh)}</b></div>
+          ${t.pantryBuy ? `<div><span>Pantry restock</span><b>${rm(t.pantryBuy)}</b></div>` : ""}
+          <div><span>Pantry you already have</span><b>${rm(t.pantryUse)}</b></div>
+          ${t.fromKitchen > 0.01 ? `<div><span>Used from fridge/freezer</span><b>${rm(t.fromKitchen)}</b></div>` : ""}
+          <div><span>Priced at</span><b style="text-align:right">${esc(priceLabel())}</b></div>
+        </div></div>`;
     const days = S.plan.days.map((d, i) => {
-      const dl = `<div class="dlabel"><b>${DAYS[i]}</b>${dateOf(i).getDate()}</div>`;
-      if (d.off) return `<div class="day off">${dl}<div class="off-msg"><span>Not cooking</span><button class="btn" data-off="${i}">Plan a dinner</button></div></div>`;
-      const row = (r, slot) => `<div class="dish"><button class="dish-main" data-recipe="${r.id}"><span class="n">${esc(r.name)}${r.spicy >= 2 ? ' <span class="pedas" title="Pedas">•</span>' : ""}</span><span class="e">${esc(r.en)}</span></button><span class="c">${rm(dishCost(r))}</span><button class="icon-btn" aria-label="Swap ${esc(r.name)}" data-swap="${i}:${slot}">${ic("swap")}</button></div>`;
+      const head = (extra = "") => `<div class="dhead"><div class="dlabel">${DAYS_LONG[i]}<span>${fmtDate(dateOf(i))}</span></div>${extra}</div>`;
+      if (d.off) return `<div class="day off">${head()}<div class="off-msg"><span>Not cooking</span><button class="btn" data-off="${i}">Plan a dinner</button></div></div>`;
+      const row = (r, slot) => `<div class="dish"><button class="dish-main" data-recipe="${r.id}"><span class="n">${esc(r.name)}${r.spicy >= 2 ? ' <span class="pedas" title="Pedas">•</span>' : ""}</span><span class="e">${esc(r.en)}</span></button><span class="c">${rm(dishCost(r))}</span><button class="icon-btn" aria-label="Swap ${esc(r.name)}" data-swap="${i}:${slot}">${ic("swap", 18)}</button></div>`;
       const body = d.onepot ? row(RX[d.onepot], "onepot") : row(RX[d.lauk], "lauk") + row(RX[d.sayur], "sayur");
       const cooked = S.flow.cooked[i];
-      const isNext = stage === 2 && i === nextCookDay();
-      return `<div class="day ${isNext ? "today" : ""}">${dl}<div class="dishes">${body}</div><div class="day-foot"><span>${d.onepot ? "One-pot" : "With rice"}</span><span class="acts">${cooked ? `<span class="tag ok">${ic("check", 12)}Cooked</span>` : `<button class="link go" data-cookday="${i}">${ic("flame", 14)}Cook</button><button class="link" data-off="${i}">Skip</button>`}</span></div></div>`;
+      const isNext = stage > 0 && i === di;
+      const tag = cooked ? `<span class="tag ok">${ic("check", 12)}Cooked</span>` : isNext ? `<span class="tag ok">Next up</span>` : "";
+      return `<div class="day ${isNext ? "today" : ""}">${head(tag)}<div class="dishes">${body}</div><div class="day-foot"><span>${d.onepot ? "One-pot" : "With rice"}</span><span class="acts">${cooked ? "" : `<button class="link go" data-cookday="${i}">${ic("flame", 15)}Cook</button><button class="link" data-off="${i}">Skip</button>`}</span></div></div>`;
     }).join("");
     return `<div class="enter">
       <h1>Week of ${fmtDate(weekStart())}</h1>
-      <p class="sub">${t.nights} dinners for ${S.settings.people}, priced at ${esc(priceLabel())}</p>
-      <div class="flow" aria-label="Progress">${steps}</div>
-      ${next}
-      <div class="receipt-wrap"><div class="receipt">
-        <div class="r-head"><span>MASAKJE · ${esc(S.settings.postcode)} ${esc((ctx().loc || { place: "" }).place.toUpperCase())}</span><span>${t.plates} plates</span></div>
-        <div class="lead-row"><span class="l">Groceries to buy</span><span class="dots"></span><span class="v">${rm(t.fresh)}</span></div>
-        ${t.pantryBuy ? `<div class="lead-row"><span class="l">Pantry restock</span><span class="dots"></span><span class="v">${rm(t.pantryBuy)}</span></div>` : ""}
-        <div class="lead-row"><span class="l">Pantry used, already at home</span><span class="dots"></span><span class="v">${rm(t.pantryUse)}</span></div>
-        <hr class="r-rule">
-        <div class="r-big"><span class="l">To spend this week</span><span class="v">${rm(t.toBuy)}</span></div>
-        <div class="meter ${diff < 0 ? "over" : ""}" role="img" aria-label="${rm(t.toBuy)} of ${rm0(b)} budget"><div style="transform:scaleX(${pct.toFixed(3)})"></div></div>
-        <div class="budget ${diff < 0 ? "over" : ""}"><span>${diff >= 0 ? `<span class="num money-v">${rm(diff)}</span> left` : `<span class="num money-v">${rm(-diff)}</span> over budget`}</span><span>Budget <span class="num money-v">${rm0(b)}</span></span></div>
-      </div></div>
-      <div class="section-h"><h2>Dinners</h2><button class="btn" id="regen">${ic("swap")}New plan</button></div>
-      <div class="days">${days}</div>
+      <p class="sub">${t.nights} dinners for ${S.settings.people}</p>
+      <div class="week-grid">
+        <aside class="side"><div class="flow" aria-label="Progress">${steps}</div>${next}${summary}</aside>
+        <section class="week-main"><div class="section-h"><h2>Dinners</h2><button class="btn" id="regen">${ic("swap")}New plan</button></div><div class="days">${days}</div></section>
+      </div>
     </div>`;
   }
 
   function viewShop() {
     const t = totals(S.plan);
     const fresh = t.rows.filter(r => !r.pantry), pantry = t.rows.filter(r => r.pantry);
+    const needP = pantry.filter(r => S.pantryNeed[r.k]);
+    const all = [...fresh.filter(r => r.buy), ...needP];
+    const got = all.filter(r => S.bought[r.k]).length;
+    const spent = all.filter(r => S.bought[r.k]).reduce((s, r) => s + r.cost, 0);
     const groups = {};
-    for (const r of fresh) (groups[r.it.aisle] = groups[r.it.aisle] || []).push(r);
-    const order = ["Meat & poultry", "Fish & seafood", "Eggs & tofu", "Vegetables", "Onion, garlic & chili", "Noodles", "Dry goods", "Pantry"];
+    const covered = fresh.filter(r => !r.buy);
+    for (const r of [...fresh.filter(r => r.buy), ...needP]) (groups[r.it.aisle] = groups[r.it.aisle] || []).push(r);
+    const order = ["Vegetables", "Onion, garlic & chili", "Meat & poultry", "Fish & seafood", "Eggs & tofu", "Noodles", "Dry goods", "Pantry", "Spices"];
     const srcTag = s => `<span class="tag ${s === "This shop" ? "ok" : ""}">${s}</span>`;
     const row = r => {
       const done = !!S.bought[r.k];
-      return `<label class="item ${done ? "done" : ""}"><input type="checkbox" id="b-${r.k}" data-bought="${r.k}" ${done ? "checked" : ""}><div><div class="n">${esc(r.it.name)}</div><div class="q"><span class="num">${qty(r.buy, r.it.unit, r.k)}</span><span>· ${unitPrice(r.k)}</span>${srcTag(r.src)}</div>${r.buy - r.q > r.it.pack * 0.25 && r.it.unit !== "pc" ? `<div class="q">Recipes use ${qty(r.q, r.it.unit, r.k)}, rest keeps for next week</div>` : ""}</div><span class="p">${rm(r.cost)}</span></label>`;
+      return `<label class="item ${done ? "done" : ""}"><input type="checkbox" id="b-${r.k}" data-bought="${r.k}" ${done ? "checked" : ""}><div><div class="n">${esc(r.it.name)}</div><div class="q"><b style="font-weight:600;color:var(--fg2)">${qty(r.buy, r.it.unit, r.k)}</b><span>· ${unitPrice(r.k)}</span>${srcTag(r.src)}</div>${r.have ? `<div class="q">${qty(r.have, r.it.unit, r.k)} already in your ${S.kitchen[r.k] ? S.kitchen[r.k].where : "kitchen"}</div>` : ""}${r.buy - r.need > r.it.pack * 0.25 && r.it.unit !== "pc" ? `<div class="q">Recipes use ${qty(r.need, r.it.unit, r.k)}, the rest goes to your fridge</div>` : ""}</div><span class="p">${rm(r.cost)}</span></label>`;
     };
-    const left = fresh.filter(r => !S.bought[r.k]).length;
-    const sec = order.filter(a => groups[a]).map(a => `<div class="group"><h3><span>${a}</span><span class="num">${rm(groups[a].reduce((s, r) => s + r.cost, 0))}</span></h3><div class="list">${groups[a].sort((x, y) => y.cost - x.cost).map(row).join("")}</div></div>`).join("");
-    const prow = r => `<label class="item"><input type="checkbox" id="p-${r.k}" data-need="${r.k}" ${S.pantryNeed[r.k] ? "checked" : ""}><div><div class="n">${esc(r.it.name)}</div><div class="q"><span>uses ${qty(r.q, r.it.unit, r.k)}</span><span>· ${unitPrice(r.k)}</span>${srcTag(r.src)}</div></div><span class="p">${S.pantryNeed[r.k] ? rm(r.cost) : '<span style="color:var(--muted)">have</span>'}</span></label>`;
+    const sec = order.filter(a => groups[a]).map(a => {
+      const g = groups[a].sort((x, y) => (!!S.bought[x.k] - !!S.bought[y.k]) || y.cost - x.cost);
+      const gd = g.filter(r => S.bought[r.k]).length;
+      return `<div class="group"><h3><span>${a}</span><span>${gd}/${g.length}</span></h3><div class="list">${g.map(row).join("")}</div></div>`;
+    }).join("");
+    const prow = r => `<label class="item"><input type="checkbox" id="p-${r.k}" data-need="${r.k}" ${S.pantryNeed[r.k] ? "checked" : ""}><div><div class="n">${esc(r.it.name)}</div><div class="q"><span>uses ${qty(r.q, r.it.unit, r.k)}</span><span>· ${unitPrice(r.k)}</span></div></div><span class="p">${S.pantryNeed[r.k] ? "Need" : '<span style="color:var(--muted)">Have</span>'}</span></label>`;
     const lockNote = !S.flow.locked ? `<div class="tip">${ic("info")}<div>This list follows your current plan. <button class="link" id="lock">Lock the plan</button> so it stops changing.</div></div>` : "";
+    const pct = all.length ? got / all.length : 0;
     return `<div class="enter">
       <h1>Shopping list</h1>
-      <p class="sub">${fresh.length} items, rounded up to what shops sell. Prices from ${esc(priceLabel())}</p>
+      <p class="sub">Prices from ${esc(priceLabel())}. Rounded up to what shops sell.</p>
       ${lockNote}
-      <div class="group"><h3><span>Pantry check · tick what you need to buy</span></h3><div class="list">${pantry.sort((a, b) => a.it.name.localeCompare(b.it.name)).map(prow).join("")}</div></div>
-      ${sec}
-      <div class="totals"><div><div class="k">${left ? `${left} left to buy` : "All bought"}</div><div class="v">${rm(t.toBuy)}</div></div><button class="btn primary" id="shopped" ${S.flow.shopped ? "disabled" : ""}>${S.flow.shopped ? "Shopping done" : "Done shopping"}</button></div>
-      <p class="fine">Each price is the shop's unit price (per kg, per 10 eggs, per bottle) times what you actually buy. This shop = its latest PriceCatcher price. Within N km = median of at least 3 shops that close to your postcode. State and Malaysia = wider medians. Estimate = PriceCatcher does not track it. Prices are estimates, not quotes.</p>
+      <div class="summary" style="margin-bottom:24px">
+        <div style="display:flex;justify-content:space-between;gap:12px;align-items:baseline"><div class="k"><b style="color:var(--fg);font-size:18px">${got} of ${all.length}</b> items bought</div><div class="k">${rm(spent)} of ${rm(t.toBuy)}</div></div>
+        <div class="meter" style="margin-top:12px" role="progressbar" aria-valuemin="0" aria-valuemax="${all.length}" aria-valuenow="${got}" aria-label="Items bought"><div style="transform:scaleX(${pct.toFixed(3)})"></div></div>
+      </div>
+      <details class="group" ${S.flow.locked ? "" : "open"}><summary style="cursor:pointer;font-size:14px;font-weight:600;color:var(--fg2);margin-bottom:8px">Before you go: pantry check (${needP.length} to buy)</summary><div class="list">${pantry.sort((a, b) => a.it.name.localeCompare(b.it.name)).map(prow).join("")}</div></details>
+      ${covered.length ? `<div class="tip">${ic("fridge")}<div><b>Already at home, not on the list:</b> ${covered.map(r => esc(r.it.name)).join(", ")}</div></div>` : ""}
+      <div class="groups">${sec}</div>
+      <div class="totals"><div><div class="k">${all.length - got ? `${all.length - got} left to buy` : "Everything bought"}</div><div class="v">${rm(t.toBuy)}</div></div><button class="btn primary" id="shopped" ${S.flow.shopped ? "disabled" : ""}>${S.flow.shopped ? "Shopping done" : "Done shopping"}</button></div>
+      <p class="fine">Each price is the shop's unit price (per kg, per 10 eggs, per bottle) times what you actually buy. This shop = its latest PriceCatcher price. Within N km = typical price of at least 3 shops that close to your postcode. Chain estimate = nearby price adjusted by that chain's price level. Estimate = PriceCatcher does not track it.</p>
+    </div>`;
+  }
+
+  function viewKitchen() {
+    const K = Object.entries(S.kitchen);
+    const q = (S.kq || "").trim().toLowerCase();
+    const adds = q ? Object.entries(ING).filter(([k, it]) => !S.kitchen[k] && it.name.toLowerCase().includes(q)).slice(0, 8) : [];
+    const row = ([k, v]) => { const it = ING[k];
+      return `<div class="item" style="grid-template-columns:1fr auto auto"><div><div class="n">${esc(it.name)}${v.soon ? ' <span class="tag ok">Use soon</span>' : ""}${v.leftover ? ' <span class="tag">Leftover</span>' : ""}</div>
+        <div class="q"><button class="link" style="font-weight:500" data-kmove="${k}">Move to ${v.where === "fridge" ? "freezer" : "fridge"}</button><button class="link" style="font-weight:500" data-ksoon="${k}">${v.soon ? "Not urgent" : "Use soon"}</button></div></div>
+        <label style="display:flex;align-items:center;gap:6px"><input class="inp" id="kq-${k}" data-kqty="${k}" type="number" inputmode="decimal" min="0" value="${Math.round(v.q)}" style="width:84px;height:40px;padding:0 10px;text-align:right" aria-label="Amount of ${esc(it.name)}"><span class="q" style="margin:0">${it.unit === "pc" ? "pcs" : it.unit}</span></label>
+        <button class="icon-btn" data-kdel="${k}" aria-label="Remove ${esc(it.name)}">${ic("trash", 18)}</button></div>`; };
+    const sec = where => { const L = K.filter(([, v]) => v.where === where); return `<div class="group"><h3><span>${where === "fridge" ? "Fridge" : "Freezer"}</span><span>${L.length}</span></h3>${L.length ? `<div class="list">${L.map(row).join("")}</div>` : `<div class="list"><div class="item" style="grid-template-columns:1fr;color:var(--muted)">Nothing here yet</div></div>`}</div>`; };
+    const fresh = K.filter(([k]) => !ING[k].pantry).map(([k]) => k);
+    const can = RECIPES.filter(allowed).map(r => ({ r, n: r.ing.filter(([k]) => fresh.includes(k)).length })).filter(x => x.n).sort((a, b) => b.n - a.n || a.r.mins - b.r.mins).slice(0, 6);
+    return `<div class="enter narrow">
+      <h1>Fridge & freezer</h1>
+      <p class="sub">What you have at home. Your plan uses these first and your shopping list skips them.</p>
+      <div class="field"><div class="search-wrap">${ic("plus")}<input class="search" id="kq" type="search" placeholder="Add an item, e.g. chicken" value="${esc(S.kq || "")}" aria-label="Add an item"></div>
+        ${adds.length ? `<div class="shops">${adds.map(([k, it]) => `<button class="shop" style="grid-template-columns:1fr auto;width:100%;background:none;border:0;border-top:1px solid var(--line);text-align:left" data-kadd="${k}"><span class="n">${esc(it.name)}</span><span class="tag ok">${ic("plus", 12)}Add ${qty(it.pack, it.unit, k)}</span></button>`).join("")}</div>` : ""}</div>
+      ${sec("fridge")}${sec("freezer")}
+      ${can.length ? `<div class="group"><h3><span>Dishes that use what you have</span></h3><div class="rlist">${can.map(({ r, n }) => `<button class="rrow" data-recipe="${r.id}"><div><div class="n">${esc(r.name)}</div><div class="e">Uses ${n} of your items</div></div><div class="m">${r.mins} min</div></button>`).join("")}</div></div>
+      <button class="btn primary big" id="replanK">${ic("swap")}Replan the week around these</button>` : ""}
+      <p class="fine">After you finish shopping, the unused part of each pack (say 470 g of a 1 kg pack of beef) is added here automatically. Cooking a planned dinner takes out what came from here.</p>
     </div>`;
   }
 
@@ -590,14 +696,29 @@ const DATA = /*__DATA__*/null;
   function locationBlock() {
     const s = S.settings, c = ctx(), loc = c.loc;
     const place = !/^\d{5}$/.test(s.postcode) ? `<span class="pc-place">Enter a 5-digit postcode</span>` : loc ? `<span class="pc-place">${esc(loc.place)}${loc.exact ? "" : " area"}</span>` : `<span class="pc-place bad">Postcode not found</span>`;
-    const near = c.near.slice(0, 8);
+    if (!loc) return `<div class="field"><label for="postcode">Your postcode</label><div class="pc-row"><input class="inp" id="postcode" inputmode="numeric" maxlength="5" autocomplete="postal-code" value="${esc(s.postcode)}">${place}</div></div>`;
+    const q = (S.shopQ || "").trim().toLowerCase();
+    const pool = q ? PR.shops.map((sh, i) => ({ i, s: sh, d: km(loc.lat, loc.lng, sh[2], sh[3]) })).filter(x => x.s[0].toLowerCase().includes(q)).sort((a, b) => a.d - b.d).slice(0, 10)
+                   : c.near.slice(0, S.nearN || 8);
+    const kmTxt = x => x.d < 1 ? "<1 km" : `${precisionNote(x.s) ? "~" : ""}${x.d < 10 ? x.d.toFixed(1) : Math.round(x.d)} km`;
     const ring = c.near.filter(x => x.d <= 5).length;
-    const list = loc ? `<div class="shops" role="radiogroup" aria-label="Where you shop">
-        <label class="shop"><input type="radio" name="shop" value="-1" ${s.shop < 0 ? "checked" : ""}><div><div class="n">Any shop near me</div><div class="q">Typical price across ${ring >= MIN_SHOPS ? `${ring} shops within 5 km` : "the nearest shops"}</div></div><span class="km"></span></label>
-        ${near.map(x => `<label class="shop"><input type="radio" name="shop" value="${x.i}" ${s.shop === x.i ? "checked" : ""}><div><div class="n">${esc(shopName(x.s))}</div><div class="q">${esc(x.s[1])}${precisionNote(x.s) ? " · " + precisionNote(x.s) : ""}</div></div><span class="km">${x.d < 1 ? "<1" : (precisionNote(x.s) ? "~" : "") + (x.d < 10 ? x.d.toFixed(1) : Math.round(x.d))} km</span></label>`).join("")}
-      </div>${near.length ? "" : `<div class="hint">No PriceCatcher shops within 20 km. State prices will be used.</div>`}` : "";
+    const cu = s.custom, cuChain = cu && chainOf(cu.name);
+    const rows = [
+      `<label class="shop"><input type="radio" name="shop" value="-1" ${s.shop === -1 ? "checked" : ""}><div><div class="n">Any shop near me</div><div class="q">Typical price across ${ring >= MIN_SHOPS ? `${ring} shops within 5 km` : "the nearest shops"}</div></div><span class="km"></span></label>`,
+      cu ? `<label class="shop"><input type="radio" name="shop" value="-2" ${s.shop === -2 ? "checked" : ""}><div><div class="n">${esc(cu.name)}</div><div class="q">Your shop · ${cuChain ? `${cuChain.name} prices are ${pctLabel(cuChain.idx)} average` : "priced like shops near you"}</div></div><span class="km">yours</span></label>` : "",
+      ...pool.map(x => `<label class="shop"><input type="radio" name="shop" value="${x.i}" ${s.shop === x.i ? "checked" : ""}><div><div class="n">${esc(shopName(x.s))}</div><div class="q">${esc(x.s[1])}${precisionNote(x.s) ? " · approx. location" : ""}</div></div><span class="km">${kmTxt(x)}</span></label>`),
+    ].join("");
+    const draft = S.shopDraft || "", dChain = chainOf(draft);
+    const add = S.adding ? `<div class="addshop"><label for="newshop" style="font-weight:600;font-size:15px">Your shop's name</label>
+        <div class="row"><input class="inp" id="newshop" placeholder="e.g. Jaya Grocer Bukit Jelutong" value="${esc(draft)}" style="background:var(--card)"><button class="btn primary" id="saveshop" style="height:48px" ${draft.trim().length < 3 ? "disabled" : ""}>Add</button></div>
+        <div class="chainmsg">${draft.trim().length < 3 ? "We'll use prices from shops near your postcode." : dChain ? `Recognised <b>${dChain.name}</b>. KPDN surveys ${dChain.n} of its branches; they are ${pctLabel(dChain.idx)} average, so we'll adjust nearby prices by that.` : "Not a chain we have data for. We'll use typical prices from shops near you."}</div></div>` : "";
     return `<div class="field"><label for="postcode">Your postcode</label><div class="pc-row"><input class="inp" id="postcode" inputmode="numeric" maxlength="5" autocomplete="postal-code" value="${esc(s.postcode)}">${place}</div></div>
-      ${loc ? `<div class="field"><span class="lbl">Where you usually shop</span>${list}<div class="hint">Shops that report prices to KPDN PriceCatcher, nearest first</div></div>` : ""}`;
+      <div class="field"><span class="lbl">Where you usually shop</span>
+        <div class="search-wrap">${ic("search")}<input class="search" id="shopq" type="search" placeholder="Search shops by name" value="${esc(S.shopQ || "")}" aria-label="Search shops"></div>
+        <div class="shops" role="radiogroup" aria-label="Where you shop">${rows}${q && !pool.length ? `<div class="shop"><span></span><div class="q">No surveyed shop matches "${esc(S.shopQ)}"</div><span></span></div>` : ""}</div>
+        <div class="shop-more">${!q && c.near.length > (S.nearN || 8) ? `<button class="link" id="moreshops">Show more nearby</button>` : ""}${S.adding ? "" : `<button class="link" id="addshop">My shop isn't listed</button>`}</div>
+        ${add}
+        <div class="hint">Listed shops report prices to KPDN PriceCatcher, nearest first. KPDN surveys about 2,100 shops nationwide, so many branches are missing. Add yours and we'll estimate.</div></div>`;
   }
   function householdBlock() {
     const s = S.settings;
@@ -623,7 +744,7 @@ const DATA = /*__DATA__*/null;
     const heads = [["Where do you shop?", "We price your list with real unit prices from shops near you"], ["Who's eating?", "Portions and nights to plan for"], ["Food preferences", "Allergies and things your family won't eat"], ["Your budget", "We'll plan dinners that fit it"]];
     const body = [locationBlock, householdBlock, prefsBlock, budgetBlock][i]();
     const canNext = i !== 0 || !!ctx().loc;
-    return `<div class="enter">
+    return `<div class="enter narrow" style="margin:0 auto">
       <div class="ob-bar">${[0, 1, 2, 3].map(k => `<i class="${k <= i ? "on" : ""}"></i>`).join("")}</div>
       <div class="ob-step">Step ${i + 1} of 4</div>
       <h1>${heads[i][0]}</h1><p class="sub">${heads[i][1]}</p>
@@ -634,7 +755,7 @@ const DATA = /*__DATA__*/null;
   }
 
   function viewSetup() {
-    return `<div class="enter">
+    return `<div class="enter narrow">
       <h1>Settings</h1>
       <p class="sub">Changes apply when you replan</p>
       ${locationBlock()}${householdBlock()}<h2 style="font-size:17px;font-weight:500;margin:28px 0 12px">Food preferences</h2>${prefsBlock()}<div style="height:20px"></div>${budgetBlock()}
@@ -668,12 +789,14 @@ const DATA = /*__DATA__*/null;
   let wakeLock = null;
   function startCooking(queue, day) {
     closeSheet();
-    C = { queue, qi: 0, step: -1, day, timers: {}, ticking: null, prepped: {} };
+    C = { queue, qi: 0, step: -1, day, timers: {}, ticking: null, prepped: {}, started: null };
+    C.clock = setInterval(() => { const el = document.getElementById("elapsed"); if (el && C && C.started) el.textContent = fmtClock(Math.floor((Date.now() - C.started) / 1000)); }, 1000);
     try { navigator.wakeLock && navigator.wakeLock.request("screen").then(l => { wakeLock = l; }).catch(() => {}); } catch (e) {}
     renderCook();
   }
   function stopCooking() {
     if (C && C.ticking) clearInterval(C.ticking);
+    if (C && C.clock) clearInterval(C.clock);
     C = null; document.getElementById("cookRoot").innerHTML = "";
     try { wakeLock && wakeLock.release(); } catch (e) {} wakeLock = null;
     document.body.style.overflow = "";
@@ -697,14 +820,19 @@ const DATA = /*__DATA__*/null;
     document.body.style.overflow = "hidden";
     const r = RX[C.queue[C.qi]], n = S.settings.people, total = r.guide.length;
     const multi = C.queue.length > 1 ? ` · dish ${C.qi + 1} of ${C.queue.length}` : "";
+    const est = C.queue.reduce((a, id) => a + RX[id].mins, 0);
+    const elapsed = C.started ? `<span class="tag ok" style="height:28px;font-size:14px;padding:0 10px">${ic("clock", 14)}<span id="elapsed">${fmtClock(Math.floor((Date.now() - C.started) / 1000))}</span>&nbsp;/ ~${est} min</span>` : `<span class="tag">~${est} min total</span>`;
     const segs = `<div class="segs">${[-1, ...r.guide.map((_, i) => i)].map(i => `<i class="${i <= C.step ? "on" : ""}"></i>`).join("")}</div>`;
     let body, foot;
     if (C.step === -1) {
       const rice = C.qi === 0 && C.day != null && !S.plan.days[C.day].onepot
         ? `<div class="tip">${ic("info")}<div>Start the rice first: <b class="num">${qty(RICE_PER_PERSON * n, "g", "rice")}</b> rice for ${n}. It will be ready when the lauk is.</div></div>` : "";
+      const ready = r.ing.filter(([k]) => C.prepped[k]).length;
       body = `<div class="step-no">Get ready</div><h2 class="step-t">Gather these for ${n} ${n === 1 ? "person" : "people"}</h2>${rice}
+        <div style="display:flex;justify-content:space-between;font-size:14px;color:var(--fg2);margin-bottom:8px"><span><b style="color:var(--fg)">${ready} of ${r.ing.length}</b> ready</span>${ready === r.ing.length ? '<span style="color:var(--pos);font-weight:600">All set</span>' : ""}</div>
+        <div class="meter" style="margin-bottom:12px" role="progressbar" aria-valuemin="0" aria-valuemax="${r.ing.length}" aria-valuenow="${ready}" aria-label="Ingredients ready"><div style="transform:scaleX(${(ready / r.ing.length).toFixed(3)})"></div></div>
         <div class="prep">${r.ing.map(([k, q]) => `<label><input type="checkbox" data-prep="${k}" ${C.prepped[k] ? "checked" : ""}><span>${esc(ING[k].name)}</span><span class="q">${qty(q * scale(), ING[k].unit, k)}</span></label>`).join("")}</div>`;
-      foot = `<button class="btn" id="ckBack">${C.qi > 0 ? "Back" : "Close"}</button><button class="btn primary" id="ckNext">Start step 1</button>`;
+      foot = `<button class="btn" id="ckBack">${C.qi > 0 ? "Back" : "Close"}</button><button class="btn primary" id="ckNext">${C.started ? "Start step 1" : `${ic("play")}Start cooking`}</button>`;
     } else if (C.step < total) {
       const st = r.guide[C.step];
       const need = st.ing.length ? `<div class="need"><span class="lbl">You need</span><div class="need-list">${st.ing.map(k => { const q = r.ing.find(x => x[0] === k)[1]; return `<span class="need-chip">${esc(ING[k].name)} <b>${qty(q * scale(), ING[k].unit, k)}</b></span>`; }).join("")}</div></div>` : "";
@@ -717,11 +845,12 @@ const DATA = /*__DATA__*/null;
       foot = `<button class="btn" id="ckBack">Back</button><button class="btn primary" id="ckNext">${C.step + 1 < total ? "Next" : "Finish"}</button>`;
     } else {
       const more = C.qi + 1 < C.queue.length;
-      body = `<div class="step-no">${ic("check")}</div><div class="done-t">${esc(r.name)} is ready</div><p class="sub">${more ? `Next: ${esc(RX[C.queue[C.qi + 1]].name)}` : C.day != null ? "Dinner is done. Selamat makan." : "Selamat makan."}</p>`;
+      const took = C.started ? Math.round((Date.now() - C.started) / 60000) : 0;
+      body = `<div class="step-no">${ic("check")}</div><div class="done-t">${esc(r.name)} is ready</div>${C.started ? `<p class="sub">Cooking time so far: ${took} min</p>` : ""}<p class="sub">${more ? `Next: ${esc(RX[C.queue[C.qi + 1]].name)}` : C.day != null ? "Dinner is done. Selamat makan." : "Selamat makan."}</p>`;
       foot = `<button class="btn" id="ckBack">Back</button><button class="btn primary" id="ckNext">${more ? `Cook ${esc(RX[C.queue[C.qi + 1]].name)}` : "Finish"}</button>`;
     }
     root.innerHTML = `<div class="cook" role="dialog" aria-modal="true" aria-label="Cooking ${esc(r.name)}">
-      <div class="cook-in"><div class="cook-top"><div><div class="n">${esc(r.name)}</div><div class="s">${r.mins} min${multi}</div></div><button class="icon-btn" id="ckClose" aria-label="Close cooking mode">${ic("x", 18)}</button></div>${segs}</div>
+      <div class="cook-in"><div class="cook-top"><div style="min-width:0"><div class="n">${esc(r.name)}</div><div class="s" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:4px">${elapsed}<span>${r.mins} min dish${multi}</span></div></div><button class="icon-btn" id="ckClose" aria-label="Close cooking mode">${ic("x", 18)}</button></div>${segs}</div>
       <div class="cook-body"><div class="cook-in enter">${body}</div></div>
       <div class="cook-in"><div class="cook-foot">${foot}</div></div>
     </div>`;
@@ -734,16 +863,16 @@ const DATA = /*__DATA__*/null;
       renderCook();
     };
     $("ckNext").onclick = () => {
-      if (C.step < total) { C.step++; return renderCook(); }
+      if (C.step < total) { if (!C.started) C.started = Date.now(); C.step++; return renderCook(); }
       if (C.qi + 1 < C.queue.length) { C.qi++; C.step = -1; return renderCook(); }
-      if (C.day != null) { S.flow.cooked[C.day] = true; save(); }
+      if (C.day != null) { S.flow.cooked[C.day] = true; deductCooked(C.day); save(); }
       stopCooking(); render();
     };
     const t = C.timers[timerKey()], st = r.guide[C.step];
     if ($("tStart")) $("tStart").onclick = () => { const cur = C.timers[timerKey()] || { left: st.sec }; C.timers[timerKey()] = { left: cur.left, end: Date.now() + cur.left * 1000, running: true }; if (!C.ticking) C.ticking = setInterval(tick, 250); renderCook(); };
     if ($("tPause")) $("tPause").onclick = () => { t.running = false; renderCook(); };
     if ($("tReset")) $("tReset").onclick = () => { delete C.timers[timerKey()]; renderCook(); };
-    root.querySelectorAll("[data-prep]").forEach(el => el.onchange = () => { C.prepped[el.dataset.prep] = el.checked; });
+    root.querySelectorAll("[data-prep]").forEach(el => el.onchange = () => { C.prepped[el.dataset.prep] = el.checked; const y = root.querySelector(".cook-body").scrollTop; renderCook(); root.querySelector(".cook-body").scrollTop = y; });
     $("ckNext").focus();
   }
 
@@ -753,7 +882,7 @@ const DATA = /*__DATA__*/null;
   }
 
   // ---------- render ----------
-  const TABS = [["week", "Week", "week"], ["shop", "Shop", "list"], ["recipes", "Recipes", "book"], ["setup", "Settings", "sliders"]];
+  const TABS = [["week", "Week", "week"], ["shop", "Shop", "list"], ["kitchen", "Kitchen", "fridge"], ["recipes", "Recipes", "book"], ["setup", "Settings", "sliders"]];
   function render() {
     const v = document.getElementById("view");
     const ob = !S.onboarded;
@@ -762,14 +891,14 @@ const DATA = /*__DATA__*/null;
     document.getElementById("where").hidden = ob;
     if (ob) { v.innerHTML = viewOnboarding(); return; }
     if (!S.plan || S.plan.days.length !== 7) newWeek();
-    v.innerHTML = S.tab === "week" ? viewWeek() : S.tab === "shop" ? viewShop() : S.tab === "recipes" ? viewRecipes() : viewSetup();
+    v.innerHTML = S.tab === "week" ? viewWeek() : S.tab === "shop" ? viewShop() : S.tab === "recipes" ? viewRecipes() : S.tab === "kitchen" ? viewKitchen() : viewSetup();
     document.getElementById("tabs").innerHTML = TABS.map(([k, l, i]) => `<button class="tab" data-tab="${k}" ${S.tab === k ? 'aria-current="page"' : ""}>${ic(i, 20)}<span>${l}</span></button>`).join("");
     document.getElementById("where").innerHTML = `${ic("pin", 14)}<span>${esc(S.settings.postcode)} · ${S.settings.people} ${S.settings.people === 1 ? "person" : "people"}</span>`;
   }
   function go(tab) { S.tab = tab; render(); window.scrollTo({ top: 0 }); }
 
   document.addEventListener("click", e => {
-    const el = e.target.closest("[data-tab],[data-go],[data-swap],[data-off],[data-recipe],[data-filter],[data-people],[data-night],[data-avoid],[data-allergy],[data-dislike],[data-cookday],[data-cookone],#regen,#replan,#where,#lock,#shopped,#newweek,#obNext,#obBack");
+    const el = e.target.closest("[data-tab],[data-go],[data-swap],[data-off],[data-recipe],[data-filter],[data-people],[data-night],[data-avoid],[data-allergy],[data-dislike],[data-cookday],[data-cookone],#regen,#replan,#where,#lock,#shopped,#newweek,#obNext,#obBack,#moreshops,#addshop,#saveshop,#replanK,[data-kadd],[data-kdel],[data-kmove],[data-ksoon]");
     if (!el) return;
     const s = S.settings;
     if (el.dataset.tab) return go(el.dataset.tab);
@@ -788,8 +917,16 @@ const DATA = /*__DATA__*/null;
     if (el.dataset.dislike) { s.dislike[el.dataset.dislike] = !s.dislike[el.dataset.dislike]; return render(); }
     if (el.id === "regen") { S.plan = makePlan(); S.flow.locked = false; S.flow.shopped = false; save(); return render(); }
     if (el.id === "lock") { S.flow.locked = true; save(); return go("shop"); }
-    if (el.id === "shopped") { S.flow.locked = true; S.flow.shopped = true; save(); return go("week"); }
+    if (el.id === "shopped") { finishShopping(); toast("Leftover pack amounts added to your kitchen"); return go("week"); }
     if (el.id === "newweek" || el.id === "replan") { newWeek(); return go("week"); }
+    if (el.dataset.kadd) { addKitchen(el.dataset.kadd, ING[el.dataset.kadd].pack, false); S.kq = ""; save(); return render(); }
+    if (el.dataset.kdel) { delete S.kitchen[el.dataset.kdel]; save(); return render(); }
+    if (el.dataset.kmove) { const v = S.kitchen[el.dataset.kmove]; v.where = v.where === "fridge" ? "freezer" : "fridge"; save(); return render(); }
+    if (el.dataset.ksoon) { const v = S.kitchen[el.dataset.ksoon]; v.soon = !v.soon; save(); return render(); }
+    if (el.id === "replanK") { newWeek(); toast("New plan built around your fridge"); return go("week"); }
+    if (el.id === "moreshops") { S.nearN = (S.nearN || 8) + 10; return render(); }
+    if (el.id === "addshop") { S.adding = true; render(); const n = document.getElementById("newshop"); n && n.focus(); return; }
+    if (el.id === "saveshop") { const name = (S.shopDraft || "").trim(); if (name.length < 3) return; s.custom = { name }; s.shop = -2; S.adding = false; S.shopDraft = ""; save(); return render(); }
     if (el.id === "obBack") { S.ob = Math.max(0, S.ob - 1); render(); return window.scrollTo({ top: 0 }); }
     if (el.id === "obNext") {
       if (S.ob < 3) { S.ob++; render(); return window.scrollTo({ top: 0 }); }
@@ -801,11 +938,16 @@ const DATA = /*__DATA__*/null;
     if (t.dataset.bought) { S.bought[t.dataset.bought] = t.checked; save(); return render(); }
     if (t.dataset.need) { S.pantryNeed[t.dataset.need] = t.checked; save(); return render(); }
     if (t.name === "shop") { s.shop = +t.value; save(); return render(); }
+    if (t.dataset.kqty) { const v = +t.value; if (v > 0) S.kitchen[t.dataset.kqty].q = v; else delete S.kitchen[t.dataset.kqty]; save(); return render(); }
     if (t.id === "budget") { s.budget = Math.max(20, +t.value || DEFAULTS.budget); save(); }
   });
   document.addEventListener("input", e => {
     const t = e.target;
     if (t.id === "q") { S.q = t.value; const pos = t.selectionStart; render(); const q = document.getElementById("q"); q.focus(); q.setSelectionRange(pos, pos); }
+    if (t.id === "shopq" || t.id === "newshop" || t.id === "kq") {
+      if (t.id === "shopq") S.shopQ = t.value; else if (t.id === "kq") S.kq = t.value; else S.shopDraft = t.value;
+      const id = t.id, pos = t.selectionStart; render(); const el = document.getElementById(id); el.focus(); el.setSelectionRange(pos, pos); return;
+    }
     if (t.id === "postcode") {
       const v = t.value.replace(/\D/g, "").slice(0, 5);
       if (v !== S.settings.postcode) { S.settings.postcode = v; S.settings.shop = -1; save(); render(); const p = document.getElementById("postcode"); p.focus(); p.setSelectionRange(v.length, v.length); }

@@ -45,6 +45,16 @@ ALIASES = {
     "kurma_powder": r"kurma", "soup_spice": r"soup spice", "black_pepper": r"pepper", "white_pepper": r"pepper",
     "cinnamon": r"cinnamon|whole spices", "star_anise": r"star anise|whole spices", "fennel": r"fennel",
 }
+# Chains: name, regex on PriceCatcher shop name. Price level = median of
+# (shop price / state median) over every item at every surveyed branch.
+CHAINS = [
+    ("Jaya Grocer", r"JAYA GROCER"), ("Village Grocer", r"VILLAGE GROCER"),
+    ("TMG", r"\bTMG\b|TUNAS MANJA"), ("Lotus's", r"LOTUS|TESCO"), ("AEON", r"AEON|MAXVALU"),
+    ("Mydin", r"MYDIN"), ("Giant", r"\bGIANT\b"), ("99 Speedmart", r"99 ?SPEEDMART"),
+    ("Econsave", r"ECONSAVE"), ("NSK", r"\bNSK\b"), ("Hero", r"\bHERO\b"), ("The Store", r"THE STORE"),
+    ("Segi Fresh", r"SEGI FRESH"),
+]
+MIN_CHAIN_SHOPS = 5
 TIMER = re.compile(r"(?:(\d+)\s*to\s*)?(\d+(?:\.\d+)?)\s*(minutes?|hours?)", re.I)
 
 
@@ -77,6 +87,7 @@ def main():
         r["guide"] = guided_steps(r)
 
     state_names = sorted(index["states"])
+    data_state_medians = [pack(index["states"][st]["median"]) for st in state_names]
     shops = []
     for s in state_names:
         for d, dv in index["states"][s]["districts"].items():
@@ -89,6 +100,18 @@ def main():
                     continue
                 shops.append([sh["name"], sh["type"], g[0], g[1], g[2], state_names.index(s), d, pack(sh["prices"])])
 
+    import statistics
+    chains = []
+    for name, pat in CHAINS:
+        ratios, n = [], 0
+        for sh in shops:
+            if re.search(pat, sh[0].upper()):
+                n += 1
+                med = data_state_medians[sh[5]]
+                ratios += [v / med[i] for i, v in enumerate(sh[7]) if v and med[i]]
+        if n >= MIN_CHAIN_SHOPS:
+            chains.append([name, pat.replace("\\b", "\\b"), round(statistics.median(ratios), 3), n])
+
     data = {
         "ingredients": ingredients,
         "recipes": recipes,
@@ -97,7 +120,7 @@ def main():
                    "national": pack(index["national"]["median"]),
                    "states": state_names,
                    "stateMedian": [pack(index["states"][s]["median"]) for s in state_names],
-                   "shops": shops},
+                   "shops": shops, "chains": chains},
     }
     src = open(os.path.join(ROOT, "prototype", "src.html")).read()
     blob = json.dumps(data, separators=(",", ":"), ensure_ascii=False).replace("</", "<\\/")
