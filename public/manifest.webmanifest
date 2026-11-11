@@ -1,0 +1,10 @@
+{
+  "name": "MasakJe",
+  "short_name": "MasakJe",
+  "description": "Plan, shop and cook Malaysian home dinners together",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#c8420c",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}

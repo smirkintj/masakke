@@ -3,7 +3,14 @@
 Weekly dinner planner for Malaysian households of 2–4. It plans rice + lauk + sayur dinners,
 builds the shopping list, and prices it with real shop prices from KPDN PriceCatcher.
 
-**Status:** clickable prototype (`prototype/index.html`). The full PWA comes after feedback.
+**Status:** hosted app on Vercel (`public/index.html` + `api/`) with shared households; the claude.ai prototype (`prototype/index.html`) is the same page in local-only mode.
+
+## Households
+
+- Create a household → get a 6-digit PIN → family joins with PIN + their name.
+- Plan, shopping ticks (with who ticked), pantry and fridge sync between phones (~12 s, and on open).
+- Storage: Upstash Redis via Vercel Marketplace (`KV_REST_API_URL`, `KV_REST_API_TOKEN`). Device tokens are stored hashed. Wrong PINs: 10 per IP per 15 min.
+- Local: `npm run dev` (in-memory storage) → http://localhost:3000
 
 ## How it works
 

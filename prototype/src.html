@@ -96,7 +96,7 @@ h1 { font-size: 30px; line-height: 1.15; font-weight: 500; margin: 12px 0 4px; t
 /* days */
 .section-h { display: flex; justify-content: space-between; align-items: center; margin: 0 0 12px; gap: 12px; }
 .section-h h2 { font-size: 20px; font-weight: 500; margin: 0; }
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 16px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--fg); font-size: 15px; font-weight: 500; transition: background-color 150ms var(--ease), transform 120ms var(--ease); white-space: nowrap; }
+.btn { text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 16px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--fg); font-size: 15px; font-weight: 500; transition: background-color 150ms var(--ease), transform 120ms var(--ease); white-space: nowrap; }
 .btn:hover { background: var(--surface); }
 .btn:active { transform: scale(0.98); }
 .btn.primary { background: var(--accent); border-color: transparent; color: var(--accent-ink); }
@@ -204,6 +204,10 @@ h1 { font-size: 30px; line-height: 1.15; font-weight: 500; margin: 12px 0 4px; t
 .toggle button { height: 34px; min-width: 56px; padding: 0 12px; border: 0; border-radius: 9px; background: transparent; color: var(--fg2); font-size: 14px; font-weight: 500; transition: background-color 150ms var(--ease), color 150ms var(--ease); }
 .toggle button[aria-pressed="true"] { background: var(--card); color: var(--fg); box-shadow: 0 1px 2px var(--shadow); }
 .toggle button[data-pneed$=":1"][aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.pinbox { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-top: 8px; }
+.pinbox span { display: grid; place-items: center; height: 64px; border-radius: 12px; background: var(--accent-soft); color: var(--accent); font-size: 32px; font-weight: 500; }
+.inp.pin { font-size: 28px; letter-spacing: 0.3em; text-align: center; font-weight: 500; }
+.syncdot { font-size: 12px; color: var(--neg); margin-left: auto; margin-right: 8px; }
 .lblrow { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 10px; }
 .lblrow .lbl { font-size: 15px; font-weight: 500; }
 .lblrow .link { font-size: 14px; text-decoration: none; }
@@ -322,6 +326,7 @@ h1 { font-size: 30px; line-height: 1.15; font-weight: 500; margin: 12px 0 4px; t
 <div class="app" id="app">
   <header class="top">
     <button class="logo" id="logo" type="button" aria-label="MasakJe, go to Today"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11h18"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 4v3"/><path d="M8.5 5.5l1 2.2"/><path d="M15.5 5.5l-1 2.2"/></svg>MasakJe</button>
+    <span id="syncdot" class="syncdot" hidden title="Offline. Changes will sync when you're back online">Offline</span>
     <button class="where" id="where" type="button"></button>
   </header>
   <main id="view"></main>
@@ -393,7 +398,7 @@ const DATA = /*__DATA__*/null;
   let S = { settings: clone(DEFAULTS), plan: null, bought: {}, pantryNeed: {}, flow: { locked: false, shopped: false, cooked: {} }, kitchen: {},
     onboarded: false, ob: -1, guideSeen: false, tab: "week", filter: "all", q: "" };
   try { const raw = localStorage.getItem(STORE); if (raw) Object.assign(S, JSON.parse(raw), { tab: "week", ob: -1 }); } catch (e) {}
-  const save = () => { try { localStorage.setItem(STORE, JSON.stringify({ settings: S.settings, plan: S.plan, bought: S.bought, pantryNeed: S.pantryNeed, flow: S.flow, kitchen: S.kitchen, onboarded: S.onboarded, guideSeen: S.guideSeen })); } catch (e) {} };
+  const save = () => { if (typeof schedulePush === "function") schedulePush(); try { localStorage.setItem(STORE, JSON.stringify({ settings: S.settings, plan: S.plan, bought: S.bought, pantryNeed: S.pantryNeed, flow: S.flow, kitchen: S.kitchen, onboarded: S.onboarded, guideSeen: S.guideSeen })); } catch (e) {} };
 
   // ---------- location ----------
   function lookupPostcode(pc) {
@@ -833,7 +838,7 @@ const DATA = /*__DATA__*/null;
     const jgLine = r => r.src === "Jaya Grocer" ? `<div class="q"><a href="${esc(JG.items[r.k].url)}" target="_blank" rel="noopener" style="color:var(--fg2)">${esc(JG.items[r.k].title)} · RM ${JG.items[r.k].price.toFixed(2)}</a></div>` : "";
     const row = r => {
       const done = !!S.bought[r.k];
-      return `<label class="item ${done ? "done" : ""}"><input type="checkbox" id="b-${r.k}" data-bought="${r.k}" ${done ? "checked" : ""}><div><div class="n">${esc(r.it.name)}</div><div class="q"><b style="font-weight:600;color:var(--fg2)">${r.src === "Jaya Grocer" ? `${r.packs} × ${r.it.unit === "pc" && JG.items[r.k].size % 1 ? "pack" : qty(JG.items[r.k].size, r.it.unit, r.k)}` : qty(r.buy, r.it.unit, r.k)}</b><span>· ${unitPrice(r.k)}</span>${srcTag(r.src)}</div>${jgLine(r)}${r.have ? `<div class="q">${qty(r.have, r.it.unit, r.k)} already in your ${S.kitchen[r.k] ? S.kitchen[r.k].where : "kitchen"}</div>` : ""}${r.buy - r.need > r.it.pack * 0.25 && r.it.unit !== "pc" ? `<div class="q">Recipes use ${qty(r.need, r.it.unit, r.k)}, the rest goes to your fridge</div>` : ""}</div><span class="p">${rm(r.cost)}</span></label>`;
+      return `<label class="item ${done ? "done" : ""}"><input type="checkbox" id="b-${r.k}" data-bought="${r.k}" ${done ? "checked" : ""}><div><div class="n">${esc(r.it.name)}</div><div class="q"><b style="font-weight:600;color:var(--fg2)">${r.src === "Jaya Grocer" ? `${r.packs} × ${r.it.unit === "pc" && JG.items[r.k].size % 1 ? "pack" : qty(JG.items[r.k].size, r.it.unit, r.k)}` : qty(r.buy, r.it.unit, r.k)}</b><span>· ${unitPrice(r.k)}</span>${srcTag(r.src)}</div>${jgLine(r)}${S.bought[r.k] && S.bought[r.k].by ? `<div class="q">Ticked by ${esc(S.bought[r.k].by === myName() ? "you" : S.bought[r.k].by)}</div>` : ""}${r.have ? `<div class="q">${qty(r.have, r.it.unit, r.k)} already in your ${S.kitchen[r.k] ? S.kitchen[r.k].where : "kitchen"}</div>` : ""}${r.buy - r.need > r.it.pack * 0.25 && r.it.unit !== "pc" ? `<div class="q">Recipes use ${qty(r.need, r.it.unit, r.k)}, the rest goes to your fridge</div>` : ""}</div><span class="p">${rm(r.cost)}</span></label>`;
     };
     const sec = order.filter(a => groups[a]).map(a => {
       const g = groups[a].sort((x, y) => (!!S.bought[x.k] - !!S.bought[y.k]) || y.cost - x.cost);
@@ -1031,6 +1036,7 @@ const DATA = /*__DATA__*/null;
     return `<div class="enter narrow">
       <h1>Settings</h1>
       <p class="sub">Changes apply when you replan</p>
+      ${householdCard()}
       ${locationBlock()}${householdBlock()}<h2 style="font-size:17px;font-weight:500;margin:28px 0 12px">Food preferences</h2>${prefsBlock()}<div style="height:20px"></div>${budgetBlock()}
       <button class="btn primary big" id="replan">Save and plan a new week</button>
       <p class="fine">Prices: ${esc(PR.source)}, ${PR.shops.length.toLocaleString()} shops, latest ${PR.date}. Shop locations: GeoNames postcodes (CC BY 4.0). Recipes are drafts and still need checking by a home cook.</p>
@@ -1247,6 +1253,151 @@ const DATA = /*__DATA__*/null;
     setTimeout(() => { if (G) G.to(el, { opacity: 0, duration: 0.25, onComplete: () => el.remove() }); else el.remove(); }, 2400);
   }
 
+  // ---------- cloud: household login + sync (only in the hosted build) ----------
+  const CLOUD = /*__CLOUD__*/false;
+  const AUTH_KEY = "masakje.auth.v1";
+  let AUTH = null; try { AUTH = JSON.parse(localStorage.getItem(AUTH_KEY) || "null"); } catch (e) {}
+  let HH = AUTH ? AUTH.household : null, MEMBERS = [], VER = 0, SYNCED = null, pushT = null, pulling = false, deferRender = false;
+  const A = { mode: "start", err: "", busy: false };   // auth screen state
+  const SHARED_WHOLE = ["settings", "plan", "flow", "onboarded"], SHARED_MAPS = ["bought", "pantryNeed", "kitchen"];
+  const myName = () => (AUTH && AUTH.member && AUTH.member.name) || "";
+  function snapshot() {
+    const f = {};
+    SHARED_WHOLE.forEach(k => { f[k] = JSON.stringify(S[k] === undefined ? null : S[k]); });
+    SHARED_MAPS.forEach(m => Object.entries(S[m] || {}).forEach(([k, v]) => { if (v !== false && v != null) f[`${m}.${k}`] = JSON.stringify(v); }));
+    return f;
+  }
+  async function api(path, opts = {}) {
+    const r = await fetch("/api/" + path, { ...opts, headers: { "Content-Type": "application/json", ...(AUTH ? { Authorization: "Bearer " + AUTH.token } : {}) } });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw Object.assign(new Error(j.error || `Error ${r.status}`), { status: r.status });
+    return j;
+  }
+  function setOnline(ok) { const el = document.getElementById("syncdot"); if (el) { el.hidden = ok; } }
+  function handleErr(e) {
+    if (e.status === 401) { signOut(true); return; }
+    setOnline(false);
+  }
+  function schedulePush() { if (!CLOUD || !AUTH || !SYNCED) return; clearTimeout(pushT); pushT = setTimeout(push, 350); }
+  async function push() {
+    if (!CLOUD || !AUTH || !SYNCED) return;
+    const now = snapshot(), set = {}, del = [];
+    for (const [f, v] of Object.entries(now)) if (SYNCED[f] !== v) set[f] = JSON.parse(v);
+    for (const f of Object.keys(SYNCED)) if (!(f in now)) del.push(f);
+    if (!Object.keys(set).length && !del.length) return;
+    try {
+      const r = await api("state", { method: "POST", body: JSON.stringify({ set, del }) });
+      for (const f of Object.keys(set)) SYNCED[f] = now[f];
+      del.forEach(f => delete SYNCED[f]);
+      VER = r.ver; setOnline(true);
+    } catch (e) { handleErr(e); }
+  }
+  async function pull(force) {
+    if (!CLOUD || !AUTH || pulling) return;
+    pulling = true;
+    try {
+      if (SYNCED) await push();   // send our changes first so they aren't overwritten
+      const r = await api("state" + (force || !SYNCED ? "" : `?since=${VER}`));
+      setOnline(true);
+      if (r.same) return;
+      VER = r.ver; HH = r.household; MEMBERS = r.members || [];
+      AUTH.household = HH; try { localStorage.setItem(AUTH_KEY, JSON.stringify(AUTH)); } catch (e) {}
+      const before = JSON.stringify(snapshot());
+      const fields = r.fields || {};
+      SHARED_WHOLE.forEach(k => { if (fields[k] !== undefined) S[k] = JSON.parse(fields[k]); });
+      SHARED_MAPS.forEach(m => { const o = {}; Object.entries(fields).forEach(([f, v]) => { if (f.startsWith(m + ".")) o[f.slice(m.length + 1)] = JSON.parse(v); }); S[m] = o; });
+      if (!S.flow) S.flow = { shopped: false, cooked: {} };
+      if (!S.settings) S.settings = clone(DEFAULTS);
+      SYNCED = { ...fields };
+      if (!fields.onboarded && S.onboarded) { SYNCED = {}; }        // first device to finish setup: push everything
+      try { localStorage.setItem(STORE, JSON.stringify({ settings: S.settings, plan: S.plan, bought: S.bought, pantryNeed: S.pantryNeed, flow: S.flow, kitchen: S.kitchen, onboarded: S.onboarded, guideSeen: S.guideSeen })); } catch (e) {}
+      if (before !== JSON.stringify(snapshot()) || force) { CTX = null; safeRender(); }
+      else updateMembersLine();
+      if (!Object.keys(SYNCED).length) schedulePush();
+    } catch (e) { handleErr(e); } finally { pulling = false; }
+  }
+  function safeRender() {
+    const a = document.activeElement;
+    if (a && /INPUT|SELECT|TEXTAREA/.test(a.tagName) && !C) { deferRender = true; return; }
+    if (C || document.querySelector(".sheet")) { deferRender = true; return; }
+    render();
+  }
+  function updateMembersLine() { const el = document.getElementById("members"); if (el) el.innerHTML = membersHtml(); }
+  function membersHtml() { return MEMBERS.map(m => `<span class="tag">${esc(m.name)}${AUTH && m.id === AUTH.member.id ? " (you)" : ""}</span>`).join(" "); }
+  function startSync() {
+    if (!CLOUD || !AUTH) return;
+    pull(true);
+    setInterval(() => { if (document.visibilityState === "visible") pull(false); }, 12000);
+    document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") pull(false); });
+    document.addEventListener("focusout", () => setTimeout(() => { if (deferRender && !(document.activeElement && /INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName))) { deferRender = false; render(); } }, 50));
+  }
+  async function signIn(path, payload) {
+    A.busy = true; A.err = ""; render();
+    try {
+      const r = await api(path, { method: "POST", body: JSON.stringify(payload) });
+      AUTH = { token: r.token, member: r.member, household: r.household };
+      HH = r.household;
+      try { localStorage.setItem(AUTH_KEY, JSON.stringify(AUTH)); } catch (e) {}
+      // a new device starts from the household's state, not whatever this browser had before
+      S.onboarded = false; S.plan = null; S.bought = {}; S.pantryNeed = {}; S.kitchen = {}; S.flow = { shopped: false, cooked: {} };
+      A.busy = false; A.mode = path === "household" ? "created" : "start";
+      SYNCED = null; await pull(true); startSyncOnce();
+      if (path === "join") { S.ob = S.onboarded ? S.ob : 0; render(); }
+      else render();
+    } catch (e) { A.busy = false; A.err = e.message; render(); }
+  }
+  let syncStarted = false;
+  function startSyncOnce() { if (!syncStarted) { syncStarted = true; startSync(); } }
+  async function signOut(expired) {
+    if (!expired) { try { await api("leave", { method: "POST" }); } catch (e) {} }
+    AUTH = null; HH = null; SYNCED = null; MEMBERS = [];
+    try { localStorage.removeItem(AUTH_KEY); localStorage.removeItem(STORE); } catch (e) {}
+    S.onboarded = false; S.plan = null; S.bought = {}; S.pantryNeed = {}; S.kitchen = {}; A.mode = "start"; A.err = expired ? "You were signed out. Log in again with your household PIN" : "";
+    render();
+  }
+  function viewAuth() {
+    const err = A.err ? `<div class="tip" style="background:rgba(220,38,38,.08)">${ic("info")}<div>${esc(A.err)}</div></div>` : "";
+    if (A.mode === "create") return `<div class="enter narrow" style="margin:0 auto">
+      <h1 style="margin-top:24px">Create your household</h1><p class="sub">You'll get a PIN to share with your family so everyone sees the same plan and list</p>${err}
+      <div class="field"><label for="hhname">Household name</label><input class="inp" id="hhname" maxlength="40" placeholder="e.g. Rumah Hamid" value="${esc(A.hh || "")}"></div>
+      <div class="field"><label for="myname">Your name</label><input class="inp" id="myname" maxlength="40" autocomplete="given-name" placeholder="e.g. Aisyah" value="${esc(A.name || "")}"></div>
+      <div class="ob-actions"><button class="btn big" data-amode="start" style="width:auto;padding:0 20px">Back</button><button class="btn primary big" id="doCreate" ${A.busy ? "disabled" : ""}>${A.busy ? "Creating…" : "Create household"}</button></div></div>`;
+    if (A.mode === "join") return `<div class="enter narrow" style="margin:0 auto">
+      <h1 style="margin-top:24px">Join your household</h1><p class="sub">Ask whoever set up MasakJe for the 6-digit PIN</p>${err}
+      <div class="field"><label for="pin">Household PIN</label><input class="inp pin" id="pin" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="000000" value="${esc(A.pin || "")}"></div>
+      <div class="field"><label for="myname">Your name</label><input class="inp" id="myname" maxlength="40" autocomplete="given-name" placeholder="e.g. Hafiz" value="${esc(A.name || "")}"></div>
+      <div class="ob-actions"><button class="btn big" data-amode="start" style="width:auto;padding:0 20px">Back</button><button class="btn primary big" id="doJoin" ${A.busy ? "disabled" : ""}>${A.busy ? "Joining…" : "Join household"}</button></div></div>`;
+    return `<div class="enter narrow" style="margin:0 auto">
+      <h1 style="margin-top:24px">Home dinners for the week, planned together</h1>
+      <p class="sub">MasakJe plans a week of Malaysian dinners, makes one shopping list with real prices near you, and walks you through cooking. Everyone in your household sees the same plan and list</p>
+      <ol class="how">
+        <li><b>Plan</b><span>A week of rice + lauk + sayur dinners your family will eat</span></li>
+        <li><b>Shop</b><span>One list for everyone. See who ticked what</span></li>
+        <li><b>Cook</b><span>Step by step, with timers</span></li>
+      </ol>${err}
+      <div style="display:grid;gap:8px;margin-top:24px"><button class="btn primary big" data-amode="create">Create a household</button><button class="btn big" data-amode="join">Join with a PIN</button></div>
+    </div>`;
+  }
+  function viewCreated() {
+    const pin = HH ? HH.pin : "";
+    const msg = encodeURIComponent(`Join our MasakJe household "${HH ? HH.name : ""}": open ${location.origin} and enter PIN ${pin}`);
+    return `<div class="enter narrow" style="margin:0 auto">
+      <h1 style="margin-top:24px">Your household PIN</h1><p class="sub">Share it with your family. They tap Join with a PIN and enter it with their name</p>
+      <div class="pinbox" aria-label="PIN ${pin.split("").join(" ")}">${pin.split("").map(d => `<span>${d}</span>`).join("")}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:16px 0 8px"><a class="btn big" href="https://wa.me/?text=${msg}" target="_blank" rel="noopener">Share on WhatsApp</a><button class="btn big" id="copyPin">Copy PIN</button></div>
+      <p class="fine" style="margin-top:4px">You can find the PIN again in Settings</p>
+      <div class="ob-actions solo"><button class="btn primary big" id="afterCreated">Next: set up your week</button></div></div>`;
+  }
+  function householdCard() {
+    if (!CLOUD || !AUTH) return "";
+    return `<h2 style="font-size:17px;font-weight:500;margin:28px 0 12px">Household</h2>
+      <div class="summary" style="display:grid;gap:12px;margin-bottom:24px">
+        <div style="display:flex;justify-content:space-between;gap:12px;align-items:baseline"><b style="font-weight:500;font-size:17px">${esc(HH ? HH.name : "")}</b><span class="k">PIN <b class="num" style="font-weight:500;color:var(--fg);letter-spacing:.08em">${esc(HH ? HH.pin : "")}</b></span></div>
+        <div id="members" style="display:flex;gap:6px;flex-wrap:wrap">${membersHtml()}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><a class="btn" href="https://wa.me/?text=${encodeURIComponent(`Join our MasakJe household "${HH ? HH.name : ""}": open ${location.origin} and enter PIN ${HH ? HH.pin : ""}`)}" target="_blank" rel="noopener">Share PIN</a>${A.confirmLeave ? `<button class="btn" id="leaveYes" style="color:var(--neg)">Tap again to leave</button>` : `<button class="btn" id="leave">Leave household</button>`}</div>
+      </div>`;
+  }
+
   // ---------- render ----------
   const TABS = [["week", "Today", "week"], ["shop", "Shop", "list"], ["kitchen", "Kitchen", "fridge"], ["recipes", "Recipes", "book"], ["setup", "Settings", "sliders"]];
   let lastView = "";
@@ -1254,11 +1405,14 @@ const DATA = /*__DATA__*/null;
   function render() {
     captureTweens();
     const v = document.getElementById("view");
-    const ob = !S.onboarded;
+    const gate = CLOUD && !AUTH, created = CLOUD && AUTH && A.mode === "created";
+    const ob = gate || created || !S.onboarded;
     document.getElementById("app").classList.toggle("bare", ob);
     document.getElementById("tabsNav").hidden = ob;
     document.getElementById("where").hidden = ob;
-    if (ob) { v.innerHTML = viewOnboarding(); return; }
+    if (gate) { v.innerHTML = viewAuth(); return; }
+    if (created) { v.innerHTML = viewCreated(); return; }
+    if (ob) { if (CLOUD && S.ob === -1) S.ob = 0; v.innerHTML = viewOnboarding(); return; }
     if (!S.plan || S.plan.days.length !== 7) newWeek();
     const viewKey = S.onboarded + S.tab;
     v.innerHTML = S.tab === "week" ? viewWeek() : S.tab === "shop" ? viewShop() : S.tab === "recipes" ? viewRecipes() : S.tab === "kitchen" ? viewKitchen() : viewSetup();
@@ -1269,7 +1423,7 @@ const DATA = /*__DATA__*/null;
   function go(tab) { S.tab = tab; render(); window.scrollTo({ top: 0 }); }
 
   document.addEventListener("click", e => {
-    const el = e.target.closest("[data-tab],[data-go],[data-swap],[data-off],[data-recipe],[data-filter],[data-people],[data-night],[data-avoid],[data-allergy],[data-dislike],[data-pick],[data-sound],[data-clear],[data-pneed],[data-tonight],[data-pickday],[data-cookday],[data-cookone],#regen,#replan,#where,#lock,#shopped,#newweek,#obNext,#obBack,#guideOk,#logo,#savehood,[data-hide],#moreshops,#addshop,#saveshop,#replanK,[data-kadd],[data-kdel],[data-kmove],[data-ksoon]");
+    const el = e.target.closest("[data-tab],[data-go],[data-swap],[data-off],[data-recipe],[data-filter],[data-people],[data-night],[data-avoid],[data-allergy],[data-dislike],[data-pick],[data-sound],[data-clear],[data-pneed],[data-tonight],[data-pickday],[data-cookday],[data-cookone],#regen,#replan,#where,#lock,#shopped,#newweek,#obNext,#obBack,#guideOk,#logo,#savehood,[data-hide],[data-amode],#doCreate,#doJoin,#copyPin,#afterCreated,#leave,#leaveYes,#moreshops,#addshop,#saveshop,#replanK,[data-kadd],[data-kdel],[data-kmove],[data-ksoon]");
     if (!el) return;
     const s = S.settings;
     if (el.dataset.tab) return go(el.dataset.tab);
@@ -1280,7 +1434,7 @@ const DATA = /*__DATA__*/null;
     if (el.dataset.recipe) return openRecipe(el.dataset.recipe);
     if (el.dataset.tonight !== undefined) return openTonightList(+el.dataset.tonight);
     if (el.dataset.pickday !== undefined) { const di = +el.dataset.pickday; closeSheet(); return openPicker(di, S.plan.days[di].onepot ? "onepot" : "lauk"); }
-    if (el.dataset.pneed) { const [k, v] = el.dataset.pneed.split(":"); captureTweens(); S.pantryNeed[k] = v === "1"; v === "1" ? SFX.tick() : SFX.untick(); save(); return render(); }
+    if (el.dataset.pneed) { const [k, v] = el.dataset.pneed.split(":"); captureTweens(); if (v === "1") S.pantryNeed[k] = true; else delete S.pantryNeed[k]; v === "1" ? SFX.tick() : SFX.untick(); save(); return render(); }
     if (el.dataset.clear) { const k = el.dataset.clear; s[k] = k === "avoid" ? { chicken: false, beef: false, mutton: false, pedas: false } : {}; save(); return render(); }
     if (el.dataset.pick) { const [i, slot] = el.dataset.pick.split(":"); return openPicker(+i, slot); }
     if (el.dataset.sound !== undefined) { S.settings.sound = S.settings.sound === false; save(); if (S.settings.sound !== false) SFX.tick(); return render(); }
@@ -1308,6 +1462,13 @@ const DATA = /*__DATA__*/null;
     if (el.id === "moreshops") { S.nearN = (S.nearN || 8) + 10; return render(); }
     if (el.id === "addshop") { S.adding = true; render(); const n = document.getElementById("newshop"); n && n.focus(); return; }
     if (el.id === "saveshop") { const name = (S.shopDraft || "").trim(); if (name.length < 3) return; s.custom = { name, postcode: s.postcode }; s.shop = -2; S.adding = false; S.shopDraft = ""; save(); return render(); }
+    if (el.dataset.amode) { A.mode = el.dataset.amode; A.err = ""; render(); const f = document.querySelector("#hhname, #pin"); f && f.focus(); return; }
+    if (el.id === "doCreate") return signIn("household", { household: A.hh || "", name: A.name || "" });
+    if (el.id === "doJoin") return signIn("join", { pin: A.pin || "", name: A.name || "" });
+    if (el.id === "copyPin") { try { navigator.clipboard.writeText(HH.pin).then(() => toast("PIN copied"), () => toast(`PIN: ${HH.pin}`)); } catch (e) { toast(`PIN: ${HH.pin}`); } return; }
+    if (el.id === "afterCreated") { A.mode = "start"; S.ob = 0; render(); return window.scrollTo({ top: 0 }); }
+    if (el.id === "leave") { A.confirmLeave = true; render(); setTimeout(() => { A.confirmLeave = false; }, 4000); return; }
+    if (el.id === "leaveYes") { A.confirmLeave = false; return signOut(false); }
     if (el.id === "savehood") { const name = (S.hoodDraft || "").trim(), b = lookupPostcode(s.postcode); if (name.length >= 3 && b) { s.hood = { pc: s.postcode, name, lat: b.lat, lng: b.lng }; S.typingHood = false; S.hoodDraft = ""; save(); render(); } return; }
     if (el.dataset.hide !== undefined) { e.preventDefault(); const i = +el.dataset.hide; s.hidden = s.hidden || {}; s.hidden[i] = true; if (s.shop === -3 && s.osm === i) s.shop = -1; save(); render(); toast("Hidden. It won't be listed again"); return; }
     if (el.id === "logo") { if (!S.onboarded) { S.ob = -1; render(); } else go("week"); return; }
@@ -1320,7 +1481,7 @@ const DATA = /*__DATA__*/null;
   });
   document.addEventListener("change", e => {
     const t = e.target, s = S.settings;
-    if (t.dataset.bought) { captureTweens(); S.bought[t.dataset.bought] = t.checked; t.checked ? SFX.tick() : SFX.untick(); save(); render(); pop(document.querySelector(`[data-bought="${t.dataset.bought}"]`)); return; }
+    if (t.dataset.bought) { captureTweens(); if (t.checked) S.bought[t.dataset.bought] = CLOUD ? { by: myName(), at: Date.now() } : true; else delete S.bought[t.dataset.bought]; t.checked ? SFX.tick() : SFX.untick(); save(); render(); pop(document.querySelector(`[data-bought="${t.dataset.bought}"]`)); return; }
     if (t.dataset.need) { S.pantryNeed[t.dataset.need] = t.checked; save(); return render(); }
     if (t.name === "shop") { if (t.value.startsWith("o:")) { s.shop = -3; s.osm = +t.value.slice(2); } else if (t.value.startsWith("p:")) { s.shop = +t.value.slice(2); } else s.shop = +t.value; save(); return render(); }
     if (t.dataset.kqty) { const v = +t.value; if (v > 0) S.kitchen[t.dataset.kqty].q = v; else delete S.kitchen[t.dataset.kqty]; save(); return render(); }
@@ -1340,6 +1501,9 @@ const DATA = /*__DATA__*/null;
       if (t.id === "shopq") S.shopQ = t.value; else if (t.id === "kq") S.kq = t.value; else if (t.id === "hoodtext") S.hoodDraft = t.value; else S.shopDraft = t.value;
       const id = t.id, pos = t.selectionStart; render(); const el = document.getElementById(id); el.focus(); el.setSelectionRange(pos, pos); return;
     }
+    if (t.id === "hhname") { A.hh = t.value; return; }
+    if (t.id === "myname") { A.name = t.value; return; }
+    if (t.id === "pin") { const v = t.value.replace(/\D/g, "").slice(0, 6); A.pin = v; if (t.value !== v) t.value = v; return; }
     if (t.id === "postcode") {
       const v = t.value.replace(/\D/g, "").slice(0, 5);
       if (v !== S.settings.postcode) { S.settings.postcode = v; S.settings.shop = -1; S.nearN = 8; save(); render(); const p = document.getElementById("postcode"); p.focus(); p.setSelectionRange(v.length, v.length); }
@@ -1347,5 +1511,6 @@ const DATA = /*__DATA__*/null;
   });
   document.addEventListener("keydown", e => { if (e.key === "Escape") { if (C) stopCooking(); else closeSheet(); } });
   render();
+  if (CLOUD && AUTH) startSyncOnce();
 })();
 </script>

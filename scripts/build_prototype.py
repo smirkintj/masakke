@@ -195,7 +195,15 @@ def main():
     blob = json.dumps(data, separators=(",", ":"), ensure_ascii=False).replace("</", "<\\/")
     out = src.replace("/*__DATA__*/null", blob)
     with open(os.path.join(ROOT, "prototype", "index.html"), "w") as f:
-        f.write(out)
+        f.write(out)   # claude.ai prototype: local only
+    # Hosted build (Vercel): same page with household login + sync switched on, as a full HTML document
+    cloud = out.replace("const CLOUD = /*__CLOUD__*/false;", "const CLOUD = true;")
+    head = ('<!doctype html><html lang="en"><head><meta charset="utf-8">'
+            '<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">'
+            '<meta name="theme-color" content="#c8420c"><link rel="manifest" href="/manifest.webmanifest">'
+            '<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}</style></head><body>')
+    with open(os.path.join(ROOT, "public", "index.html"), "w") as f:
+        f.write(head + cloud + "</body></html>")
     unmatched = sum(1 for r in recipes for k, _ in r["ing"] if not any(k in st["ing"] for st in r["guide"]))
     print(f"prototype/index.html {len(out)//1024} KB, shops={len(shops)}, "
           f"ingredients not linked to any step={unmatched}")
