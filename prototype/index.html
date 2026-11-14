@@ -183,7 +183,7 @@ h1 { font-size: 30px; line-height: 1.15; font-weight: 500; margin: 12px 0 4px; t
 .rtabs { display: flex; gap: 20px; border-bottom: 1px solid var(--line); margin: 4px 0 12px; overflow-x: auto; scrollbar-width: none; }
 .rtabs button { flex: none; background: none; border: 0; padding: 8px 0 10px; font-size: 15px; font-weight: 500; color: var(--fg2); border-bottom: 2px solid transparent; margin-bottom: -1px; }
 .rtabs button[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); }
-.rx-bar { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center; }
+.rx-bar { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center; margin-bottom: 12px; }
 .rx-bar .search-wrap { margin: 0; }
 .rx-bar .btn { height: 44px; padding: 0 12px; white-space: nowrap; }
 .rx-count { font-size: 13px; color: var(--muted); margin: 4px 0 8px; }
@@ -811,7 +811,10 @@ const DATA = {"ingredients":{"chicken":{"name":"Chicken (whole, cleaned)","unit"
     for (let i = 0; i < 250; i++) { const p = randomPlan(), s = score(p); if (s < bs) { bs = s; best = p; } }
     return best;
   }
-  function newWeek() { S.plan = makePlan(); S.bought = {}; S.pantryNeed = {}; S.flow = { locked: false, shopped: false, cooked: {} }; save(); }
+  // A plan belongs to a calendar week (Monday start). "Plan next week" makes one for next Monday;
+  // replanning keeps the plan's own week, or this week if that one has already ended.
+  const mondayAfter = d => { const n = new Date(d); n.setDate(n.getDate() + 7); return n; };
+  function newWeek(start) { const st = start || (S.plan && todayIdx() < 7 ? planStart() : weekStart()); S.plan = makePlan(); S.plan.start = ymd(st); S.bought = {}; S.pantryNeed = {}; S.flow = { locked: false, shopped: false, cooked: {} }; save(); }
   function inPlan() { return new Set(S.plan.days.flatMap(d => [d.lauk, d.sayur, d.onepot]).filter(Boolean)); }
   function swap(di, slot) {
     const day = S.plan.days[di]; const used = inPlan();
@@ -831,9 +834,10 @@ const DATA = {"ingredients":{"chicken":{"name":"Chicken (whole, cleaned)","unit"
 
   // ---------- dates & formatting ----------
   function weekStart() { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - (d.getDay() + 6) % 7); return d; }
-  const dateOf = i => { const d = weekStart(); d.setDate(d.getDate() + i); return d; };
+  function planStart() { const st = S.plan && S.plan.start; if (st) { const [y, m, d] = st.split("-").map(Number); return new Date(y, m - 1, d); } return weekStart(); }
+  const dateOf = i => { const d = planStart(); d.setDate(d.getDate() + i); return d; };
   const fmtDate = d => d.toLocaleDateString("en-MY", { day: "numeric", month: "short" });
-  const todayIdx = () => (new Date().getDay() + 6) % 7;
+  const todayIdx = () => { const t = new Date(); t.setHours(0, 0, 0, 0); return Math.round((t - planStart()) / 864e5); };   // negative before the plan starts, 7+ after it ends
   function qty(q, unit, key) {
     if (unit === "pc") {
       const n = key === "egg" ? Math.ceil(q - 1e-9) : Math.max(1, Math.round(q));
@@ -850,7 +854,7 @@ const DATA = {"ingredients":{"chicken":{"name":"Chicken (whole, cleaned)","unit"
   // ---------- flow ----------
   function nextCookDay() {
     const t = todayIdx();
-    for (let i = t; i < 7; i++) if (!S.plan.days[i].off && !S.flow.cooked[i]) return i;
+    for (let i = Math.max(t, 0); i < 7; i++) if (!S.plan.days[i].off && !S.flow.cooked[i]) return i;
     return -1;
   }
   function flowStage() { if (!S.flow.locked) return 0; if (!S.flow.shopped) return 1; return 2; }
@@ -864,11 +868,13 @@ const DATA = {"ingredients":{"chicken":{"name":"Chicken (whole, cleaned)","unit"
     const dishRow = (r, i, slot) => `<div class="dish pickable"><button class="dish-main" data-recipe="${r.id}"><span class="n">${esc(r.name)}${r.spicy >= 2 ? ' <span class="pedas" title="Pedas">•</span>' : ""}</span><span class="e">${esc(r.en)} · ${r.mins} min</span></button><button class="btn" style="height:36px;padding:0 12px" data-pick="${i}:${slot}">Change</button></div>`;
     const dishesOf = (d, i) => d.onepot ? dishRow(RX[d.onepot], i, "onepot") : dishRow(RX[d.lauk], i, "lauk") + dishRow(RX[d.sayur], i, "sayur");
     let hero;
-    if (di < 0) hero = `<div class="next"><div><div class="k">This week</div><div class="t">Every dinner is cooked</div><div class="d">Plan next week when you're ready</div></div><button class="btn primary big" id="newweek">Plan next week</button></div>`;
+    if (di < 0) hero = ti >= 7
+      ? `<div class="next"><div><div class="k">This week</div><div class="t">Not planned yet</div><div class="d">Last week's plan has ended. Plan this week to get a shopping list</div></div><button class="btn primary big" id="newweek">Plan this week</button></div>`
+      : `<div class="next"><div><div class="k">This week</div><div class="t">${S.plan.days.some((d, i) => i >= ti && !d.off) ? "Every dinner is cooked" : "No more dinners planned"}</div><div class="d">Next week starts ${fmtDate(mondayAfter(planStart()))}. Plan it now and shop this weekend</div></div><button class="btn primary big" id="newweek">Plan next week</button></div>`;
     else {
       const d = S.plan.days[di], items = dayItems(d), mins = items.reduce((a, r) => a + r.mins, 0);
-      const when = di === ti ? "Tonight" : DAYS_LONG[di];
-      hero = `<div class="next"><div class="k">${when}${di !== ti && !S.plan.days[ti].off ? "" : ""}</div>
+      const when = di === ti ? "Tonight" : ti < 0 ? `${DAYS_LONG[di]}, ${fmtDate(dateOf(di))}` : DAYS_LONG[di];
+      hero = `<div class="next"><div class="k">${when}</div>
         <div class="dishes" style="margin-top:-4px">${dishesOf(d, di)}</div>
         <div class="d" style="margin-top:-4px">${d.onepot ? "One-pot dinner" : "With rice"} · about ${Math.max(...items.map(r => r.mins)) + (d.onepot ? 0 : 10)} min · about ${items.reduce((a, r) => a + r.macro[0], 0) + (d.onepot ? 0 : riceMacro()[0])} kcal and ${items.reduce((a, r) => a + r.macro[1], 0) + (d.onepot ? 0 : riceMacro()[1])} g protein a person</div>
         ${(() => { const miss = missingFor(di);
@@ -897,7 +903,7 @@ const DATA = {"ingredients":{"chicken":{"name":"Chicken (whole, cleaned)","unit"
     return `<div class="enter">
       ${offlineBanner()}
       <h1>${new Date().toLocaleDateString("en-MY", { weekday: "long", day: "numeric", month: "short" })}</h1>
-      <p class="sub">Dinner for ${S.settings.people} · prices from ${esc(priceLabel())}</p>
+      <p class="sub">${todayIdx() < 0 ? `Next week's plan, from ${fmtDate(planStart())}` : `Dinner for ${S.settings.people}`} · prices from ${esc(priceLabel())}</p>
       ${householdLine()}
       ${thawCard()}
       ${S.guideSeen ? "" : `<div class="guide"><div class="gh"><b>How your week works</b><button class="link" id="guideOk">Got it</button></div>
@@ -1971,7 +1977,8 @@ const DATA = {"ingredients":{"chicken":{"name":"Chicken (whole, cleaned)","unit"
       const added = Object.keys(S.kitchen).length - before;
       toast(added > 0 ? `Done. ${added} leftover pack ${added === 1 ? "amount" : "amounts"} saved to your fridge` : "Shopping done"); return go("week");
     }
-    if (el.id === "newweek" || el.id === "replan") { newWeek(); return go("week"); }
+    if (el.id === "newweek") { const next = todayIdx() >= 7 ? weekStart() : mondayAfter(planStart()); newWeek(next); SFX.done(); go("week"); return toast(todayIdx() < 0 ? `Planned the week of ${fmtDate(next)}` : "Planned this week"); }
+    if (el.id === "replan") { newWeek(); return go("week"); }
     if (el.dataset.kadd) { addKitchen(el.dataset.kadd, ING[el.dataset.kadd].pack, false); S.kq = ""; save(); return render(); }
     if (el.dataset.kdel) { delete S.kitchen[el.dataset.kdel]; save(); return render(); }
     if (el.dataset.kmove) { const v = S.kitchen[el.dataset.kmove]; v.where = v.where === "fridge" ? "freezer" : "fridge"; save(); return render(); }
