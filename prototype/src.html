@@ -895,7 +895,7 @@ const DATA = /*__DATA__*/null;
       const when = di === ti ? "Tonight" : ti < 0 ? `${DAYS_LONG[di]}, ${fmtDate(dateOf(di))}` : DAYS_LONG[di];
       hero = `<div class="next"><div class="k">${when}</div>
         <div class="dishes" style="margin-top:-4px">${dishesOf(d, di)}</div>
-        <div class="d" style="margin-top:-4px">${d.onepot ? "One-pot dinner" : "With rice"} · about ${Math.max(...items.map(r => r.mins)) + (d.onepot ? 0 : 10)} min · about ${items.reduce((a, r) => a + r.macro[0], 0) + (d.onepot ? 0 : riceMacro()[0])} kcal and ${items.reduce((a, r) => a + r.macro[1], 0) + (d.onepot ? 0 : riceMacro()[1])} g protein a person</div>
+        <div class="d" style="margin-top:-4px">${d.onepot ? "Full meal, no rice needed" : "With rice"} · about ${Math.max(...items.map(r => r.mins)) + (d.onepot ? 0 : 10)} min · about ${items.reduce((a, r) => a + r.macro[0], 0) + (d.onepot ? 0 : riceMacro()[0])} kcal and ${items.reduce((a, r) => a + r.macro[1], 0) + (d.onepot ? 0 : riceMacro()[1])} g protein a person</div>
         ${(() => { const miss = missingFor(di);
           if (!miss.length) return `<button class="btn primary big" data-cookday="${di}">${ic("flame")}Start cooking</button>`;
           const names = miss.slice(0, 3).map(m => esc(ING[m.k].name.replace(/ \(.*\)/, ""))).join(", ") + (miss.length > 3 ? ` and ${miss.length - 3} more` : "");
@@ -916,7 +916,7 @@ const DATA = /*__DATA__*/null;
       if (d.off) return `<div class="offrow"><span><b>${i === ti ? "Today" : DAYS_LONG[i]}</b> ${fmtDate(dateOf(i))} · Not cooking</span><button class="link" data-off="${i}">Add dinner</button></div>`;
       const head = `<div class="dhead"><div class="dlabel">${i === ti ? "Today" : DAYS_LONG[i]}<span>${fmtDate(dateOf(i))}</span></div>${S.flow.cooked[i] ? `<span class="tag">${ic("check", 12)}Cooked</span>` : ""}</div>`;
       if (d.off) return `<div class="day off">${head}<div class="off-msg"><span>Not cooking</span><button class="btn" data-off="${i}">Plan a dinner</button></div></div>`;
-      return `<div class="day ${S.flow.cooked[i] ? "off" : ""}">${head}<div class="dishes">${dishesOf(d, i)}</div><div class="day-foot"><span>${d.onepot ? "One-pot" : "With rice"}</span><span class="acts">${S.flow.cooked[i] ? "" : `<button class="link go" data-cookday="${i}">${ic("flame", 15)}Cook</button><button class="link" data-off="${i}">Skip</button>`}</span></div></div>`;
+      return `<div class="day ${S.flow.cooked[i] ? "off" : ""}">${head}<div class="dishes">${dishesOf(d, i)}</div><div class="day-foot"><span>${d.onepot ? "Full meal" : "With rice"}</span><span class="acts">${S.flow.cooked[i] ? "" : `<button class="link go" data-cookday="${i}">${ic("flame", 15)}Cook</button><button class="link" data-off="${i}">Skip</button>`}</span></div></div>`;
     }).join("");
     const pct = Math.min(1, t.toBuy / b);
     return `<div class="enter">
@@ -1015,7 +1015,7 @@ const DATA = /*__DATA__*/null;
     const root = document.getElementById("sheetRoot");
     const html = `<div class="scrim open" id="scrim"></div><div class="sheet open" role="dialog" aria-modal="true" aria-labelledby="pk-t"><div class="sheet-in">
       <div class="grab"></div><button class="icon-btn close" id="shClose" aria-label="Close">${ic("x", 18)}</button>
-      <h2 id="pk-t">Change ${P0.slot === "sayur" ? "sayur" : P0.slot === "onepot" ? "one-pot" : "lauk"}</h2>
+      <h2 id="pk-t">Change ${P0.slot === "sayur" ? "sayur" : P0.slot === "onepot" ? "full meal" : "lauk"}</h2>
       <p class="sub" style="margin:4px 0 12px">${DAYS_LONG[P0.di]} · now ${esc(cur.name)}. Price change is for the whole week's shopping.</p>
       <div class="search-wrap">${ic("search")}<input class="search" id="pkq" type="search" placeholder="Search dishes" value="${esc(P0.q)}" aria-label="Search dishes"></div>
       ${F.length ? `<div class="chips" role="group">${F.map(([k, l]) => `<button class="chip" data-pkf="${k}" aria-pressed="${P0.f === k}">${l}</button>`).join("")}</div>` : ""}
@@ -1111,7 +1111,7 @@ const DATA = /*__DATA__*/null;
   const regionOf = r => r.region || REGION[r.cuisine] || "asian";
   const REGIONS = [["all", "All"], ["malaysian", "Malaysian"], ["asian", "Asian"], ["western", "Western"], ["ours", "Ours"]];
   const CUISINE_LABEL = { Malay: "Malay", Chinese: "Chinese", Indian: "Indian", "Thai-Malay": "Kelantan-Thai" };
-  const KIND_LABEL = { lauk: "Lauk", sayur: "Sayur", onepot: "One-pot" };
+  const KIND_LABEL = { lauk: "Lauk", sayur: "Sayur", onepot: "Full meal", snack: "Snack / side" };   // onepot = a meal on its own (nasi goreng, mee, bubur), not "cooked in one pot"
   const SORTS = [["quick", "Quickest", "quickest first"], ["cheap", "Cheapest per plate", "cheapest first"], ["protein", "Most protein", "most protein first"], ["kcal", "Fewest calories", "fewest calories first"], ["fav", "Family favourites", "family favourites first"], ["az", "A to Z", "A to Z"]];
   const PROTS = [["chicken", "Ayam"], ["beef", "Daging"], ["fish", "Ikan"], ["seafood", "Udang & sotong"], ["egg", "Telur & tauhu"], ["veg", "Vegetarian"]];
   const TIMES = [["30", "30 min or less"], ["60", "1 hour or less"], ["any", "Any"]];
@@ -1142,7 +1142,7 @@ const DATA = /*__DATA__*/null;
     const tabs = REGIONS.filter(([k]) => k === "all" || k === RXS.tab || ok.some(r => k === "ours" ? r.by : regionOf(r) === k));
     if (!tabs.some(([k]) => k === RXS.tab)) RXS.tab = "all";
     const list = rxList(), act = rxActive(), sortL = SORTS.find(x => x[0] === RXS.sort) || SORTS[0];
-    const quick = [["kind:lauk", "Lauk"], ["kind:sayur", "Sayur"], ["kind:onepot", "One-pot"], ["time:30", "30 min or less"], ["mild", "Not spicy"]].filter(([k]) => !act.some(a => a[0] === k || (k.startsWith("time") && a[0] === "time")));
+    const quick = [["kind:lauk", "Lauk"], ["kind:sayur", "Sayur"], ["kind:onepot", "Full meal"], ["time:30", "30 min or less"], ["mild", "Not spicy"]].filter(([k]) => !act.some(a => a[0] === k || (k.startsWith("time") && a[0] === "time")));
     return `<div class="enter">
       <div class="rx-head"><h1>Recipes</h1><button class="btn primary" data-ed="new">${ic("plus", 16)}${CLOUD ? "Add" : loadDraft() ? "Your draft" : "Add"}</button></div>
       <p class="sub">${ok.length} dishes${ok.some(r => r.by) ? ` · ${ok.filter(r => r.by).length} from your household` : ""}${hidden ? `, ${hidden} hidden by your preferences` : ""}</p>
@@ -1505,7 +1505,7 @@ const DATA = /*__DATA__*/null;
       const took = C.started ? Math.max(1, Math.round((Date.now() - C.started) / 60000)) : 0;
       if (!C.toRate) C.toRate = C.ids.filter(id => myRating(id) === undefined);
       const rateRows = C.toRate.map(id => { const mine = myRating(id), r = RX[id];
-        return `<div class="rate"><div class="rh"><b>${esc(r.name)}</b><span>${r.kind === "sayur" ? "Sayur" : r.kind === "onepot" ? "One-pot" : "Lauk"}</span></div>
+        return `<div class="rate"><div class="rh"><b>${esc(r.name)}</b><span>${KIND_LABEL[r.kind] || "Lauk"}</span></div>
           <div class="rbtns">${[[1, "Liked"], [0, "OK"], [-1, "Not again"]].map(([v, l]) => `<button data-rate="${id}:${v}" aria-pressed="${mine === v}">${l}</button>`).join("")}</div>
           ${mine === 1 ? `<div class="rnote good">Saved. It'll come up more often</div>` : mine === -1 ? `<div class="rnote">Saved. It'll come up less, and your family will see you don't like it</div>` : mine === 0 ? `<div class="rnote">Saved</div>` : ""}</div>`; }).join("");
       body = `<div class="done-mark">${ic("check", 40)}</div><div class="done-t">${C.ids.length > 1 ? "Dinner is ready" : `${esc(RX[C.ids[0]].name)} is ready`}</div><p class="sub">${C.started ? `Cooked in ${took} min. ` : ""}Selamat makan.</p>
@@ -1853,7 +1853,7 @@ const DATA = /*__DATA__*/null;
       const d = r.draft;
       FD = null;
       ED = { id: null, name: d.name, cuisine: d.cuisine, kind: d.kind, protein: d.protein, serves: d.serves, mins: d.mins, spicy: d.spicy, ing: d.ing, guide: d.guide, from: "",
-        src: r.source, ai: { halal: d.halal, unpriced: d.unpriced || [] }, iq: "", err: "", confirmDel: false };
+        src: r.source, ai: { unpriced: d.unpriced || [] }, iq: "", err: "", confirmDel: false };
       saveDraft(); SFX.done(); render(); window.scrollTo({ top: 0 });
     } catch (e) { if (e.status === 401) return handleErr(e); FD.step = e.status === 429 ? "limit" : FD.results.length ? "results" : "input"; FD.err = e.message; render(); }
   }
@@ -1938,15 +1938,14 @@ const DATA = /*__DATA__*/null;
     const unit = k => ING[k].unit === "pc" ? "pcs" : ING[k].unit;
     return `<div class="enter narrow ed">
       <div class="ed-top"><button class="linkbtn" data-ed="cancel">${ic("back", 16)}Back</button><span class="fine" style="margin:0">${d.id ? "Editing for everyone in your household" : "Draft kept on this phone"}</span></div>
-      ${d.ai ? `<div class="aibox"><div><b>Check before you cook.</b> Converted from <a href="${esc(d.src.url)}" target="_blank" rel="noopener">${esc(d.src.site)}</a> by AI${d.src.via === "card" ? ", from the recipe card on that page" : ""}. Amounts, step order and the halal check can be wrong</div>
-        ${d.ai.halal && !d.ai.halal.ok ? `<div class="aiwarn"><b>Not halal as written.</b> ${esc((d.ai.halal.notes || []).join(" · "))}</div>` : d.ai.halal && d.ai.halal.notes && d.ai.halal.notes.length ? `<div>${esc(d.ai.halal.notes.join(" · "))}</div>` : ""}
+      ${d.ai ? `<div class="aibox"><div><b>Check before you cook.</b> Converted from <a href="${esc(d.src.url)}" target="_blank" rel="noopener">${esc(d.src.site)}</a> by AI${d.src.via === "card" ? ", from the recipe card on that page" : ""}. Amounts and step order can be wrong</div>
         ${d.ai.unpriced && d.ai.unpriced.length ? `<div><b>Not in our price list:</b> ${esc(d.ai.unpriced.join(", "))}. Buy these separately; they're kept in the steps where the page uses them</div>` : ""}</div>` : ""}
       <h1>${d.id ? "Edit recipe" : d.ai ? "Check the recipe" : d.from ? "Make your version" : "Write your own"}</h1>
       ${d.from && !d.id ? `<p class="sub">Starting from our ${esc(d.from)}. Change anything</p>` : ""}
       <div class="field"><label for="ed-name">Name</label><input class="inp" id="ed-name" data-edf="name" maxlength="60" placeholder="e.g. Ayam goreng Mak" value="${esc(d.name)}"></div>
       <div class="ed-grid">
         <label class="ed-sel">Cuisine<select data-edf="cuisine">${["Malaysian", "Asian", "Western"].map(g => `<optgroup label="${g}">${CUISINES.filter(c => c[1] === g).map(([c]) => `<option value="${c}" ${d.cuisine === c ? "selected" : ""}>${c}</option>`).join("")}</optgroup>`).join("")}</select></label>
-        <label class="ed-sel">Type<select data-edf="kind">${opt([["lauk", "Lauk"], ["sayur", "Sayur"], ["onepot", "One-pot"]], d.kind)}</select></label>
+        <label class="ed-sel">Type<select data-edf="kind">${opt([["lauk", "Lauk (with rice)"], ["sayur", "Sayur"], ["onepot", "Full meal"], ["snack", "Snack / side"]], d.kind)}</select></label>
         <label class="ed-sel">Main protein<select data-edf="protein">${opt(PROTEIN_OPTS, d.protein)}</select></label>
         <label class="ed-sel">Serves<select data-edf="serves">${opt([1, 2, 3, 4, 5, 6, 8].map(n => [n, n]), d.serves)}</select></label>
         <label class="ed-sel">Minutes<input class="inp" type="number" inputmode="numeric" min="5" max="600" data-edf="mins" value="${esc(d.mins)}"></label>
@@ -1957,6 +1956,7 @@ const DATA = /*__DATA__*/null;
       ${d.ing.map(([k, q], i) => `<div class="ed-ing"><span class="n">${esc(ING[k].name)}</span><input class="inp num" type="number" inputmode="decimal" min="0" step="any" data-edq="${i}" value="${esc(q)}" aria-label="Amount of ${esc(ING[k].name)}"><span class="u">${unit(k)}</span><button class="icon-btn" data-ed="delIng:${i}" aria-label="Remove ${esc(ING[k].name)}">${ic("x", 16)}</button></div>`).join("")}
       <div class="search-wrap" style="margin-top:8px">${ic("plus")}<input class="search" id="ed-iq" type="search" placeholder="Add an ingredient, e.g. santan" value="${esc(d.iq)}" aria-label="Add an ingredient" autocomplete="off"></div>
       <div id="edRes">${edResults()}</div>
+      ${d.kind === "snack" ? `<p class="fine">Snacks and sides aren't picked as dinner by the planner. You can still cook them any time</p>` : ""}
       <div class="ed-h"><h3>Steps</h3><span class="fine" style="margin:0">In the order things go into the pot</span></div>
       ${d.guide.map((st, i) => `<div class="ed-step">
         <div class="ed-sh"><b>Step ${i + 1}</b><span>${i ? `<button class="linkbtn" data-ed="up:${i}">Move up</button>` : ""}${d.guide.length > 1 ? `<button class="linkbtn" data-ed="delStep:${i}">Remove</button>` : ""}</span></div>
@@ -2019,7 +2019,7 @@ const DATA = /*__DATA__*/null;
     const days = S.plan ? S.plan.days.map((d, i) => ({ d, i })).filter(({ d, i }) => i >= ti && !d.off && !S.flow.cooked[i] && (slot === "onepot" ? d.onepot !== r.id : d[slot] && d[slot] !== r.id)) : [];
     return `<div class="hhbox">
       <div class="vh">Added by ${esc(byName(r.by))}${r.editedBy && r.editedBy !== r.by ? `, edited by ${esc(byName(r.editedBy))}` : ""}</div>
-      <p class="k" style="margin:4px 0 10px">${ready ? "The planner can pick it for your weeks" : nots ? "Someone said Not again, so the planner won't pick it. You can still add it yourself" : "The planner starts picking it after someone has cooked it once"}</p>
+      <p class="k" style="margin:4px 0 10px">${r.kind === "snack" ? "A snack or side: cook it any time; the planner doesn't pick it for dinner" : ready ? "The planner can pick it for your weeks" : nots ? "Someone said Not again, so the planner won't pick it. You can still add it yourself" : "The planner starts picking it after someone has cooked it once"}</p>
       ${days.length ? `<div class="k">Put it on this week's plan</div><div class="chips wrap" style="margin:6px 0 10px">${days.map(({ d, i }) => `<button class="chip" data-ed="plan:${i}:${slot}:${r.id}" title="Replaces ${esc((RX[slot === "onepot" ? d.onepot || d.lauk : d[slot]] || {}).name || "")}">${i === ti ? "Today" : DAYS_LONG[i]}</button>`).join("")}</div>` : ""}
       <button class="btn" data-ed="edit:${r.id}">${ic("edit", 16)}Edit</button>
     </div>`;
