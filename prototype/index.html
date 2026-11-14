@@ -747,6 +747,7 @@ const DATA = {"ingredients":{"chicken":{"name":"Chicken (whole, cleaned)","unit"
     const s = S.settings, a = s.avoid;
     if ((a.beef && r.protein === "beef") || (a.mutton && r.protein === "mutton") || (a.pedas && r.spicy >= 2)) return false;
     if (a.chicken && r.ing.some(([k]) => k.startsWith("chicken"))) return false;
+    if (a.pork && r.protein === "pork") return false;
     const banned = new Set(Object.keys(s.dislike).filter(k => s.dislike[k]));
     for (const [id, , keys] of ALLERGENS) if (s.allergy[id]) keys.forEach(k => banned.add(k));
     return !r.ing.some(([k]) => banned.has(k));
@@ -782,7 +783,7 @@ const DATA = {"ingredients":{"chicken":{"name":"Chicken (whole, cleaned)","unit"
   const rand = arr => arr[Math.floor(Math.random() * arr.length)];
   // Weekly protein mix: a typical Malaysian family week is mostly chicken and fish,
   // red meat about once, and egg/tofu/dhal as an occasional light night, not the default.
-  const GROUP = r => ["egg", "tofu", "veg"].includes(r.protein) ? "light" : ["fish", "seafood"].includes(r.protein) ? "fish" : ["beef", "mutton"].includes(r.protein) ? "red" : "chicken";
+  const GROUP = r => ["egg", "tofu", "veg"].includes(r.protein) ? "light" : ["fish", "seafood"].includes(r.protein) ? "fish" : ["beef", "mutton", "pork"].includes(r.protein) ? "red" : "chicken";
   function mixTarget(nights) {
     const light = nights >= 6 ? 1 : nights >= 4 ? 1 : 0;
     const red = nights >= 5 ? 1 : 0;
@@ -1113,7 +1114,7 @@ const DATA = {"ingredients":{"chicken":{"name":"Chicken (whole, cleaned)","unit"
   const CUISINE_LABEL = { Malay: "Malay", Chinese: "Chinese", Indian: "Indian", "Thai-Malay": "Kelantan-Thai" };
   const KIND_LABEL = { lauk: "Lauk", sayur: "Sayur", onepot: "Full meal", snack: "Snack / side" };   // onepot = a meal on its own (nasi goreng, mee, bubur), not "cooked in one pot"
   const SORTS = [["quick", "Quickest", "quickest first"], ["cheap", "Cheapest per plate", "cheapest first"], ["protein", "Most protein", "most protein first"], ["kcal", "Fewest calories", "fewest calories first"], ["fav", "Family favourites", "family favourites first"], ["az", "A to Z", "A to Z"]];
-  const PROTS = [["chicken", "Ayam"], ["beef", "Daging"], ["fish", "Ikan"], ["seafood", "Udang & sotong"], ["egg", "Telur & tauhu"], ["veg", "Vegetarian"]];
+  const PROTS = [["chicken", "Ayam"], ["beef", "Daging"], ["pork", "Pork"], ["fish", "Ikan"], ["seafood", "Udang & sotong"], ["egg", "Telur & tauhu"], ["veg", "Vegetarian"]];
   const TIMES = [["30", "30 min or less"], ["60", "1 hour or less"], ["any", "Any"]];
   const protGroup = r => r.protein === "mutton" ? "beef" : r.protein === "tofu" ? "egg" : r.protein;
   const platePrice = r => dishCost(r) / S.settings.people;
@@ -1272,11 +1273,11 @@ const DATA = {"ingredients":{"chicken":{"name":"Chicken (whole, cleaned)","unit"
   }
   function prefsBlock() {
     const s = S.settings;
-    const av = [["chicken", "Chicken"], ["beef", "Beef"], ["mutton", "Mutton"], ["pedas", "Very spicy"]];
+    const av = [["chicken", "Chicken"], ["beef", "Beef"], ["mutton", "Mutton"], ["pork", "Pork"], ["pedas", "Very spicy"]];
     const left = RECIPES.filter(allowed).length;
     return `<div class="field"><div class="lblrow"><span class="lbl">Allergies</span>${Object.values(s.allergy).some(Boolean) ? `<button class="link" data-clear="allergy">Clear</button>` : ""}</div><div class="seg" role="group">${ALLERGENS.map(([k, l]) => `<button data-allergy="${k}" aria-pressed="${!!s.allergy[k]}">${l}</button>`).join("")}</div><div class="hint">Removes every dish with that ingredient, including sauces (oyster sauce and belacan count as shellfish, kicap as soy and wheat). Always check product labels.</div></div>
       <div class="field"><div class="lblrow"><span class="lbl">Vegetables you don't eat</span>${Object.values(s.dislike).some(Boolean) ? `<button class="link" data-clear="dislike">Clear</button>` : ""}</div><div class="seg" role="group">${VEG.map(k => `<button data-dislike="${k}" aria-pressed="${!!s.dislike[k]}">${esc(ING[k].name.replace(/ \(.*\)/, ""))}</button>`).join("")}</div></div>
-      <div class="field"><div class="lblrow"><span class="lbl">Also leave out</span>${Object.values(s.avoid).some(Boolean) ? `<button class="link" data-clear="avoid">Clear</button>` : ""}</div><div class="seg" role="group">${av.map(([k, l]) => `<button data-avoid="${k}" aria-pressed="${!!s.avoid[k]}">${l}</button>`).join("")}</div><div class="hint">All dishes are halal</div></div>
+      <div class="field"><div class="lblrow"><span class="lbl">Also leave out</span>${Object.values(s.avoid).some(Boolean) ? `<button class="link" data-clear="avoid">Clear</button>` : ""}</div><div class="seg" role="group">${av.map(([k, l]) => `<button data-avoid="${k}" aria-pressed="${!!s.avoid[k]}">${l}</button>`).join("")}</div><div class="hint">MasakJe's own recipes are all halal. Recipes your household adds can be anything</div></div>
       <p class="sub" style="margin:0"><span class="num">${left}</span> of ${RECIPES.length} dishes match${left < 15 ? ". That's few, so expect repeats" : ""}</p>`;
   }
 
@@ -1913,7 +1914,7 @@ const DATA = {"ingredients":{"chicken":{"name":"Chicken (whole, cleaned)","unit"
   const byName = n => (n === myName() || n === "You") ? "you" : n;
   const shortName = k => ING[k].name.replace(/\s*\(.*?\)\s*/g, " ").trim();
   const CUISINES = [["Malay", "Malaysian"], ["Chinese", "Malaysian"], ["Indian", "Malaysian"], ["Thai", "Asian"], ["Japanese", "Asian"], ["Korean", "Asian"], ["Vietnamese", "Asian"], ["Other Asian", "Asian"], ["Western", "Western"]];
-  const PROTEIN_OPTS = [["chicken", "Ayam"], ["beef", "Daging"], ["mutton", "Kambing"], ["fish", "Ikan"], ["seafood", "Udang & sotong"], ["egg", "Telur"], ["tofu", "Tauhu"], ["veg", "Vegetarian"]];
+  const PROTEIN_OPTS = [["chicken", "Ayam"], ["beef", "Daging"], ["mutton", "Kambing"], ["pork", "Pork"], ["fish", "Ikan"], ["seafood", "Udang & sotong"], ["egg", "Telur"], ["tofu", "Tauhu"], ["veg", "Vegetarian"]];
   function openEditor(id, copyOf) {
     const src = id ? S.recipes[id] : copyOf ? RX[copyOf] : null;
     if (!src) { ED = loadDraft() || { id: null, name: "", cuisine: "Malay", kind: "lauk", protein: "chicken", serves: S.settings.people, mins: 30, spicy: 0, ing: [], guide: [{ t: "", ing: [], min: "", cue: "" }], from: "" }; }

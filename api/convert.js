@@ -9,7 +9,7 @@ import { aiReady, DAILY, usedToday, takeOne, giveBack, webFetch, chatJSON, logUs
 import CATALOG from "./_catalog.js";
 
 const CUISINES = ["Malay", "Chinese", "Indian", "Thai", "Japanese", "Korean", "Vietnamese", "Other Asian", "Western"];
-const PROTEINS = ["chicken", "beef", "mutton", "fish", "seafood", "egg", "tofu", "veg"];
+const PROTEINS = ["chicken", "beef", "mutton", "pork", "fish", "seafood", "egg", "tofu", "veg"];
 const CAT_LINES = Object.entries(CATALOG).map(([k, [n, u]]) => `${k} | ${n} | ${u}`).join("\n");
 
 const SYSTEM = `You convert one recipe from a web page into MasakJe's format for a Malaysian family. Reply in json only.
