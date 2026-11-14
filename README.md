@@ -43,6 +43,7 @@ python3 scripts/build_prototype.py
 - Allergies (incl. hidden in sauces) and vegetable dislikes
 - Recipe browser: sort by quickest, cheapest per plate, most protein, fewest calories, family favourites; filter by protein, time, type, heat, fridge
 - Household recipes ("Write your own" or "Make my version" of ours): shared with everyone, anyone can edit; the planner starts picking one after it has been cooked once and nobody said "Not again"
+- Find a dish (hosted app): type what you feel like eating; MasakJe shows our matching recipes, then searches the web (DeepSeek) for real recipe pages to pick from, reads the page's recipe card (or the page, via DeepSeek) and converts it into a draft with priced ingredients, pot-order steps, timers, wait-until cues and a halal check, for you to check before saving. 3 online searches per household per day (`MASAKJE_FIND_PER_DAY`); needs `DEEPSEEK_API_KEY` in Vercel. Cost per call is logged in Redis (`ailog:<date>`)
 - Defrost: an evening card for tomorrow's meat or fish, and one tap to add this week's 9 pm reminders to your calendar
 - Send the shopping list to WhatsApp, grouped by aisle
 - Sounds and springy feedback on taps, selections and completions (switch off in Settings)

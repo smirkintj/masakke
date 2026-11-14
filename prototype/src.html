@@ -250,6 +250,25 @@ h1 { font-size: 30px; line-height: 1.15; font-weight: 500; margin: 12px 0 4px; t
 .pickme .mrow span:not(.av) { font-size: 13px; color: var(--muted); }
 .or { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 13px; margin: 20px 0 8px; }
 .or::before, .or::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.fd-q .search { height: 52px; font-size: 16px; }
+.fd-wait { display: flex; gap: 12px; align-items: center; padding: 16px; border-radius: 16px; background: var(--surface); color: var(--fg2); margin: 8px 0 20px; }
+.spin { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--line); border-top-color: var(--accent); animation: spin 0.8s linear infinite; flex: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.fd-list { display: grid; gap: 8px; }
+.fd-card { display: grid; gap: 4px; width: 100%; text-align: left; padding: 14px 16px; border: 1px solid var(--line); border-radius: 18px; background: var(--card); color: var(--fg); transition: transform 120ms var(--ease); }
+.fd-card:active { transform: scale(0.985); }
+.fd-card.best { border-color: var(--accent-line); background: var(--accent-soft); }
+.fd-h { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+.fd-h b { font-weight: 500; font-size: 16px; }
+.fd-best { font-size: 12px; color: var(--accent); font-weight: 500; white-space: nowrap; }
+.fd-site { font-size: 13px; color: var(--muted); }
+.fd-note { font-size: 14px; color: var(--fg2); }
+.fd-limit { display: grid; gap: 4px; padding: 14px 16px; border-radius: 16px; background: var(--surface); margin: 8px 0 16px; }
+.fd-limit b { font-weight: 500; } .fd-limit span { font-size: 14px; color: var(--fg2); }
+.aibox { display: grid; gap: 8px; padding: 12px 14px; border-radius: 16px; background: var(--accent-soft); color: var(--fg); font-size: 14px; line-height: 1.45; margin: 4px 0 12px; }
+.aibox b { font-weight: 600; }
+.aiwarn { color: var(--neg); }
+.aibox a { color: var(--accent); font-weight: 500; }
 .chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
 .rlist { display: grid; gap: 8px; }
 .rrow { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; padding: 14px 16px; border: 1px solid var(--line); border-radius: 18px; background: var(--card); text-align: left; width: 100%; transition: background-color 150ms var(--ease); }
@@ -456,7 +475,7 @@ const DATA = /*__DATA__*/null;
     const guide = (h.guide || []).filter(st => st.t && st.t.trim()).map(st => ({ t: st.t.trim(), ing: (st.ing || []).filter(k => keys.has(k)), sec: Math.max(0, +st.sec || 0), cue: st.cue || "" }));
     return { id, name: h.name, en: `${h.cuisine || "Our"} · our recipe`, kind: h.kind || "lauk", protein: h.protein || "chicken", cuisine: h.cuisine || "Malay", mins: +h.mins || 30, spicy: +h.spicy || 0,
       ing, guide: guide.length ? guide : [{ t: "Cook it the way you usually do", ing: [...keys], sec: 0, cue: "" }], steps: guide.map(x => x.t), macro: macroOf(ing),
-      by: h.by || "You", byId: h.byId || "", editedBy: h.editedBy || "", cookedAt: h.cookedAt || 0, from: h.from || "", serves: h.serves || 4, deleted: !!h.deleted };
+      src: h.src || null, by: h.by || "You", byId: h.byId || "", editedBy: h.editedBy || "", cookedAt: h.cookedAt || 0, from: h.from || "", serves: h.serves || 4, deleted: !!h.deleted };
   }
   function syncHouseRecipes() {   // deleted ones stay in RX so a plan that still uses them keeps working
     RECIPES.splice(BUILTIN);
@@ -1125,7 +1144,7 @@ const DATA = /*__DATA__*/null;
     const list = rxList(), act = rxActive(), sortL = SORTS.find(x => x[0] === RXS.sort) || SORTS[0];
     const quick = [["kind:lauk", "Lauk"], ["kind:sayur", "Sayur"], ["kind:onepot", "One-pot"], ["time:30", "30 min or less"], ["mild", "Not spicy"]].filter(([k]) => !act.some(a => a[0] === k || (k.startsWith("time") && a[0] === "time")));
     return `<div class="enter">
-      <div class="rx-head"><h1>Recipes</h1><button class="btn primary" data-ed="new">${ic("plus", 16)}${loadDraft() ? "Your draft" : "Add"}</button></div>
+      <div class="rx-head"><h1>Recipes</h1><button class="btn primary" data-ed="new">${ic("plus", 16)}${CLOUD ? "Add" : loadDraft() ? "Your draft" : "Add"}</button></div>
       <p class="sub">${ok.length} dishes${ok.some(r => r.by) ? ` · ${ok.filter(r => r.by).length} from your household` : ""}${hidden ? `, ${hidden} hidden by your preferences` : ""}</p>
       ${tabs.length < 3 ? "" : `<div class="rtabs" role="tablist" aria-label="Cuisine">${tabs.map(([k, l]) => `<button role="tab" data-rxtab="${k}" aria-selected="${RXS.tab === k}">${l}</button>`).join("")}</div>`}
       <div class="rx-bar"><div class="search-wrap">${ic("search")}<input class="search" id="q" type="search" placeholder="Search" value="${esc(S.q)}" aria-label="Search recipes"></div><button class="btn" id="rxsort" aria-haspopup="dialog">${ic("sliders", 16)}${esc(sortL[1])}${act.length ? ` · ${act.length}` : ""}</button></div>
@@ -1334,7 +1353,7 @@ const DATA = /*__DATA__*/null;
       </div>
       ${r.by ? houseBlock(r) : ""}
       <h3>Ingredients for ${n}</h3>${ing}
-      ${r.by ? `<p class="fine">Written by your household${r.from ? `, based on our ${esc(r.from)}` : ""}. Prices and nutrition are worked out from the ingredients.</p>` : `<p class="fine">Draft recipe, not yet tested by a home cook</p>
+      ${r.by ? `<p class="fine">${r.src ? `From <a href="${esc(r.src.url)}" target="_blank" rel="noopener">${esc(r.src.site)}</a>, converted by AI and checked by your household` : `Written by your household${r.from ? `, based on our ${esc(r.from)}` : ""}`}. Prices and nutrition are worked out from the ingredients.</p>` : `<p class="fine">Draft recipe, not yet tested by a home cook</p>
       <button class="btn big" data-ed="copy:${r.id}">${ic("edit", 16)}Make my version</button>`}
     </div></div>`;
     requestAnimationFrame(() => { document.getElementById("scrim").classList.add("open"); root.querySelector(".sheet").classList.add("open"); });
@@ -1747,13 +1766,13 @@ const DATA = /*__DATA__*/null;
     if (created) { v.innerHTML = viewCreated(); return; }
     if (ob) { if (CLOUD && S.ob === -1) S.ob = 0; v.innerHTML = viewOnboarding(); return; }
     if (!S.plan || S.plan.days.length !== 7) newWeek();
-    const viewKey = S.onboarded + S.tab + (ED ? "ed" : "");
-    v.innerHTML = ED ? viewEditor() : S.tab === "week" ? viewWeek() : S.tab === "shop" ? viewShop() : S.tab === "recipes" ? viewRecipes() : S.tab === "kitchen" ? viewKitchen() : viewSetup();
+    const viewKey = S.onboarded + S.tab + (ED ? "ed" : "") + (FD ? "fd" + FD.step : "");
+    v.innerHTML = FD ? viewFind() : ED ? viewEditor() : S.tab === "week" ? viewWeek() : S.tab === "shop" ? viewShop() : S.tab === "recipes" ? viewRecipes() : S.tab === "kitchen" ? viewKitchen() : viewSetup();
     document.getElementById("tabs").innerHTML = TABS.map(([k, l, i]) => `<button class="tab" data-tab="${k}" ${S.tab === k ? 'aria-current="page"' : ""}>${ic(i, 20)}<span>${l}</span></button>`).join("");
     playTweens(viewKey !== lastView); lastView = viewKey;
     document.getElementById("where").innerHTML = `${ic("pin", 14)}<span>${esc((ctx().loc && ctx().loc.hood) || S.settings.postcode)} · ${S.settings.people} ${S.settings.people === 1 ? "person" : "people"}</span>`;
   }
-  function go(tab) { ED = null; S.tab = tab; render(); window.scrollTo({ top: 0 }); }
+  function go(tab) { ED = null; FD = null; S.tab = tab; render(); window.scrollTo({ top: 0 }); }
 
   // ---------- defrost: meat and fish for the next dinner, the evening before ----------
   const FROZEN = new Set(["chicken", "chicken_thigh", "chicken_breast", "chicken_wing", "beef", "mutton", "fish_kembung", "fish_selar", "fish_tenggiri", "fish_siakap", "fish_tilapia", "prawn", "squid", "cockle"]);
@@ -1804,6 +1823,87 @@ const DATA = /*__DATA__*/null;
     window.open("https://wa.me/?text=" + encodeURIComponent(txt), "_blank", "noopener");
   }
 
+
+  // ---------- find a dish: our recipes first, then real recipes online (hosted app only) ----------
+  let FD = null;
+  const STOPW = new Set(["ala", "macam", "style", "the", "and", "with", "sikit", "nak", "yang", "resepi", "recipe", "cara", "masak", "simple", "sedap", "mudah"]);
+  const normQ = t => String(t).toLowerCase().normalize("NFKD").replace(/[^a-z0-9 ]+/g, " ").replace(/\s+/g, " ").trim();
+  function oursFor(q) {
+    const w = normQ(q).split(" ").filter(x => x.length > 2 && !STOPW.has(x)); if (!w.length) return [];
+    return RECIPES.map(r => { const hay = " " + normQ(r.name + " " + r.en) + " "; const hit = w.filter(x => hay.includes(" " + x) || hay.includes(x + " ")).length; return { r, sc: hit / w.length }; })
+      .filter(x => x.sc >= 0.5).sort((a, b) => b.sc - a.sc || a.r.name.length - b.r.name.length).slice(0, 2).map(x => x.r);
+  }
+  async function openFind() {
+    if (!CLOUD) return openEditor();
+    ED = null; FD = { step: "input", q: "", url: "", results: [], ours: [], err: "", left: null, used: [], daily: 3, ready: true };
+    S.tab = "recipes"; closeSheet(); render(); window.scrollTo({ top: 0 });
+    try { const r = await api("find"); Object.assign(FD, { left: r.left, used: r.used || [], daily: r.daily, ready: r.ready }); if (FD.step === "input") { if (r.left === 0) FD.step = "limit"; render(); } } catch (e) { handleErr(e); }
+  }
+  async function runFind() {
+    const q = (FD.q || "").trim(); if (q.length < 3) { FD.err = "Type a dish name, e.g. ayam masak kicap"; return render(); }
+    FD.ours = oursFor(q); FD.err = ""; FD.step = "searching"; render();
+    try { const r = await api("find", { method: "POST", body: JSON.stringify({ q }) }); Object.assign(FD, { step: "results", results: r.results || [], left: r.left, used: r.used || FD.used, searched: q }); }
+    catch (e) { FD.step = e.status === 429 ? "limit" : "input"; FD.err = e.message; if (e.status === 401) return handleErr(e); }
+    render(); window.scrollTo({ top: 0 });
+  }
+  async function runConvert(url, site) {
+    FD.step = "converting"; FD.site = site || ""; FD.err = ""; render(); window.scrollTo({ top: 0 });
+    try {
+      const r = await api("convert", { method: "POST", body: JSON.stringify({ url }) });
+      const d = r.draft;
+      FD = null;
+      ED = { id: null, name: d.name, cuisine: d.cuisine, kind: d.kind, protein: d.protein, serves: d.serves, mins: d.mins, spicy: d.spicy, ing: d.ing, guide: d.guide, from: "",
+        src: r.source, ai: { halal: d.halal, unpriced: d.unpriced || [] }, iq: "", err: "", confirmDel: false };
+      saveDraft(); SFX.done(); render(); window.scrollTo({ top: 0 });
+    } catch (e) { if (e.status === 401) return handleErr(e); FD.step = e.status === 429 ? "limit" : FD.results.length ? "results" : "input"; FD.err = e.message; render(); }
+  }
+  function viewFind() {
+    const f = FD, draft = loadDraft();
+    const leftLine = f.left == null ? "" : f.left > 0 ? `${f.left} of ${f.daily} online ${f.daily === 1 ? "search" : "searches"} left today` : "No online searches left today";
+    const top = `<div class="ed-top"><button class="linkbtn" data-fd="close">${ic("back", 16)}Back</button><span class="fine" style="margin:0">${leftLine}</span></div>`;
+    const err = f.err ? `<div class="ed-err" role="alert">${esc(f.err)}</div>` : "";
+    const oursHtml = f.ours.length ? `<div class="k" style="margin:4px 0 8px">Already in MasakJe</div><div class="rlist">${f.ours.map(rxRow).join("")}</div>` : "";
+    if (!f.ready) return `<div class="enter narrow ed">${top}<h1>Find a dish</h1><p class="sub">The recipe finder isn't set up on this server yet</p><button class="btn primary big" data-fd="write">Write it yourself</button></div>`;
+    if (f.step === "searching" || f.step === "converting") return `<div class="enter narrow ed">${top}
+      <h1>${f.step === "searching" ? "Looking it up" : "Reading the recipe"}</h1>
+      <div class="fd-wait"><span class="spin" aria-hidden="true"></span><span>${f.step === "searching" ? `Searching recipe sites for "${esc(f.q)}"` : `Converting ${esc(f.site || "the page")} into MasakJe: prices, pot order, timers`}</span></div>
+      ${f.step === "searching" ? oursHtml : ""}</div>`;
+    if (f.step === "results") return `<div class="enter narrow ed">${top}
+      <h1>Is it one of these?</h1><p class="sub">Searched for "${esc(f.searched)}". Tap the recipe you mean</p>${err}
+      ${oursHtml}
+      ${f.results.length ? `<div class="k" style="margin:16px 0 8px">Found online</div><div class="fd-list">${f.results.map((r, i) => `<button class="fd-card ${i ? "" : "best"}" data-fdpick="${i}">
+        <span class="fd-h"><b>${esc(r.name)}</b>${i ? "" : `<span class="fd-best">Closest name</span>`}</span>
+        <span class="fd-site">${esc(r.site)}${r.mins ? ` · ${r.mins} min` : ""}${r.serves ? ` · serves ${r.serves}` : ""}</span>
+        ${r.note ? `<span class="fd-note">${esc(r.note)}</span>` : ""}</button>`).join("")}</div>` : `<p class="sub">No recipe pages matched. That search wasn't counted. Try another name, or write it yourself</p>`}
+      <p class="fine">We read only the page you pick and keep a link back to it. <button class="linkbtn" data-fd="again">Search again</button> · <button class="linkbtn" data-fd="write">Write it yourself</button></p></div>`;
+    if (f.step === "limit") return `<div class="enter narrow ed">${top}<h1>Find a dish</h1>
+      <div class="fd-limit"><b>Your household has used today's ${f.daily} online searches</b><span>${f.used.length ? `${esc(joinNames(Object.entries(f.used.reduce((a, n) => (a[n] = (a[n] || 0) + 1, a), {})).map(([n, c]) => `${byName(n)}${c > 1 ? ` (${c})` : ""}`)))}. ` : ""}More from midnight. Our recipes are still free to search</span></div>
+      ${oursHtml}<button class="btn big" data-fd="write" style="margin-top:12px">Write it yourself</button></div>`;
+    return `<div class="enter narrow ed">${top}
+      <h1>What do you feel like eating?</h1>
+      <p class="sub">Type it the way you'd say it. MasakJe checks our recipes first, then finds real recipes online for you to pick from</p>
+      ${draft && draft.name ? `<div class="tip">${ic("edit")}<div>You have an unsaved draft: <b>${esc(draft.name)}</b>. <button class="linkbtn" data-fd="draft">Continue it</button></div></div>` : ""}
+      <div class="search-wrap fd-q">${ic("search")}<input class="search" id="fd-q" type="search" enterkeyhint="search" maxlength="100" autocomplete="off" placeholder="e.g. ayam masak kicap mamak" value="${esc(f.q)}" aria-label="Dish to find"></div>
+      ${err}
+      <div class="k" style="margin:4px 0 8px">Try</div>
+      <div class="chips wrap">${["Sambal udang petai", "Chicken katsu curry", "Spaghetti aglio olio", "Tom yam campur"].map(t => `<button class="chip" data-fdtry="${esc(t)}">${esc(t)}</button>`).join("")}</div>
+      <button class="btn primary big" data-fd="go" ${f.left === 0 ? "disabled" : ""} style="margin-top:16px">${f.left === 0 ? "No searches left today" : "Find it"}</button>
+      <div class="or"><span>or paste a recipe link</span></div>
+      <div class="rx-bar"><input class="inp" id="fd-url" type="url" inputmode="url" autocomplete="off" placeholder="https://…" value="${esc(f.url)}" aria-label="Recipe link"><button class="btn" data-fd="url" ${f.left === 0 ? "disabled" : ""}>Read it</button></div>
+      <p class="fine">Each household gets ${f.daily} online searches a day; a pasted link counts as one, opening a result doesn't. Searching our own recipes is free. <button class="linkbtn" data-fd="write">Write it yourself</button></p>
+    </div>`;
+  }
+  function fdAction(a) {
+    const [cmd, x] = a.split(":");
+    if (cmd === "close") { FD = null; return render(); }
+    if (cmd === "write") { FD = null; dropDraftIfAi(); return openEditor(); }
+    if (cmd === "draft") { FD = null; return openEditor(); }
+    if (cmd === "again") { FD.step = "input"; FD.err = ""; render(); const q = document.getElementById("fd-q"); q && q.focus(); return; }
+    if (cmd === "go") return runFind();
+    if (cmd === "url") { const u = (FD.url || "").trim(); if (!/^https?:\/\/\S+\.\S+/.test(u)) { FD.err = "Paste a full link starting with https://"; return render(); } return runConvert(u, (() => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch (e) { return ""; } })()); }
+  }
+  const dropDraftIfAi = () => { const d = loadDraft(); if (d && d.ai) dropDraft(); };
+
   // ---------- write your own recipe ----------
   const DRAFT_KEY = "masakje.draft.v1";
   let ED = null;
@@ -1820,7 +1920,7 @@ const DATA = /*__DATA__*/null;
     else {
       const sv = id ? src.serves || 4 : 4, f = sv / 4;
       ED = { id: id || null, name: id ? src.name : `${src.name} (our way)`, cuisine: src.cuisine === "Thai-Malay" ? "Thai" : src.cuisine, kind: src.kind, protein: src.protein, serves: sv, mins: src.mins, spicy: src.spicy,
-        ing: src.ing.map(([k, q]) => [k, Math.round(q * f * 10) / 10]), guide: (src.guide || []).map(st => ({ t: st.t, ing: [...st.ing], min: st.sec ? Math.round(st.sec / 6) / 10 : "", cue: st.cue || "" })), from: id ? src.from || "" : src.name };
+        src: id ? src.src || null : null, ing: src.ing.map(([k, q]) => [k, Math.round(q * f * 10) / 10]), guide: (src.guide || []).map(st => ({ t: st.t, ing: [...st.ing], min: st.sec ? Math.round(st.sec / 6) / 10 : "", cue: st.cue || "" })), from: id ? src.from || "" : src.name };
     }
     ED.iq = ""; ED.err = ""; ED.confirmDel = false;
     closeSheet(); S.tab = "recipes"; render(); window.scrollTo({ top: 0 });
@@ -1838,7 +1938,10 @@ const DATA = /*__DATA__*/null;
     const unit = k => ING[k].unit === "pc" ? "pcs" : ING[k].unit;
     return `<div class="enter narrow ed">
       <div class="ed-top"><button class="linkbtn" data-ed="cancel">${ic("back", 16)}Back</button><span class="fine" style="margin:0">${d.id ? "Editing for everyone in your household" : "Draft kept on this phone"}</span></div>
-      <h1>${d.id ? "Edit recipe" : d.from ? "Make your version" : "Write your own"}</h1>
+      ${d.ai ? `<div class="aibox"><div><b>Check before you cook.</b> Converted from <a href="${esc(d.src.url)}" target="_blank" rel="noopener">${esc(d.src.site)}</a> by AI${d.src.via === "card" ? ", from the recipe card on that page" : ""}. Amounts, step order and the halal check can be wrong</div>
+        ${d.ai.halal && !d.ai.halal.ok ? `<div class="aiwarn"><b>Not halal as written.</b> ${esc((d.ai.halal.notes || []).join(" · "))}</div>` : d.ai.halal && d.ai.halal.notes && d.ai.halal.notes.length ? `<div>${esc(d.ai.halal.notes.join(" · "))}</div>` : ""}
+        ${d.ai.unpriced && d.ai.unpriced.length ? `<div><b>Not in our price list:</b> ${esc(d.ai.unpriced.join(", "))}. Buy these separately; they're kept in the steps where the page uses them</div>` : ""}</div>` : ""}
+      <h1>${d.id ? "Edit recipe" : d.ai ? "Check the recipe" : d.from ? "Make your version" : "Write your own"}</h1>
       ${d.from && !d.id ? `<p class="sub">Starting from our ${esc(d.from)}. Change anything</p>` : ""}
       <div class="field"><label for="ed-name">Name</label><input class="inp" id="ed-name" data-edf="name" maxlength="60" placeholder="e.g. Ayam goreng Mak" value="${esc(d.name)}"></div>
       <div class="ed-grid">
@@ -1875,13 +1978,13 @@ const DATA = /*__DATA__*/null;
     const id = d.id || "h" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
     S.recipes[id] = { name: name.slice(0, 60), cuisine: d.cuisine, kind: d.kind, protein: d.protein, serves: +d.serves, mins: Math.max(5, Math.min(600, Math.round(+d.mins || 30))), spicy: +d.spicy,
       ing: d.ing.map(([k, q]) => [k, Math.round(+q * f * 10) / 10]), guide: steps.map((st, si) => ({ t: st.t.trim().slice(0, 500), ing: [...st.ing.filter(k => d.ing.some(x => x[0] === k)), ...(si ? [] : d.ing.map(x => x[0]).filter(k => !steps.some(o => o.ing.includes(k))))], sec: Math.round((+st.min || 0) * 60), cue: (st.cue || "").trim() })),
-      from: d.from || "", by: old ? old.by : who, byId: old ? old.byId : meKey(), at: old ? old.at : Date.now(), editedBy: old ? who : "", editedAt: old ? Date.now() : 0, cookedAt: old ? old.cookedAt || 0 : 0 };
+      from: d.from || "", src: d.src ? { url: d.src.url, site: d.src.site } : old && old.src ? old.src : null, by: old ? old.by : who, byId: old ? old.byId : meKey(), at: old ? old.at : Date.now(), editedBy: old ? who : "", editedAt: old ? Date.now() : 0, cookedAt: old ? old.cookedAt || 0 : 0 };
     syncHouseRecipes(); save(); if (!d.id) dropDraft();
     ED = null; SFX.done(); render(); toast(old ? "Saved for everyone" : "Added to your recipes"); openRecipe(id);
   }
   function edAction(a) {
     const [cmd, x, y] = a.split(":"), d = ED;
-    if (cmd === "new") return openEditor();
+    if (cmd === "new") return CLOUD ? openFind() : openEditor();
     if (cmd === "edit") return openEditor(x);
     if (cmd === "copy") return openEditor(null, x);
     if (cmd === "plan") { const [di, slot] = [+x, y], id = a.split(":")[3]; closeSheet(); captureTweens(); S.plan.days[di] = slot === "onepot" ? { onepot: id } : { ...S.plan.days[di], [slot]: id }; save(); SFX.step(); go("week"); toast(`${RX[id].name} is on ${DAYS_LONG[di]}`); return; }
@@ -1936,7 +2039,7 @@ const DATA = /*__DATA__*/null;
     requestAnimationFrame(() => { const n = q && document.querySelector(q); if (n) G.fromTo(n, { scale: 0.92 }, { scale: 1, duration: 0.32, ease: "back.out(2.6)", clearProps: "transform" }); });
   }, true);
   document.addEventListener("click", e => {
-    const el = e.target.closest("[data-tab],[data-go],[data-swap],[data-off],[data-recipe],[data-filter],[data-ed],[data-thaw],[data-thawcal],#waShare,[data-rxtab],[data-rxon],[data-rxoff],[data-rxreset],#rxsort,[data-people],[data-night],[data-avoid],[data-allergy],[data-dislike],[data-pick],[data-sound],[data-clear],[data-pneed],[data-applysave],[data-rate],[data-tonight],[data-pickday],[data-cookday],[data-cookone],#regen,#replan,#where,#lock,#shopped,#newweek,#obNext,#obBack,#guideOk,#logo,#savehood,[data-hide],[data-amode],#doCreate,#doJoin,#doJoinNew,[data-joinas],#copyPin,#afterCreated,#leave,#leaveYes,#moreshops,#addshop,#saveshop,#replanK,[data-kadd],[data-kdel],[data-kmove],[data-ksoon]");
+    const el = e.target.closest("[data-tab],[data-go],[data-swap],[data-off],[data-recipe],[data-filter],[data-ed],[data-fd],[data-fdpick],[data-fdtry],[data-thaw],[data-thawcal],#waShare,[data-rxtab],[data-rxon],[data-rxoff],[data-rxreset],#rxsort,[data-people],[data-night],[data-avoid],[data-allergy],[data-dislike],[data-pick],[data-sound],[data-clear],[data-pneed],[data-applysave],[data-rate],[data-tonight],[data-pickday],[data-cookday],[data-cookone],#regen,#replan,#where,#lock,#shopped,#newweek,#obNext,#obBack,#guideOk,#logo,#savehood,[data-hide],[data-amode],#doCreate,#doJoin,#doJoinNew,[data-joinas],#copyPin,#afterCreated,#leave,#leaveYes,#moreshops,#addshop,#saveshop,#replanK,[data-kadd],[data-kdel],[data-kmove],[data-ksoon]");
     if (!el) return;
     const s = S.settings;
     if (el.dataset.tab) return go(el.dataset.tab);
@@ -1946,6 +2049,9 @@ const DATA = /*__DATA__*/null;
     if (el.dataset.off !== undefined) return toggleOff(+el.dataset.off);
     if (el.dataset.recipe) return openRecipe(el.dataset.recipe);
     if (el.dataset.ed) return edAction(el.dataset.ed);
+    if (el.dataset.fd) return fdAction(el.dataset.fd);
+    if (el.dataset.fdpick !== undefined) { const r = FD.results[+el.dataset.fdpick]; return r && runConvert(r.url, r.site); }
+    if (el.dataset.fdtry) { FD.q = el.dataset.fdtry; return runFind(); }
     if (el.dataset.thaw) { S.flow.thawed = { ...(S.flow.thawed || {}), [el.dataset.thaw]: (CLOUD && myName()) || "You" }; save(); SFX.done(); const c = el.closest(".thaw"); if (G && c) { G.to(c, { opacity: 0, height: 0, marginBottom: 0, paddingTop: 0, paddingBottom: 0, duration: 0.35, ease: EASE }); setTimeout(render, 380); } else render(); return; }
     if (el.dataset.thawcal) return thawCalendar();
     if (el.id === "waShare") return shareList();
@@ -2025,9 +2131,16 @@ const DATA = /*__DATA__*/null;
     }
     if (t.id === "budget") { s.budget = Math.max(20, +t.value || DEFAULTS.budget); save(); }
   });
+  document.addEventListener("keydown", e => {
+    if (e.key !== "Enter" || !FD) return;
+    if (e.target.id === "fd-q") { e.preventDefault(); FD.q = e.target.value; runFind(); }
+    else if (e.target.id === "fd-url") { e.preventDefault(); FD.url = e.target.value; fdAction("url"); }
+  });
   document.addEventListener("input", e => {
     const t = e.target;
     if (edInput(t)) return;
+    if (FD && t.id === "fd-q") { FD.q = t.value; return; }
+    if (FD && t.id === "fd-url") { FD.url = t.value; return; }
     if (t.id === "q") { S.q = t.value; const pos = t.selectionStart; render(); const q = document.getElementById("q"); q.focus(); q.setSelectionRange(pos, pos); }
     if (t.id === "shopq" || t.id === "newshop" || t.id === "kq" || t.id === "hoodtext") {
       if (t.id === "shopq") S.shopQ = t.value; else if (t.id === "kq") S.kq = t.value; else if (t.id === "hoodtext") S.hoodDraft = t.value; else S.shopDraft = t.value;

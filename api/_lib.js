@@ -19,9 +19,11 @@ function memExec([cmd, ...a]) {
     case "SET": { if (a.includes("NX") && mem.kv.has(a[0])) return null; mem.kv.set(a[0], String(a[1])); return "OK"; }
     case "DEL": { const n = a.filter(k => mem.kv.delete(k) | mem.hash.delete(k)).length; return n; }
     case "INCR": { const v = Number(mem.kv.get(a[0]) || 0) + 1; mem.kv.set(a[0], String(v)); return v; }
+    case "DECR": { const v = Number(mem.kv.get(a[0]) || 0) - 1; mem.kv.set(a[0], String(v)); return v; }
     case "EXPIRE": mem.exp.set(a[0], Date.now() + Number(a[1]) * 1000); return 1;
     case "HSET": { const h = mem.hash.get(a[0]) || new Map(); for (let i = 1; i < a.length; i += 2) h.set(a[i], String(a[i + 1])); mem.hash.set(a[0], h); return (a.length - 1) / 2; }
     case "HDEL": { const h = mem.hash.get(a[0]); if (!h) return 0; return a.slice(1).filter(f => h.delete(f)).length; }
+    case "HGET": { const h = mem.hash.get(a[0]); return h && h.has(a[1]) ? h.get(a[1]) : null; }
     case "HGETALL": { const h = mem.hash.get(a[0]); return h ? [...h.entries()].flat() : []; }
     default: throw new Error("memory store: unsupported " + c);
   }

@@ -47,5 +47,13 @@
         }
       ]
     }
-  ]
+  ],
+  "functions": {
+    "api/find.js": {
+      "maxDuration": 30
+    },
+    "api/convert.js": {
+      "maxDuration": 60
+    }
+  }
 }
