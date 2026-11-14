@@ -46,6 +46,7 @@ python3 scripts/build_prototype.py
 - Find a dish (hosted app): type what you feel like eating; MasakJe shows our matching recipes, then searches the web (DeepSeek) for real recipe pages to pick from, reads the page's recipe card (or the page, via DeepSeek) and converts it into a draft with priced ingredients, pot-order steps, timers and wait-until cues, for you to check before saving. It doesn't filter by diet: what a household eats is its own choice. 3 online searches per household per day (`MASAKJE_FIND_PER_DAY`); needs `DEEPSEEK_API_KEY` in Vercel. Cost per call is logged in Redis (`ailog:<date>`)
 - Defrost: an evening card for tomorrow's meat or fish, and one tap to add this week's 9 pm reminders to your calendar
 - Send the shopping list to WhatsApp, grouped by aisle
+- Kitchen art: a flat, animated drawing for every ingredient (shopping list, kitchen, cooking checklist) and cooking method (tumis, goreng, rebus, kukus, bakar, kacau, tumbuk, gaul, prep, serve). Each cooking step shows its method, worked out from the step text; recipe cards show a plated dish and how it's cooked. Drawn in code (`scripts/art_lib.py`), no image files; still with reduce motion
 - Sounds and springy feedback on taps, selections and completions (switch off in Settings)
 
 ## Weekly refresh

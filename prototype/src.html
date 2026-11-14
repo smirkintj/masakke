@@ -443,6 +443,26 @@ h1 { font-size: 30px; line-height: 1.15; font-weight: 500; margin: 12px 0 4px; t
   .tabs-in { max-width: 640px; }
   .narrow { max-width: 640px; }
 }
+/*__ART_CSS__*/
+.iart { width: 40px; height: 40px; border-radius: 12px; background: var(--accent-soft); display: grid; place-items: center; flex: none; }
+.iart svg { width: 34px; }
+.item.wa { grid-template-columns: 28px 40px minmax(0, 1fr) auto; }
+.item.kit { gap: 10px; padding-left: 12px; padding-right: 8px; }
+.item.kit .iart { width: 32px; height: 32px; border-radius: 10px; }
+.item.kit .iart svg { width: 27px; }
+.prep label .iart { width: 32px; height: 32px; border-radius: 10px; }
+.prep label .iart svg { width: 27px; }
+.need-chip .iart { width: 22px; height: 22px; background: none; display: inline-grid; vertical-align: -6px; margin-right: 2px; }
+.need-chip .iart svg { width: 22px; }
+.cook-art { position: relative; border-radius: 28px; background: var(--accent-soft); display: grid; place-items: center; padding: 6px 0 0; margin-bottom: 14px; }
+.cook-art .art { width: min(230px, 60vw); }
+.mtag { position: absolute; left: 14px; top: 12px; height: 26px; padding: 0 10px; border-radius: 13px; background: var(--card); font-size: 12px; font-weight: 600; letter-spacing: 0.02em; color: var(--accent); display: inline-flex; align-items: center; }
+.dish-hero { border-radius: 24px; background: var(--accent-soft); margin: 4px 0 14px; overflow: hidden; }
+.dish-hero .art svg { width: 100%; }
+.methods { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin: 4px 0 14px; }
+.methods div { flex: none; display: grid; gap: 4px; justify-items: center; font-size: 12px; color: var(--fg2); }
+.methods .art { width: 60px; height: 60px; border-radius: 18px; background: var(--surface); display: grid; place-items: center; }
+.methods .art svg { width: 50px; }
 </style>
 
 <div class="app" id="app">
@@ -1049,7 +1069,7 @@ const DATA = /*__DATA__*/null;
     const jgLine = r => r.src === "Jaya Grocer" ? `<div class="q"><a href="${esc(JG.items[r.k].url)}" target="_blank" rel="noopener" style="color:var(--fg2)">${esc(JG.items[r.k].title)} · RM ${JG.items[r.k].price.toFixed(2)}</a></div>` : "";
     const row = r => {
       const done = !!S.bought[r.k];
-      return `<label class="item ${done ? "done" : ""}"><input type="checkbox" id="b-${r.k}" data-bought="${r.k}" ${done ? "checked" : ""}><div><div class="n">${esc(r.it.name)}</div><div class="q"><b style="font-weight:600;color:var(--fg2)">${r.src === "Jaya Grocer" ? `${r.packs} × ${r.it.unit === "pc" && JG.items[r.k].size % 1 ? "pack" : qty(JG.items[r.k].size, r.it.unit, r.k)}` : qty(r.buy, r.it.unit, r.k)}</b><span>· ${unitPrice(r.k)}</span>${srcTag(r.src)}</div>${jgLine(r)}${isPending("bought." + r.k) ? `<div class="q pending">${ic("clock", 12)}Waiting to sync</div>` : S.bought[r.k] && S.bought[r.k].by ? `<div class="q">Ticked by ${esc(S.bought[r.k].by === myName() ? "you" : S.bought[r.k].by)}</div>` : ""}${r.have ? `<div class="q">${qty(r.have, r.it.unit, r.k)} already in your ${S.kitchen[r.k] ? S.kitchen[r.k].where : "kitchen"}</div>` : ""}${r.buy - r.need > r.it.pack * 0.25 && r.it.unit !== "pc" ? `<div class="q">Recipes use ${qty(r.need, r.it.unit, r.k)}, the rest goes to your fridge</div>` : ""}</div><span class="p">${rm(r.cost)}</span></label>`;
+      return `<label class="item wa ${done ? "done" : ""}"><input type="checkbox" id="b-${r.k}" data-bought="${r.k}" ${done ? "checked" : ""}>${ingArt(r.k, all.indexOf(r))}<div><div class="n">${esc(r.it.name)}</div><div class="q"><b style="font-weight:600;color:var(--fg2)">${r.src === "Jaya Grocer" ? `${r.packs} × ${r.it.unit === "pc" && JG.items[r.k].size % 1 ? "pack" : qty(JG.items[r.k].size, r.it.unit, r.k)}` : qty(r.buy, r.it.unit, r.k)}</b><span>· ${unitPrice(r.k)}</span>${srcTag(r.src)}</div>${jgLine(r)}${isPending("bought." + r.k) ? `<div class="q pending">${ic("clock", 12)}Waiting to sync</div>` : S.bought[r.k] && S.bought[r.k].by ? `<div class="q">Ticked by ${esc(S.bought[r.k].by === myName() ? "you" : S.bought[r.k].by)}</div>` : ""}${r.have ? `<div class="q">${qty(r.have, r.it.unit, r.k)} already in your ${S.kitchen[r.k] ? S.kitchen[r.k].where : "kitchen"}</div>` : ""}${r.buy - r.need > r.it.pack * 0.25 && r.it.unit !== "pc" ? `<div class="q">Recipes use ${qty(r.need, r.it.unit, r.k)}, the rest goes to your fridge</div>` : ""}</div><span class="p">${rm(r.cost)}</span></label>`;
     };
     const sec = order.filter(a => groups[a]).map(a => {
       const g = groups[a].sort((x, y) => (!!S.bought[x.k] - !!S.bought[y.k]) || y.cost - x.cost);
@@ -1057,7 +1077,7 @@ const DATA = /*__DATA__*/null;
       return `<div class="group"><h3><span>${a}</span><span>${gd}/${g.length}</span></h3><div class="list">${g.map(row).join("")}</div></div>`;
     }).join("");
     const prow = r => { const need = !!S.pantryNeed[r.k];
-      return `<div class="item" style="grid-template-columns:minmax(0,1fr) auto"><div><div class="n">${esc(r.it.name)}</div><div class="q"><span>uses ${qty(r.q, r.it.unit, r.k)}</span><span>· ${unitPrice(r.k)}</span></div></div>
+      return `<div class="item" style="grid-template-columns:40px minmax(0,1fr) auto">${ingArt(r.k)}<div><div class="n">${esc(r.it.name)}</div><div class="q"><span>uses ${qty(r.q, r.it.unit, r.k)}</span><span>· ${unitPrice(r.k)}</span></div></div>
         <div class="toggle" role="group" aria-label="${esc(r.it.name)}"><button data-pneed="${r.k}:0" aria-pressed="${!need}">Have</button><button data-pneed="${r.k}:1" aria-pressed="${need}">Need</button></div></div>`; };
     const lockNote = "";
     const pct = all.length ? got / all.length : 0;
@@ -1085,7 +1105,7 @@ const DATA = /*__DATA__*/null;
     const q = (S.kq || "").trim().toLowerCase();
     const adds = q ? Object.entries(ING).filter(([k, it]) => !S.kitchen[k] && it.name.toLowerCase().includes(q)).slice(0, 8) : [];
     const row = ([k, v]) => { const it = ING[k];
-      return `<div class="item" style="grid-template-columns:1fr auto auto"><div><div class="n">${esc(it.name)}${v.soon ? ' <span class="tag ok">Use soon</span>' : ""}${v.leftover ? ' <span class="tag">Leftover</span>' : ""}</div>
+      return `<div class="item kit" style="grid-template-columns:32px minmax(0,1fr) auto auto">${ingArt(k, K.findIndex(x => x[0] === k))}<div><div class="n">${esc(it.name)}${v.soon ? ' <span class="tag ok">Use soon</span>' : ""}${v.leftover ? ' <span class="tag">Leftover</span>' : ""}</div>
         <div class="q"><button class="link" style="font-weight:500" data-kmove="${k}">Move to ${v.where === "fridge" ? "freezer" : "fridge"}</button><button class="link" style="font-weight:500" data-ksoon="${k}">${v.soon ? "Not urgent" : "Use soon"}</button></div></div>
         <label style="display:flex;align-items:center;gap:6px"><input class="inp" id="kq-${k}" data-kqty="${k}" type="number" inputmode="decimal" min="0" value="${Math.round(v.q)}" style="width:84px;height:40px;padding:0 10px;text-align:right" aria-label="Amount of ${esc(it.name)}"><span class="q" style="margin:0">${it.unit === "pc" ? "pcs" : it.unit}</span></label>
         <button class="icon-btn" data-kdel="${k}" aria-label="Remove ${esc(it.name)}">${ic("trash", 18)}</button></div>`; };
@@ -1342,9 +1362,11 @@ const DATA = /*__DATA__*/null;
     const root = document.getElementById("sheetRoot");
     root.innerHTML = `<div class="scrim" id="scrim"></div><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sh-t"><div class="sheet-in">
       <div class="grab"></div><button class="icon-btn close" id="shClose" aria-label="Close">${ic("x", 18)}</button>
+      <div class="dish-hero">${dishArt(r)}</div>
       <h2 id="sh-t">${esc(r.name)}</h2><div style="color:var(--fg2)">${esc(r.en)}</div>
       <div class="meta"><span class="tag">${ic("clock", 12)}${r.mins} min</span><span class="tag">${r.guide.length} steps</span><span class="tag">${esc(r.cuisine)}</span>${r.spicy >= 2 ? '<span class="tag pedas">Pedas</span>' : r.spicy ? '<span class="tag">Mild heat</span>' : ""}<span class="tag num">${rm(dishCost(r))} for ${n}</span></div>
       ${macroBox(r)}
+      ${(() => { const ms = methodsOf(r); return ms.length ? `<div class="k" style="margin:0 0 6px">How it's cooked</div><div class="methods">${ms.map(m => `<div>${methodArt(m)}<span>${METHOD_LABEL[m]}</span></div>`).join("")}</div>` : ""; })()}
       <button class="btn primary big" data-cookone="${r.id}">${ic("flame")}Start cooking</button>
       <div class="verdict">
         <div class="vh">What your family thinks</div>
@@ -1488,19 +1510,20 @@ const DATA = /*__DATA__*/null;
         <div class="meter" style="margin-bottom:12px" role="progressbar" aria-valuemin="0" aria-valuemax="${keys.length}" aria-valuenow="${ready}" aria-label="Ingredients ready"><div data-tw="prep" data-s="${(ready / keys.length).toFixed(3)}" style="transform:scaleX(${(ready / keys.length).toFixed(3)})"></div></div>
         ${(() => { const miss = C.day != null ? new Set(missingFor(C.day).map(m => m.k)) : new Set(); C.miss = miss;
           return `${miss.size ? `<div class="tip">${ic("cart")}<div>${miss.size} ${miss.size === 1 ? "item isn't" : "items aren't"} ticked as bought yet. Check you have ${miss.size === 1 ? "it" : "them"}, or swap something similar</div></div>` : ""}
-        <div class="prep">${keys.map(k => `<label><input type="checkbox" data-prep="${k}" ${C.prepped[k] ? "checked" : ""}><span>${esc(ING[k].name)}${miss.has(k) ? '<span class="nb">not bought</span>' : ""}</span><span class="q">${qty(merged[k], ING[k].unit, k)}</span></label>`).join("")}</div>`; })()}`;
+        <div class="prep">${keys.map(k => `<label><input type="checkbox" data-prep="${k}" ${C.prepped[k] ? "checked" : ""}>${ingArt(k, keys.indexOf(k))}<span>${esc(ING[k].name)}${miss.has(k) ? '<span class="nb">not bought</span>' : ""}</span><span class="q">${qty(merged[k], ING[k].unit, k)}</span></label>`).join("")}</div>`; })()}`;
       foot = `<button class="btn" id="ckBack">Close</button><button class="btn primary" id="ckNext">${ic("play")}Start cooking</button>`;
     } else if (C.step < total) {
       const st = C.steps[C.step], kind = dishKind(st);
       const tag = `<div class="dtag ${kind}">${esc(dishLabel(st))}${st.parallel ? " · at the same time" : ""}</div>`;
-      const need = st.ing.length ? `<div class="need"><span class="lbl">You need</span><div class="need-list">${st.ing.map(([k, q]) => `<span class="need-chip">${esc(ING[k].name)} <b>${qty(q, ING[k].unit, k)}</b></span>`).join("")}</div></div>` : "";
+      const need = st.ing.length ? `<div class="need"><span class="lbl">You need</span><div class="need-list">${st.ing.map(([k, q]) => `<span class="need-chip">${ingArt(k)}${esc(ING[k].name)} <b>${qty(q, ING[k].unit, k)}</b></span>`).join("")}</div></div>` : "";
       let timer = "";
       if (st.sec) {
         const t = C.timers[C.step] || { left: st.sec, running: false };
         timer = `<div class="timer ${t.rang ? "ring" : ""}"><div><div class="clock" data-tclock="${C.step}">${fmtClock(t.left)}</div><div class="lbl">${t.rang ? "Time's up" : t.running ? "Running. You can go to the next step" : "Timer"}</div></div><div class="acts">${t.rang && !t.acked ? `<button class="btn primary" id="tAck">${ic("check")}Stop alarm</button>` : t.running ? `<button class="btn" id="tPause" aria-label="Pause timer">${ic("pause")}</button>` : `<button class="btn primary" id="tStart">${ic("play")}${t.left === st.sec ? "Start" : "Resume"}</button>`}${t.left !== st.sec && !(t.rang && !t.acked) ? `<button class="btn" id="tReset" aria-label="Reset timer">${ic("reset")}</button>` : ""}</div></div>`;
       }
       const cue = st.cue ? `<div class="cue"><span>Wait until</span>${esc(st.cue)}</div>` : "";
-      body = `<div class="step-no">Step ${C.step + 1} of ${total}</div>${tag}<h2 class="step-t">${esc(st.t)}</h2>${need}${cue}${timer}`;
+      const mth = methodOf(st.t);
+      body = `<div class="cook-art"><span class="mtag">${METHOD_LABEL[mth].toUpperCase()}</span>${methodArt(mth)}</div><div class="step-no">Step ${C.step + 1} of ${total}</div>${tag}<h2 class="step-t">${esc(st.t)}</h2>${need}${cue}${timer}`;
       foot = `<button class="btn" id="ckBack">Back</button><button class="btn primary" id="ckNext">${C.step + 1 < total ? "Next" : "Finish"}</button>`;
     } else {
       const took = C.started ? Math.max(1, Math.round((Date.now() - C.started) / 60000)) : 0;
@@ -1904,6 +1927,50 @@ const DATA = /*__DATA__*/null;
     if (cmd === "url") { const u = (FD.url || "").trim(); if (!/^https?:\/\/\S+\.\S+/.test(u)) { FD.err = "Paste a full link starting with https://"; return render(); } return runConvert(u, (() => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch (e) { return ""; } })()); }
   }
   const dropDraftIfAi = () => { const d = loadDraft(); if (d && d.ai) dropDraft(); };
+
+
+  // ---------- kitchen art (drawings built by scripts/art_lib.py) ----------
+  const ART = DATA.art || { ing: {}, method: {} };
+  const ingArt = (k, i = 0) => ART.ing[k] ? `<span class="art iart" aria-hidden="true"><svg viewBox="0 0 120 120"><g class="a-idle" style="animation-delay:${(i % 7) * 0.45}s">${ART.ing[k]}</g></svg></span>` : "";
+  const METHOD_LABEL = { tumis: "Tumis", goreng: "Goreng", rebus: "Rebus", kukus: "Kukus", bakar: "Bakar", kacau: "Kacau", tumbuk: "Tumbuk", gaul: "Gaul", prep: "Prep", serve: "Serve" };
+  const METHOD_RULES = [   // first match wins: frying a paste is tumis, frying chicken is goreng
+    ["tumis", /\b(tumis|saut[eé]|stir[- ]?fr|pecah minyak|fragrant|fry (the |all |in )?(blended|ground|pounded|paste|spice|onion|garlic|shallot|chil|aromatic|ginger|lemongrass|rempah|curry|cinnamon|star anise|cardamom|clove|fennel|cumin|mustard|whole spice))/],
+    ["goreng", /\b(deep[- ]?fr|goreng|shallow[- ]?fr|pan[- ]?fr|fry|fried)/],
+    ["kukus", /\b(steam|kukus)/],
+    ["bakar", /\b(grill|bakar|roast|bake|toast|char|broil|air[- ]?fr)/],
+    ["rebus", /\b(boil|rebus|blanch|parboil|poach|rice cooker)/],
+    ["tumbuk", /\b(pound|tumbuk|blend|kisar|grind|pur[eé]e|blitz)/],
+    ["kacau", /\b(simmer|stir|kacau|reduce|thicken|santan|coconut milk|stock)/],
+    ["gaul", /\b(mix|toss|gaul|marinat|season|combine|coat|rub|whisk|beat)/],
+    ["prep", /^(cut|slice|chop|dice|peel|wash|rinse|clean|soak|mince|shred|trim|halve|quarter|score|gather|prepare|pat)/],   // only when the step starts with it: "add the sliced onion" is cooking
+    ["serve", /\b(serve|garnish|dish out|plate|sprinkle)/],
+  ];
+  const methodOf = t => { t = String(t || "").toLowerCase(); for (const [m, re] of METHOD_RULES) if (re.test(t)) return m; return "kacau"; };
+  const methodArt = m => ART.method[m] ? `<span class="art" aria-hidden="true"><svg viewBox="0 0 120 120">${ART.method[m]}</svg></span>` : "";
+  const methodsOf = r => [...new Set((r.guide || []).map(st => methodOf(st.t)).filter(m => m !== "serve"))].slice(0, 5);
+  // A plated dish for the recipe card: sauce colour from what's in it, the main item on the plate, aromatics around it.
+  const MAIN_ORDER = ["chicken", "chicken_thigh", "chicken_wing", "chicken_breast", "beef", "mutton", "fish_kembung", "fish_selar", "fish_siakap", "fish_tilapia", "fish_tenggiri", "prawn", "squid", "cockle", "egg", "tofu", "tempe", "yellow_mee", "kuetiau", "bihun", "rice", "dhal", "salted_fish", "ikan_bilis"];
+  const AROMA = ["chili_red", "chili_padi", "shallot", "garlic", "lemongrass", "ginger", "lime", "curry_leaves", "spring_onion", "tomato", "star_anise", "cinnamon", "galangal", "chili_green", "dried_chili", "kicap_manis", "santan"];
+  const NOODLE = { yellow_mee: "#f2c14e", kuetiau: "#f7f2e4", bihun: "#fbf8ef" };
+  function dishArt(r) {
+    const has = k => r.ing.some(([x]) => x === k), any = re => r.ing.some(([x]) => re.test(x));
+    // most telling base first: a tomato-chilli gravy stays red even with a little santan in it
+    const sauce = r.kind === "sayur" && !has("santan") && !has("oyster_sauce") && !has("kicap_manis") ? "#6aa84f" : has("tomyam_paste") ? "#e0622c" : has("tomato_sauce") || (has("tomato") && has("dried_chili")) ? "#c3361c"
+      : has("kicap_manis") || has("soy_dark") ? "#5a2a14" : any(/^curry|kurma/) ? "#d9822b" : has("santan") && has("turmeric_powder") ? "#efc65a" : has("santan") ? "#f1dfaa"
+      : has("dried_chili") || has("chili_powder") ? "#b8321b" : has("soup_spice") ? "#e9d3a0" : has("oyster_sauce") ? "#8a5a3b" : "#c8420c";
+    const main = (r.kind === "onepot" && ["yellow_mee", "kuetiau", "bihun", "rice"].find(has)) || MAIN_ORDER.find(has) || (r.ing.find(([k]) => ING[k].aisle === "Vegetables") || [])[0];
+    const around = AROMA.filter(k => has(k) && k !== main).slice(0, 4);
+    const spots = [[18, 14, -12], [196, 10, 10], [20, 78, 8], [194, 76, -8]];
+    const side = around.map((k, i) => `<g transform="translate(${spots[i][0]} ${spots[i][1]}) scale(.36)"><g class="a-idle" style="animation-delay:${i * 0.6}s">${ART.ing[k] || ""}</g></g>`).join("");
+    return `<span class="art" aria-hidden="true"><svg viewBox="0 0 240 132">
+      <ellipse cx="120" cy="120" rx="80" ry="6" fill="#1c1917" opacity=".07"/>
+      <ellipse cx="120" cy="88" rx="78" ry="28" fill="#fff" stroke="#efe3d4" stroke-width="2"/><ellipse cx="120" cy="86" rx="64" ry="20" fill="#f6efe3"/>
+      <ellipse cx="120" cy="86" rx="54" ry="15" fill="${sauce}"/><ellipse cx="104" cy="82" rx="14" ry="3" fill="#fff" opacity=".18"/>
+      ${NOODLE[main] ? [0, 1, 2, 3, 4].map(i => `<path d="M${84 + i * 6} ${92 - (i % 2) * 4} C${96 + i * 4} ${60 + i * 2} ${128 + i * 2} ${66 + i * 3} ${150 - i * 3} ${88 - (i % 3) * 3}" fill="none" stroke="${NOODLE[main]}" stroke-width="${main === "kuetiau" ? 6 : main === "bihun" ? 2.5 : 4}" stroke-linecap="round"/>`).join("") + (has("egg") ? `<g transform="translate(118 60) scale(.25)">${ART.ing.egg}</g>` : "")
+        : main && ART.ing[main] ? `<g transform="translate(84 40) scale(.6)">${ART.ing[main]}</g>` : ""}
+      ${[100, 120, 140].map((x, i) => `<path class="a-st" style="animation-delay:${i * 0.8}s" d="M${x} 46 q-5 -6 0 -12 q5 -6 0 -12" fill="none" stroke="#cfc8c1" stroke-width="3.5" stroke-linecap="round"/>`).join("")}
+      ${side}</svg></span>`;
+  }
 
   // ---------- write your own recipe ----------
   const DRAFT_KEY = "masakje.draft.v1";
