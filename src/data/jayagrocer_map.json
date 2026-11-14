@@ -332,6 +332,62 @@
   },
   "fennel": {
    "match": "fennel|jintan manis|adas"
+  },
+  "spaghetti": {
+   "match": "spaghetti",
+   "exclude": "sauce|ready|instant|whole ?wheat|gluten"
+  },
+  "sohun": {
+   "match": "glass noodle|sohun|tang hoon|vermicelli.*(mung|bean)",
+   "exclude": "soup|cup|instant"
+  },
+  "butter": {
+   "match": "\\b(salted|unsalted|pure|dairy) butter\\b|\\bbutter (block|250|227|200)",
+   "exclude": "peanut|cookie|biscuit|cake|garlic|spread|margarine|lettuce|head|bean|bread|popcorn|croissant|ghee|fish|squash"
+  },
+  "cheese": {
+   "match": "cheddar",
+   "exclude": "cracker|biscuit|snack|bread|sauce|cake|stick"
+  },
+  "milk": {
+   "match": "fresh milk|full cream milk|pasteuri[sz]ed milk",
+   "exclude": "chocolate|strawberry|banana|coffee|uht|powder|soy|oat|almond|condensed|evaporated"
+  },
+  "mushroom": {
+   "match": "button mushroom|cendawan butang|white mushroom",
+   "exclude": "can|soup|dried"
+  },
+  "lemon": {
+   "match": "^lemon|lemon \\(",
+   "exclude": "juice|tea|grass|cake|cookie|sauce|drink|flavour"
+  },
+  "breadcrumbs": {
+   "match": "bread ?crumb|panko",
+   "exclude": "chicken|fish|nugget"
+  },
+  "gochujang": {
+   "match": "gochujang|red pepper paste",
+   "exclude": "sauce mix|ramyun|noodle"
+  },
+  "honey": {
+   "match": "\\b(pure|natural|raw|wild|forest|manuka|acacia|organic|bee) honey\\b|^honey \\d",
+   "exclude": "lemon|chicken|cereal|biscuit|cake|drink|tea|mustard|pollen|comb|stick|mandarin|orange|melon|potato|dates|lime|pear|apple|pomelo|sauce|glazed"
+  },
+  "vinegar": {
+   "match": "vinegar|cuka",
+   "exclude": "apple cider|balsamic|wine|chip"
+  },
+  "stock_cube": {
+   "match": "chicken (stock|bouillon) cube|kiub",
+   "exclude": "beef|fish|vegetable"
+  },
+  "sesame_seed": {
+   "match": "sesame seed|bijan",
+   "exclude": "oil|paste|bun|biscuit|candy"
+  },
+  "mixed_herbs": {
+   "match": "mixed herbs|italian (herbs|seasoning)|oregano",
+   "exclude": "sauce|pizza|chicken"
   }
  }
 }

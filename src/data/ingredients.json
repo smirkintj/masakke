@@ -92,6 +92,20 @@
     "white_pepper":     { "name": "Lada putih (white pepper)", "unit": "g", "aisle": "Spices", "codes": [873], "size": 100, "pack": 100, "fallback": 7.0, "pantry": true },
     "cinnamon":         { "name": "Kayu manis (cinnamon)", "unit": "g", "aisle": "Spices", "codes": [343], "size": 100, "pack": 100, "fallback": 4.0, "pantry": true },
     "star_anise":       { "name": "Bunga lawang (star anise)", "unit": "g", "aisle": "Spices", "codes": [865], "size": 100, "pack": 100, "fallback": 5.0, "pantry": true },
-    "fennel":           { "name": "Jintan manis (fennel seed)", "unit": "g", "aisle": "Spices", "codes": [863], "size": 100, "pack": 100, "fallback": 3.0, "pantry": true }
-  }
+    "fennel":           { "name": "Jintan manis (fennel seed)", "unit": "g", "aisle": "Spices", "codes": [863], "size": 100, "pack": 100, "fallback": 3.0, "pantry": true },
+    "spaghetti":        { "name": "Spaghetti", "unit": "g", "aisle": "Noodles", "size": 500, "pack": 500, "fallback": 5.5 },
+    "sohun":            { "name": "Sohun (glass noodles)", "unit": "g", "aisle": "Noodles", "size": 250, "pack": 250, "fallback": 3.5 },
+    "butter":           { "name": "Butter", "unit": "g", "aisle": "Dairy", "size": 250, "pack": 250, "fallback": 11.9 },
+    "cheese":           { "name": "Cheddar cheese", "unit": "g", "aisle": "Dairy", "size": 250, "pack": 250, "fallback": 12.9 },
+    "milk":             { "name": "Fresh milk", "unit": "ml", "aisle": "Dairy", "size": 1000, "pack": 1000, "fallback": 7.9 },
+    "mushroom":         { "name": "Cendawan butang (button mushrooms)", "unit": "g", "aisle": "Vegetables", "size": 200, "pack": 200, "fallback": 4.9 },
+    "lemon":            { "name": "Lemon", "unit": "pc", "aisle": "Vegetables", "size": 1, "pack": 1, "fallback": 1.5 },
+    "breadcrumbs":      { "name": "Serbuk roti (breadcrumbs)", "unit": "g", "aisle": "Dry goods", "size": 200, "pack": 200, "fallback": 4.5 },
+    "gochujang":        { "name": "Gochujang (Korean chili paste)", "unit": "g", "aisle": "Pantry", "size": 500, "pack": 500, "fallback": 17.9, "pantry": true },
+    "honey":            { "name": "Madu (honey)", "unit": "g", "aisle": "Pantry", "size": 500, "pack": 500, "fallback": 16.9, "pantry": true },
+    "vinegar":          { "name": "Cuka (vinegar)", "unit": "ml", "aisle": "Pantry", "size": 500, "pack": 500, "fallback": 3.2, "pantry": true },
+    "stock_cube":       { "name": "Kiub stok ayam (stock cubes)", "unit": "pc", "aisle": "Pantry", "size": 12, "pack": 12, "fallback": 4.9, "pantry": true },
+    "sesame_seed":      { "name": "Bijan (sesame seeds)", "unit": "g", "aisle": "Spices", "size": 100, "pack": 100, "fallback": 3.9, "pantry": true },
+    "mixed_herbs":      { "name": "Herba campur (dried mixed herbs)", "unit": "g", "aisle": "Spices", "size": 20, "pack": 20, "fallback": 6.5, "pantry": true }
+}
 }

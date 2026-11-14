@@ -41,6 +41,7 @@ python3 scripts/build_prototype.py
 - Fridge & freezer: list subtracts it, planner prefers it, pack leftovers added after shopping
 - Cooking mode: get-ready checklist with progress, one step per screen, step timers, total elapsed time
 - Allergies (incl. hidden in sauces) and vegetable dislikes
+- 106 halal recipes: Malaysian (Malay, Chinese, Indian), Asian (Thai, Chinese, Japanese, Korean) and Western, each with hand-written pot-order steps, timers and wait-until cues
 - Recipe browser: sort by quickest, cheapest per plate, most protein, fewest calories, family favourites; filter by protein, time, type, heat, fridge
 - Household recipes ("Write your own" or "Make my version" of ours): shared with everyone, anyone can edit; the planner starts picking one after it has been cooked once and nobody said "Not again"
 - Find a dish (hosted app): type what you feel like eating; MasakJe shows our matching recipes, then searches the web (DeepSeek) for real recipe pages to pick from, reads the page's recipe card (or the page, via DeepSeek) and converts it into a draft with priced ingredients, pot-order steps, timers and wait-until cues, for you to check before saving. It doesn't filter by diet: what a household eats is its own choice. 3 online searches per household per day (`MASAKJE_FIND_PER_DAY`); needs `DEEPSEEK_API_KEY` in Vercel. Cost per call is logged in Redis (`ailog:<date>`)

@@ -512,10 +512,12 @@ const DATA = /*__DATA__*/null;
     ["fish", "Fish", ["fish_kembung", "fish_selar", "fish_tenggiri", "fish_siakap", "fish_tilapia", "ikan_bilis", "salted_fish", "fish_sauce"]],
     ["peanut", "Peanuts", ["peanuts"]],
     ["egg", "Egg", ["egg"]],
-    ["soy", "Soy", ["tofu", "tempe", "kicap_manis", "soy_light", "soy_dark", "oyster_sauce"]],
-    ["wheat", "Wheat / gluten", ["flour", "yellow_mee", "soy_light", "soy_dark", "kicap_manis", "oyster_sauce"]],
+    ["soy", "Soy", ["tofu", "tempe", "kicap_manis", "soy_light", "soy_dark", "oyster_sauce", "gochujang"]],
+    ["wheat", "Wheat / gluten", ["flour", "yellow_mee", "soy_light", "soy_dark", "kicap_manis", "oyster_sauce", "spaghetti", "breadcrumbs", "gochujang", "stock_cube"]],
+    ["dairy", "Milk / dairy", ["milk", "butter", "cheese"]],
+    ["sesame", "Sesame", ["sesame_seed", "sesame_oil"]],
   ];
-  const VEG = ["kangkung", "bayam", "sawi", "kailan", "pak_choy", "cabbage", "chinese_cabbage", "taugeh", "long_bean", "french_bean", "okra", "brinjal", "carrot", "potato", "broccoli", "cauliflower", "capsicum", "cucumber", "tomato"];
+  const VEG = ["kangkung", "bayam", "sawi", "kailan", "pak_choy", "cabbage", "chinese_cabbage", "taugeh", "long_bean", "french_bean", "okra", "brinjal", "carrot", "potato", "broccoli", "cauliflower", "capsicum", "cucumber", "tomato", "mushroom"];
   const RADII = [3, 5, 10, 20];          // km rings used for "near you" prices
   const MIN_SHOPS = 3;                    // shops needed in a ring to trust its median
 
@@ -1064,7 +1066,7 @@ const DATA = /*__DATA__*/null;
     const groups = {};
     const covered = fresh.filter(r => !r.buy);
     for (const r of [...fresh.filter(r => r.buy), ...needP]) (groups[r.it.aisle] = groups[r.it.aisle] || []).push(r);
-    const order = ["Vegetables", "Onion, garlic & chili", "Meat & poultry", "Fish & seafood", "Eggs & tofu", "Noodles", "Dry goods", "Pantry", "Spices"];
+    const order = ["Vegetables", "Onion, garlic & chili", "Meat & poultry", "Fish & seafood", "Eggs & tofu", "Dairy", "Noodles", "Dry goods", "Pantry", "Spices"];
     const srcTag = s => `<span class="tag ${s === "This shop" || s === "Jaya Grocer" ? "ok" : ""}">${s}</span>`;
     const jgLine = r => r.src === "Jaya Grocer" ? `<div class="q"><a href="${esc(JG.items[r.k].url)}" target="_blank" rel="noopener" style="color:var(--fg2)">${esc(JG.items[r.k].title)} · RM ${JG.items[r.k].price.toFixed(2)}</a></div>` : "";
     const row = r => {
@@ -1837,7 +1839,7 @@ const DATA = /*__DATA__*/null;
   // ---------- share the list to WhatsApp ----------
   const buyText = r => r.src === "Jaya Grocer" ? `${r.packs} × ${r.it.unit === "pc" && JG.items[r.k].size % 1 ? "pack" : qty(JG.items[r.k].size, r.it.unit, r.k)}` : qty(r.buy, r.it.unit, r.k);
   function shareList() {
-    const t = totals(S.plan), order = ["Vegetables", "Onion, garlic & chili", "Meat & poultry", "Fish & seafood", "Eggs & tofu", "Noodles", "Dry goods", "Pantry", "Spices"];
+    const t = totals(S.plan), order = ["Vegetables", "Onion, garlic & chili", "Meat & poultry", "Fish & seafood", "Eggs & tofu", "Dairy", "Noodles", "Dry goods", "Pantry", "Spices"];
     const rows = t.rows.filter(r => (r.pantry ? S.pantryNeed[r.k] : r.buy) && !S.bought[r.k]);
     if (!rows.length) return toast("Nothing left to buy");
     const shop = chosenShop(), groups = order.map(a => [a, rows.filter(r => r.it.aisle === a)]).filter(([, g]) => g.length);
@@ -1938,7 +1940,7 @@ const DATA = /*__DATA__*/null;
     ["goreng", /\b(deep[- ]?fr|goreng|shallow[- ]?fr|pan[- ]?fr|fry|fried)/],
     ["kukus", /\b(steam|kukus)/],
     ["bakar", /\b(grill|bakar|roast|bake|toast|char|broil|air[- ]?fr)/],
-    ["rebus", /\b(boil|rebus|blanch|parboil|poach|rice cooker)/],
+    ["rebus", /\b(boil|rebus|blanch|parboil|poach|rice cooker|cook the rice)/],
     ["tumbuk", /\b(pound|tumbuk|blend|kisar|grind|pur[eé]e|blitz)/],
     ["kacau", /\b(simmer|stir|kacau|reduce|thicken|santan|coconut milk|stock)/],
     ["gaul", /\b(mix|toss|gaul|marinat|season|combine|coat|rub|whisk|beat)/],
