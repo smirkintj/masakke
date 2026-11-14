@@ -343,5 +343,61 @@ export default {
 "fennel": [
 "Jintan manis (fennel seed)",
 "g"
+],
+"spaghetti": [
+"Spaghetti",
+"g"
+],
+"sohun": [
+"Sohun (glass noodles)",
+"g"
+],
+"butter": [
+"Butter",
+"g"
+],
+"cheese": [
+"Cheddar cheese",
+"g"
+],
+"milk": [
+"Fresh milk",
+"ml"
+],
+"mushroom": [
+"Cendawan butang (button mushrooms)",
+"g"
+],
+"lemon": [
+"Lemon",
+"pc"
+],
+"breadcrumbs": [
+"Serbuk roti (breadcrumbs)",
+"g"
+],
+"gochujang": [
+"Gochujang (Korean chili paste)",
+"g"
+],
+"honey": [
+"Madu (honey)",
+"g"
+],
+"vinegar": [
+"Cuka (vinegar)",
+"ml"
+],
+"stock_cube": [
+"Kiub stok ayam (stock cubes)",
+"pc"
+],
+"sesame_seed": [
+"Bijan (sesame seeds)",
+"g"
+],
+"mixed_herbs": [
+"Herba campur (dried mixed herbs)",
+"g"
 ]
 };
